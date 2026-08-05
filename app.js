@@ -554,10 +554,7 @@ class AppEngine {
 
   updateNavComboPageLink() {
     const navItem = document.getElementById('navComboPageItem');
-    if (!navItem) return;
-
-    const hasDedicatedCombos = this.recipes.some(r => r.displayLocation === 'dedicated_page');
-    navItem.style.display = hasDedicatedCombos ? 'inline-block' : 'none';
+    if (navItem) navItem.style.display = 'inline-block';
     this.renderDedicatedCombos();
   }
 
@@ -1942,19 +1939,73 @@ class AppEngine {
     this.showToast('Logged out successfully.');
   }
 
+  openProfileMenuModal() {
+    const modal = document.getElementById('profileMenuModal');
+    const headerBox = document.getElementById('profileMenuHeaderBox');
+    const footerBox = document.getElementById('profileMenuFooterBox');
+
+    if (headerBox) {
+      if (this.user) {
+        headerBox.innerHTML = `
+          <img src="${this.user.avatar || 'assets/turmeric.jpg'}" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-mint); flex-shrink:0;">
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:1.05rem; cursor:pointer; color:white;" onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();">
+              ${this.user.name} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; color:var(--primary-mint);"></i>
+            </div>
+            <div style="font-size:0.78rem; opacity:0.85;">📞 +91 ${this.user.mobile}</div>
+            <button onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();" style="background:var(--primary-mint); color:var(--primary-deep); border:none; padding:0.3rem 0.65rem; border-radius:var(--radius-sm); font-size:0.72rem; font-weight:800; margin-top:0.35rem; cursor:pointer;">
+              <i class="fa-solid fa-id-card"></i> View Full Profile Page
+            </button>
+          </div>
+        `;
+      } else {
+        headerBox.innerHTML = `
+          <div style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:1.05rem; color:white;">Guest Customer</div>
+            <div style="font-size:0.78rem; opacity:0.85;">Login to access saved addresses & orders</div>
+            <button onclick="app.openAuthModal('login'); app.closeProfileMenuModal();" style="background:var(--primary-mint); color:var(--primary-deep); border:none; padding:0.35rem 0.75rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:800; margin-top:0.35rem; cursor:pointer;">
+              <i class="fa-solid fa-right-to-bracket"></i> Login / Register
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    if (footerBox) {
+      if (this.user) {
+        footerBox.innerHTML = `
+          <button onclick="app.logoutUser(); app.closeProfileMenuModal();" style="width:100%; padding:0.5rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.8rem; cursor:pointer;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout Account
+          </button>
+        `;
+      } else {
+        footerBox.innerHTML = ``;
+      }
+    }
+
+    if (modal) modal.classList.add('open');
+  }
+
+  closeProfileMenuModal() {
+    const modal = document.getElementById('profileMenuModal');
+    if (modal) modal.classList.remove('open');
+  }
+
   updateAuthStatusUI() {
     const userBtn = document.getElementById('userAuthBtn');
     if (!userBtn) return;
 
     if (this.user) {
-      userBtn.title = `Profile: ${this.user.name}`;
+      userBtn.title = `Profile Menu (${this.user.name})`;
       userBtn.innerHTML = `<i class="fa-solid fa-circle-user" style="color:var(--primary-mint);"></i>`;
-      userBtn.onclick = () => this.openCustomerProfilePage('addresses');
     } else {
-      userBtn.title = 'Account Login';
+      userBtn.title = 'Account & Store Menu';
       userBtn.innerHTML = `<i class="fa-regular fa-user"></i>`;
-      userBtn.onclick = () => this.openAuthModal();
     }
+    userBtn.onclick = () => this.openProfileMenuModal();
   }
 
   quickDemoLogin(role) {
