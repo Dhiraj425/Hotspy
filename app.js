@@ -1977,7 +1977,7 @@ class AppEngine {
     if (footerBox) {
       if (this.user) {
         footerBox.innerHTML = `
-          <button onclick="app.logoutUser(); app.closeProfileMenuModal();" style="width:100%; padding:0.5rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.8rem; cursor:pointer;">
+          <button onclick="app.openLogoutConfirmModal();" style="width:100%; padding:0.5rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.8rem; cursor:pointer;">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout Account
           </button>
         `;
@@ -1987,6 +1987,25 @@ class AppEngine {
     }
 
     if (modal) modal.classList.add('open');
+  }
+
+  openLogoutConfirmModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  closeLogoutConfirmModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  confirmLogoutUser() {
+    this.user = null;
+    this.closeLogoutConfirmModal();
+    this.closeProfileMenuModal();
+    this.updateAuthStatusUI();
+    this.showHomePage();
+    this.showToast('Logged out successfully.');
   }
 
   closeProfileMenuModal() {
@@ -2739,52 +2758,6 @@ class AppEngine {
     this.openOrderInvoicePage(newOrder.id);
   }
 
-  // --- MODAL CONTROLLERS ---
-  openAuthModal(defaultTab = 'login') {
-    const modal = document.getElementById('authModal');
-    if (modal) {
-      modal.classList.add('open');
-      this.switchAuthTab(defaultTab);
-    }
-  }
-
-  closeAuthModal() {
-    const modal = document.getElementById('authModal');
-    if (modal) modal.classList.remove('open');
-  }
-
-  switchAuthTab(tab) {
-    const loginBtn = document.getElementById('tabLoginBtn');
-    const signupBtn = document.getElementById('tabSignupBtn');
-    const loginForm = document.getElementById('formLogin');
-    const signupForm = document.getElementById('formSignup');
-
-    if (tab === 'login') {
-      loginBtn.classList.add('active');
-      signupBtn.classList.remove('active');
-      loginForm.style.display = 'block';
-      signupForm.style.display = 'none';
-    } else {
-      signupBtn.classList.add('active');
-      loginBtn.classList.remove('active');
-      signupForm.style.display = 'block';
-      loginForm.style.display = 'none';
-    }
-  }
-
-  quickDemoLogin(role) {
-    if (role === 'customer') {
-      this.user = { name: 'Aarav Sharma', email: 'aarav@hotspy.com', role: 'customer' };
-      this.showToast('Logged in as Customer (Aarav Sharma)');
-    } else if (role === 'admin') {
-      this.user = { name: 'Admin - Hotspy Global', email: 'admin@hotspyorganics.com', role: 'admin' };
-      this.showToast('Logged in as Store Administrator');
-    }
-    localStorage.setItem('hotspy_user', JSON.stringify(this.user));
-    this.updateAuthStatusUI();
-    this.closeAuthModal();
-  }
-
   logout() {
     this.user = null;
     localStorage.removeItem('hotspy_user');
@@ -2792,22 +2765,7 @@ class AppEngine {
     this.showToast('Logged out successfully');
   }
 
-  updateAuthStatusUI() {
-    const btn = document.getElementById('userAuthBtn');
-    if (!btn) return;
 
-    if (this.user) {
-      btn.innerHTML = `<i class="fa-solid fa-user-check" style="color:var(--primary);"></i> ${this.user.name.split(' ')[0]}`;
-      btn.onclick = () => {
-        if (confirm(`Logged in as ${this.user.name}. Do you want to logout?`)) {
-          this.logout();
-        }
-      };
-    } else {
-      btn.innerHTML = `<i class="fa-regular fa-user"></i>`;
-      btn.onclick = () => this.openAuthModal('login');
-    }
-  }
 
   openCartDrawer() {
     const drawer = document.getElementById('cartDrawerBackdrop');
