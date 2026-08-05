@@ -6,8 +6,13 @@
              Recipe Pairings & Combo Bundles Manager with Discount Combo Cart Items & Supabase Sync
    ========================================================================== */
 
-const SUPABASE_URL = "https://nmzwenbwgccwaokywthe.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tendlbmJ3Z2Njd2Fva3l3dGhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MDgwOTUsImV4cCI6MjEwMTQ4NDA5NX0.Q2a1fMkQpIm3niHsHvp8CmpVHHhRb1NVH5kszDFi48E";
+const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
+  ? window.SUPABASE_URL 
+  : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_URL ? window.ENV.SUPABASE_URL : "https://nmzwenbwgccwaokywthe.supabase.co");
+
+const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.SUPABASE_ANON_KEY) 
+  ? window.SUPABASE_ANON_KEY 
+  : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_ANON_KEY ? window.ENV.SUPABASE_ANON_KEY : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tendlbmJ3Z2Njd2Fva3l3dGhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MDgwOTUsImV4cCI6MjEwMTQ4NDA5NX0.Q2a1fMkQpIm3niHsHvp8CmpVHHhRb1NVH5kszDFi48E");
 
 // --- DEFAULT GLOBAL BADGES & ANNOUNCEMENT STATE ---
 const DEFAULT_GLOBAL_SETTINGS = {
