@@ -1818,6 +1818,19 @@ class AppEngine {
   }
 
   // --- MOBILE NUMBER AUTH SYSTEM (SIGNUP & LOGIN) ---
+  openAuthModal(type = 'login') {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+      modal.classList.add('open');
+      this.switchAuthTab(type);
+    }
+  }
+
+  closeAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.remove('open');
+  }
+
   switchAuthTab(type) {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');

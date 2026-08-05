@@ -2126,12 +2126,25 @@ img {
     height: 64px;
   }
 
+  .header-actions {
+    gap: 0.35rem;
+  }
+  .header-actions .icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+  .header-actions .mode-toggle-btn {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
   .brand-name {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
   }
 
   .brand-tagline {
-    font-size: 0.58rem;
+    font-size: 0.52rem;
   }
 
   .nav-menu {
