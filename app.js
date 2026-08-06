@@ -179,6 +179,17 @@ class AppEngine {
     });
   }
 
+  // --- LIVE ORDER TRACKING CONTROLLER ---
+  openLiveTrackingModal() {
+    const modal = document.getElementById('liveTrackingModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  closeLiveTrackingModal() {
+    const modal = document.getElementById('liveTrackingModal');
+    if (modal) modal.classList.remove('open');
+  }
+
   toggleProfileDropdown(e) {
     if (e) e.stopPropagation();
     const card = document.getElementById('profileDropdownCard');
@@ -277,7 +288,7 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(this.products);
   }
 
-  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE (SHOWS ONLY CATEGORIES - NO PRODUCTS!)
+  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE
   openCategoryPage() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
@@ -619,10 +630,10 @@ class AppEngine {
   updateCartUI() {
     const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
     const mobileBadge = document.getElementById('mobileCartBadge');
-    const desktopCartCount = document.getElementById('desktopCartCount');
+    const headerCartBadge = document.getElementById('headerCartBadge');
 
     if (mobileBadge) mobileBadge.textContent = totalItems;
-    if (desktopCartCount) desktopCartCount.textContent = totalItems;
+    if (headerCartBadge) headerCartBadge.textContent = totalItems;
 
     const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const grandTotalEl = document.getElementById('cartGrandTotal');
@@ -834,9 +845,14 @@ class AppEngine {
           <span style="background:var(--primary-light); color:var(--header-bg); font-size:0.72rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:4px;">${o.status}</span>
         </div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--header-bg); margin-bottom:0.5rem;">Total: ₹${o.total_amount}</div>
-        <button onclick="app.openOrderInvoicePage('${o.id}')" style="background:var(--header-bg); color:white; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; font-size:0.78rem; cursor:pointer;">
-          <i class="fa-solid fa-file-invoice"></i> View Tax Invoice
-        </button>
+        <div style="display:flex; gap:0.5rem;">
+          <button onclick="app.openOrderInvoicePage('${o.id}')" style="background:var(--header-bg); color:white; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+            <i class="fa-solid fa-file-invoice"></i> View Tax Invoice
+          </button>
+          <button onclick="app.openLiveTrackingModal()" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;">
+            <i class="fa-solid fa-truck-fast"></i> Track Delivery
+          </button>
+        </div>
       </div>
     `).join('');
   }
@@ -867,7 +883,7 @@ class AppEngine {
       shipping_address: JSON.stringify(defaultAddr),
       subtotal: subtotal,
       total_amount: subtotal,
-      status: 'Processing',
+      status: 'Out for Express Delivery',
       date: new Date().toISOString().split('T')[0]
     };
 
@@ -878,7 +894,7 @@ class AppEngine {
     this.saveCart();
     this.closeCartDrawer();
     this.showToast(`🎉 Order Placed! ID: ${newOrder.id}`);
-    this.openOrderInvoicePage(newOrder.id);
+    this.openLiveTrackingModal();
   }
 
   addComboToCart(recipeId) {

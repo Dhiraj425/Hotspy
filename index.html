@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=13.0">
+  <link rel="stylesheet" href="styles.css?v=14.0">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
   <!-- BigBasket Header (Deep Teal Green #024731) -->
   <header class="bb-header">
     <div class="container" style="padding:0;">
-      <!-- Row 1: Logo Icon & Profile Wrapper -->
+      <!-- Row 1: Logo Icon & Right Action Bar (Cart Icon Beside Profile + Live Tracking) -->
       <div class="bb-header-top">
         <a href="#" class="bb-brand-logo" onclick="app.showHomePage(); return false;">
           <div class="bb-brand-icon">bb</div>
@@ -35,24 +35,38 @@
           <span class="bb-brand-tag">ORGANICS</span>
         </a>
 
-        <!-- Profile Relative Wrapper for Inline Animated Dropdown -->
-        <div class="profile-dropdown-wrapper">
-          <div class="bb-header-profile-icon" id="userAuthBtn" onclick="app.toggleProfileDropdown(event)" title="Profile & Account">
-            <i class="fa-regular fa-circle-user"></i>
+        <!-- Right Header Action Bar -->
+        <div style="display:flex; align-items:center; gap:0.65rem;">
+          <!-- Live Tracking Button -->
+          <button class="header-track-btn" onclick="app.openLiveTrackingModal()" title="Live Delivery Tracking">
+            <i class="fa-solid fa-truck-fast" style="color:var(--primary);"></i> Track
+          </button>
+
+          <!-- Cart Icon Beside Profile with Live Badge Count -->
+          <div class="bb-header-cart-icon" onclick="app.openCartDrawer()" title="View Basket">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span class="header-cart-badge" id="headerCartBadge">0</span>
           </div>
 
-          <!-- INLINE ANIMATED PROFILE DROPDOWN CARD -->
-          <div class="profile-dropdown-card" id="profileDropdownCard">
-            <div class="dropdown-header-box" id="dropdownHeaderBox"></div>
+          <!-- Profile Icon with Inline Animated Dropdown -->
+          <div class="profile-dropdown-wrapper">
+            <div class="bb-header-profile-icon" id="userAuthBtn" onclick="app.toggleProfileDropdown(event)" title="Profile & Account">
+              <i class="fa-regular fa-circle-user"></i>
+            </div>
 
-            <ul class="dropdown-menu-list">
-              <li><a href="#" onclick="app.showHomePage(); app.closeProfileDropdown();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
-              <li><a href="#" onclick="app.openCategoryPage('All'); app.closeProfileDropdown();"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Directory</a></li>
-              <li><a href="#" onclick="app.openComboPage(); app.closeProfileDropdown();"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
-              <li><a href="#" onclick="app.openTraceabilityPage(); app.closeProfileDropdown();"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
-            </ul>
+            <!-- INLINE ANIMATED PROFILE DROPDOWN CARD -->
+            <div class="profile-dropdown-card" id="profileDropdownCard">
+              <div class="dropdown-header-box" id="dropdownHeaderBox"></div>
 
-            <div id="dropdownFooterBox" style="padding:0.5rem; border-top:1px solid var(--border-subtle);"></div>
+              <ul class="dropdown-menu-list">
+                <li><a href="#" onclick="app.showHomePage(); app.closeProfileDropdown();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
+                <li><a href="#" onclick="app.openCategoryPage('All'); app.closeProfileDropdown();"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Directory</a></li>
+                <li><a href="#" onclick="app.openComboPage(); app.closeProfileDropdown();"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
+                <li><a href="#" onclick="app.openTraceabilityPage(); app.closeProfileDropdown();"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
+              </ul>
+
+              <div id="dropdownFooterBox" style="padding:0.5rem; border-top:1px solid var(--border-subtle);"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -64,8 +78,8 @@
           <span>Deliver to <strong>Lucknow 226010</strong> <i class="fa-solid fa-caret-down" style="font-size:0.75rem;"></i></span>
         </div>
 
-        <div class="bb-speed-badge">
-          <i class="fa-solid fa-bolt" style="color:var(--header-bg);"></i> ⚡ 10 MINS
+        <div class="bb-speed-badge" onclick="app.openLiveTrackingModal()" style="cursor:pointer;">
+          <i class="fa-solid fa-bolt" style="color:var(--header-bg);"></i> ⚡ 10 MINS LIVE
         </div>
       </div>
 
@@ -117,7 +131,7 @@
       </div>
     </main>
 
-    <!-- 2. STANDALONE DEDICATED CATEGORIES DIRECTORY PAGE (CATEGORIES ONLY - NO PRODUCTS!) -->
+    <!-- 2. STANDALONE DEDICATED CATEGORIES DIRECTORY PAGE -->
     <div id="dedicatedCategoryPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -127,9 +141,7 @@
         <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
-      <!-- Category Cards Grid (CATEGORIES ONLY) -->
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:1rem;" id="categoriesDirectoryGrid">
-        
         <div onclick="app.openCategoryProductsView('Spices')" style="background:white; border:1px solid var(--border-light); padding:1.25rem 1rem; border-radius:var(--radius-md); text-align:center; cursor:pointer; box-shadow:var(--shadow-sm); transition:var(--transition-fast);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-light)'">
           <div style="width:58px; height:58px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin:0 auto 0.65rem;">
             <i class="fa-solid fa-pepper-hot"></i>
@@ -169,7 +181,6 @@
           <h3 style="font-size:0.92rem; font-weight:800; color:var(--header-bg); margin-bottom:0.25rem;">Super Saver Combos</h3>
           <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Chef Recipe Pairings</span>
         </div>
-
       </div>
     </div>
 
@@ -183,7 +194,6 @@
         <button class="btn-secondary" onclick="app.openCategoryPage('All');" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-border-all"></i> All Categories</button>
       </div>
 
-      <!-- Filter Toolbar -->
       <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:0.65rem 0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
         <div style="display:flex; align-items:center; gap:0.5rem;">
           <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">Sort By:</span>
@@ -202,9 +212,7 @@
         </div>
       </div>
 
-      <div class="product-grid" id="categoryProductGrid">
-        <!-- Rendered dynamically by app.js -->
-      </div>
+      <div class="product-grid" id="categoryProductGrid"></div>
     </div>
 
     <!-- 3. STANDALONE DEDICATED FARM TRACEABILITY PAGE -->
@@ -243,9 +251,7 @@
         <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
-      <div class="product-grid" id="dedicatedCombosGrid">
-        <!-- Rendered dynamically by app.js -->
-      </div>
+      <div class="product-grid" id="dedicatedCombosGrid"></div>
     </div>
 
     <!-- 5. STANDALONE DEDICATED CUSTOMER PROFILE PAGE -->
@@ -261,8 +267,8 @@
           <h3 id="profileNameDisplay" style="font-size:1.05rem; font-weight:800; color:var(--header-bg);">Aarav Sharma</h3>
           <p id="profileMobileDisplay" style="font-size:0.82rem; font-weight:700; color:var(--header-bg); margin-bottom:0.65rem;">📞 +91 9876543210</p>
           
-          <button class="btn-secondary" onclick="app.openChangePasswordModal()" style="width:100%; font-size:0.78rem; padding:0.4rem;">
-            <i class="fa-solid fa-key"></i> Change Password
+          <button class="btn-primary" onclick="app.openLiveTrackingModal()" style="width:100%; font-size:0.8rem; padding:0.4rem; margin-bottom:0.4rem;">
+            <i class="fa-solid fa-truck-fast"></i> Live Delivery Tracker
           </button>
         </div>
 
@@ -279,7 +285,6 @@
           <div id="profileSectionAddresses">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.85rem;">
               <h3 style="font-size:0.95rem; color:var(--header-bg);">Saved Delivery Addresses</h3>
-              <button class="btn-primary" onclick="app.openAddAddressModal()" style="padding:0.3rem 0.65rem; font-size:0.72rem;">+ Add Address</button>
             </div>
             <div id="profileAddressesGrid" style="display:grid; grid-template-columns: 1fr; gap:0.75rem;"></div>
           </div>
@@ -302,35 +307,64 @@
 
   </div>
 
-  <!-- STANDALONE ADMIN PANEL VIEW -->
-  <div id="adminWrapper" style="display:none; padding:1.25rem 1rem;" class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:2px solid var(--header-bg);">
-      <div>
-        <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">🔒 Secure Admin Suite</h1>
+  <!-- POPUP MODAL: LIVE ORDER TRACKING -->
+  <div id="liveTrackingModal" class="modal-backdrop" onclick="if(event.target === this) app.closeLiveTrackingModal()">
+    <div class="auth-modal-card" style="max-width:400px;">
+      <button class="modal-close-btn" onclick="app.closeLiveTrackingModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div style="background:var(--header-bg); color:white; padding:1.2rem; text-align:center;">
+        <span style="background:var(--primary); color:var(--header-dark); font-size:0.65rem; font-weight:900; padding:0.18rem 0.55rem; border-radius:var(--radius-full); text-transform:uppercase;">
+          ⚡ 10-Min Express Delivery
+        </span>
+        <h3 style="font-size:1.2rem; font-weight:800; margin-top:0.4rem;">Live Delivery Status</h3>
+        <div style="font-size:0.8rem; opacity:0.9;">Estimated Arrival in <strong>8 Mins</strong></div>
       </div>
-      <button class="btn-primary" onclick="app.closeAdminMode()" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-store"></i> Storefront</button>
-    </div>
 
-    <div style="display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap;">
-      <button class="btn-secondary active" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Products</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('recipes')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Recipes</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('traceability')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Traceability</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('orders')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Orders</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('users')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Customers</button>
-    </div>
+      <div style="padding:1.25rem;">
+        <!-- Timeline Progress -->
+        <div style="display:flex; flex-direction:column; gap:1rem; position:relative; margin-bottom:1.25rem;">
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <div style="width:28px; height:28px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800;">✓</div>
+            <div>
+              <strong style="font-size:0.85rem; color:var(--header-bg);">Order Placed & Confirmed</strong>
+              <div style="font-size:0.72rem; color:var(--text-muted);">16:30 PM • Lucknow Express Hub</div>
+            </div>
+          </div>
 
-    <div id="adminSectionProducts" style="background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto;">
-      <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
-        <thead>
-          <tr style="background:var(--bg-warm); text-align:left;">
-            <th style="padding:0.4rem;">Img</th>
-            <th style="padding:0.4rem;">Name</th>
-            <th style="padding:0.4rem;">Price</th>
-            <th style="padding:0.4rem;">Stock</th>
-          </tr>
-        </thead>
-        <tbody id="adminProductTable"></tbody>
-      </table>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <div style="width:28px; height:28px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800;">✓</div>
+            <div>
+              <strong style="font-size:0.85rem; color:var(--header-bg);">Packed & Quality Verified</strong>
+              <div style="font-size:0.72rem; color:var(--text-muted);">16:32 PM • Organic Purity Seal Applied</div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <div style="width:28px; height:28px; border-radius:50%; background:var(--primary); color:var(--header-dark); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; animation:pulse 1.5s infinite;">
+              <i class="fa-solid fa-truck-fast"></i>
+            </div>
+            <div>
+              <strong style="font-size:0.85rem; color:var(--header-bg);">Out for Express Delivery ⚡</strong>
+              <div style="font-size:0.72rem; color:var(--text-muted);">Rider is 1.2 km away from your location</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rider Contact Card -->
+        <div style="background:var(--bg-warm); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <div style="width:38px; height:38px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+              <i class="fa-solid fa-motorcycle"></i>
+            </div>
+            <div>
+              <strong style="font-size:0.85rem; color:var(--text-main);">Raju Sharma</strong>
+              <div style="font-size:0.72rem; color:var(--text-muted);">EV Express Rider • UP32 EV 4012</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="app.showToast('Calling Rider Raju Sharma (+91 9812345678)...')" style="padding:0.35rem 0.65rem; font-size:0.75rem;">
+            <i class="fa-solid fa-phone"></i> Call
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -477,6 +511,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=13.0"></script>
+  <script src="app.js?v=14.0"></script>
 </body>
 </html>
