@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   Homepage Customize Engine: Interactive Drag & Drop Product Reordering & Category Assignment
+   Dedicated Standalone Admin Portal Engine (#/admin) with Top Header & Sidebar
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -792,7 +792,7 @@ class AppEngine {
       if (loginCard) loginCard.style.display = 'none';
       if (dashboard) dashboard.style.display = 'flex';
       if (headerLogoutBtn) headerLogoutBtn.style.display = 'inline-flex';
-      this.switchAdminTab('homepage');
+      this.switchAdminTab('orders');
     } else {
       if (dashboard) dashboard.style.display = 'none';
       if (loginCard) loginCard.style.display = 'block';
@@ -824,83 +824,13 @@ class AppEngine {
   }
 
   switchAdminTab(tab) {
-    ['homepage', 'orders', 'products', 'addproduct', 'banners', 'combos'].forEach(t => {
+    ['orders', 'products', 'addproduct', 'banners', 'combos'].forEach(t => {
       const sec = document.getElementById(`adminSection${t.charAt(0).toUpperCase() + t.slice(1)}`);
       const link = document.getElementById(`adminSidebar${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
       if (link) link.classList.toggle('active', t.toLowerCase() === tab.toLowerCase());
     });
     this.renderAdminTables();
-    if (tab.toLowerCase() === 'homepage') {
-      this.renderDraggableProductsList();
-    }
-  }
-
-  // --- DRAG AND DROP CUSTOMIZER ENGINE ---
-  renderDraggableProductsList() {
-    const container = document.getElementById('draggableProductsList');
-    if (!container) return;
-
-    container.innerHTML = this.products.map(p => `
-      <div class="drag-card" draggable="true" ondragstart="app.handleDragStart(event, '${p.id}')">
-        <div style="display:flex; align-items:center; gap:0.65rem;">
-          <img src="${p.image}" style="width:36px; height:36px; object-fit:cover; border-radius:4px;">
-          <div>
-            <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg);">${p.name.slice(0, 20)}...</div>
-            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Cat: ${p.category} | ${p.isFeatured ? '⭐ Featured' : 'Standard'}</div>
-          </div>
-        </div>
-        <i class="fa-solid fa-grip-vertical drag-handle"></i>
-      </div>
-    `).join('');
-  }
-
-  handleDragStart(e, productId) {
-    e.dataTransfer.setData('text/plain', productId);
-    e.currentTarget.classList.add('dragging');
-  }
-
-  handleDragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add('drag-over');
-  }
-
-  handleDragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-  }
-
-  handleDropAssignCategory(e, newCategory) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    const productId = e.dataTransfer.getData('text/plain');
-    
-    const prod = this.products.find(p => p.id === productId);
-    if (prod) {
-      prod.category = newCategory;
-      localStorage.setItem('hotspy_products', JSON.stringify(this.products));
-      this.showToast(`🎉 Reassigned "${prod.name}" to category: ${newCategory}!`);
-      this.renderDraggableProductsList();
-    }
-  }
-
-  handleDropAssignFeatured(e) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    const productId = e.dataTransfer.getData('text/plain');
-
-    const prod = this.products.find(p => p.id === productId);
-    if (prod) {
-      prod.isFeatured = true;
-      localStorage.setItem('hotspy_products', JSON.stringify(this.products));
-      this.showToast(`🎉 Added "${prod.name}" to Homepage Featured Storefront!`);
-      this.renderDraggableProductsList();
-    }
-  }
-
-  saveHomepageDragSettings() {
-    localStorage.setItem('hotspy_products', JSON.stringify(this.products));
-    this.showToast('🎉 Saved Homepage Customization Settings!');
-    this.showHomePage();
   }
 
   renderAdminTables() {
