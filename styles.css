@@ -196,7 +196,7 @@ button {
   }
 }
 
-/* PROFILE DROPDOWN CONTAINER (RELATIVE FOR INLINE DROPDOWN) */
+/* PROFILE DROPDOWN CONTAINER */
 .profile-dropdown-wrapper {
   position: relative;
 }
@@ -219,7 +219,7 @@ button {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* INLINE PROFILE DROPDOWN CARD (SMOOTH ANIMATION BELOW PROFILE ICON - NO POPUP) */
+/* INLINE PROFILE DROPDOWN CARD */
 .profile-dropdown-card {
   position: absolute;
   top: calc(100% + 8px);
@@ -392,7 +392,7 @@ button {
   font-size: 0.9rem;
 }
 
-/* CIRCULAR CATEGORY STRIP */
+/* CIRCULAR CATEGORY STRIP (VISIBLE ON MOBILE ONLY - HIDDEN ON DESKTOP TO PREVENT DUPLICATE NAVIGATION) */
 .bb-category-circles-strip {
   display: flex;
   gap: 1.1rem;
@@ -402,6 +402,12 @@ button {
   background: white;
   border-bottom: 1px solid var(--border-light);
   margin-bottom: 1rem;
+}
+
+@media (min-width: 769px) {
+  .bb-category-circles-strip {
+    display: none !important;
+  }
 }
 
 .bb-category-circle-card {
