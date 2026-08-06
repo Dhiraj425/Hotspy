@@ -157,17 +157,198 @@ class AppEngine {
   }
 
   async init() {
-    this.renderProducts();
+    this.renderHomeProducts();
     this.updateCartUI();
     this.updateAuthStatusUI();
-    this.renderDedicatedCombos();
 
-    // Listen for #admin secret URL hash
     window.addEventListener('hashchange', () => this.checkAdminRoute());
     this.checkAdminRoute();
   }
 
-  // --- SECRET ADMIN SECURITY ROUTE (#admin) ---
+  // --- STRICT PAGE SWITCHER (HIDES ALL OTHER PAGES STRICTLY) ---
+  hideAllPages() {
+    const pages = [
+      'homePageContent',
+      'dedicatedCategoryPageView',
+      'dedicatedTraceabilityPageView',
+      'dedicatedCombosPageView',
+      'customerProfilePageView',
+      'orderInvoicePageView',
+      'adminWrapper'
+    ];
+    pages.forEach(p => {
+      const el = document.getElementById(p);
+      if (el) el.style.display = 'none';
+    });
+    const storefront = document.getElementById('storefrontWrapper');
+    if (storefront) storefront.style.display = 'block';
+  }
+
+  // 1. STANDALONE HOMEPAGE
+  showHomePage() {
+    this.hideAllPages();
+    const home = document.getElementById('homePageContent');
+    if (home) home.style.display = 'block';
+
+    this.updateMobileNavActive('mobNavHome');
+    this.renderHomeProducts();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  renderHomeProducts() {
+    const grid = document.getElementById('homeProductGrid');
+    if (!grid) return;
+    grid.innerHTML = this.renderProductCardsHTML(this.products);
+  }
+
+  // 2. STANDALONE DEDICATED CATEGORY PAGE
+  openCategoryPage(catName = 'All') {
+    this.hideAllPages();
+    const page = document.getElementById('dedicatedCategoryPageView');
+    if (page) page.style.display = 'block';
+
+    this.selectedCategory = catName;
+    const bread = document.getElementById('catBreadcrumb');
+    const title = document.getElementById('catPageTitle');
+    if (bread) bread.textContent = `Home / Catalog / ${catName}`;
+    if (title) title.textContent = catName === 'All' ? 'All Groceries & Staples' : `${catName} Storefront`;
+
+    const grid = document.getElementById('categoryProductGrid');
+    if (grid) {
+      let filtered = this.products;
+      if (catName !== 'All') {
+        filtered = filtered.filter(p => p.category === catName);
+      }
+      grid.innerHTML = this.renderProductCardsHTML(filtered);
+    }
+
+    this.updateMobileNavActive('mobNavCat');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 3. STANDALONE DEDICATED TRACEABILITY PAGE
+  openTraceabilityPage() {
+    this.hideAllPages();
+    const page = document.getElementById('dedicatedTraceabilityPageView');
+    if (page) page.style.display = 'block';
+
+    this.updateMobileNavActive('mobNavOrganic');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 4. STANDALONE DEDICATED RECIPE COMBOS PAGE
+  openComboPage() {
+    this.hideAllPages();
+    const page = document.getElementById('dedicatedCombosPageView');
+    if (page) page.style.display = 'block';
+
+    const grid = document.getElementById('dedicatedCombosGrid');
+    if (grid) {
+      grid.innerHTML = this.recipes.map(r => `
+        <div class="bb-product-card">
+          <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">SAVE ₹170</span>
+          <div class="bb-card-img-wrap">
+            <img src="${r.image}">
+          </div>
+          <h3 class="bb-card-title">${r.title}</h3>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
+          <div class="bb-price-row">
+            <span class="bb-sale-price">₹${r.comboPrice}</span>
+            <span class="bb-mrp-price">₹669</span>
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
+        </div>
+      `).join('');
+    }
+
+    this.updateMobileNavActive('mobNavOffers');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 5. STANDALONE DEDICATED CUSTOMER PROFILE PAGE
+  openCustomerProfilePage(tab = 'addresses') {
+    if (!this.user) {
+      this.openAuthModal('login');
+      return;
+    }
+
+    this.hideAllPages();
+    const page = document.getElementById('customerProfilePageView');
+    if (page) page.style.display = 'block';
+
+    const avatar = document.getElementById('profileAvatarImg');
+    const nameEl = document.getElementById('profileNameDisplay');
+    const mobileEl = document.getElementById('profileMobileDisplay');
+
+    if (avatar) avatar.src = this.user.avatar || 'assets/turmeric.jpg';
+    if (nameEl) nameEl.textContent = this.user.name;
+    if (mobileEl) mobileEl.textContent = `📞 +91 ${this.user.mobile}`;
+
+    this.switchProfileTab(tab);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 6. STANDALONE DEDICATED ORDER TAX INVOICE PAGE
+  openOrderInvoicePage(orderId) {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    this.hideAllPages();
+    const page = document.getElementById('orderInvoicePageView');
+    if (page) page.style.display = 'block';
+
+    const printableBox = document.getElementById('printableOrderInvoice');
+    let items = [];
+    try { items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; } catch(e) {}
+    let addr = {};
+    try { addr = typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address; } catch(e) {}
+
+    if (printableBox) {
+      printableBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; border-bottom:2px solid var(--header-bg); padding-bottom:1rem;">
+          <div>
+            <h1 style="font-size:1.5rem; color:var(--header-bg); margin:0;">bigbasket ORGANICS</h1>
+            <div style="font-size:0.8rem; color:var(--text-muted);">A TATA Enterprise • Online Supermarket</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.15rem; font-weight:800; color:var(--header-bg);">TAX INVOICE</div>
+            <div style="font-size:0.8rem; font-weight:700;">Invoice #: INV-${order.id}</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:1.25rem; background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md);">
+          <strong>Customer: ${order.customer_name}</strong> (📞 +91 ${order.customer_mobile})<br>
+          <span style="font-size:0.82rem;">Delivery: ${addr.house_no}, ${addr.street}, ${addr.city} - ${addr.pincode}</span>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.85rem;">
+          <thead>
+            <tr style="background:var(--header-bg); color:white;">
+              <th style="padding:0.5rem; text-align:left;">Item</th>
+              <th style="padding:0.5rem; text-align:center;">Qty</th>
+              <th style="padding:0.5rem; text-align:right;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(items || []).map(item => `
+              <tr style="border-bottom:1px solid var(--border-light);">
+                <td style="padding:0.5rem;"><strong>${item.name}</strong></td>
+                <td style="padding:0.5rem; text-align:center;">${item.quantity}</td>
+                <td style="padding:0.5rem; text-align:right; font-weight:800;">₹${item.price * item.quantity}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+
+        <div style="text-align:right; font-size:1.1rem; font-weight:800; color:var(--header-bg);">
+          Grand Total: ₹${order.total_amount}
+        </div>
+      `;
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 7. STANDALONE ADMIN PANEL
   checkAdminRoute() {
     if (window.location.hash === '#admin') {
       this.openAdminAuthModal();
@@ -201,36 +382,26 @@ class AppEngine {
   }
 
   openAdminMode() {
+    this.hideAllPages();
     const storefront = document.getElementById('storefrontWrapper');
     const adminPanel = document.getElementById('adminWrapper');
     if (adminPanel) adminPanel.style.display = 'block';
     if (storefront) storefront.style.display = 'none';
     this.renderAdminTables();
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   closeAdminMode() {
-    const storefront = document.getElementById('storefrontWrapper');
-    const adminPanel = document.getElementById('adminWrapper');
-    if (adminPanel) adminPanel.style.display = 'none';
-    if (storefront) storefront.style.display = 'block';
-    window.location.hash = '';
+    this.showHomePage();
   }
 
-  // RENDER PRODUCTS
-  renderProducts() {
-    const grid = document.getElementById('productGrid');
-    if (!grid) return;
-
-    let filtered = this.products;
-    if (this.selectedCategory !== 'All') {
-      filtered = filtered.filter(p => p.category === this.selectedCategory);
-    }
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+  // PRODUCT CARD HTML GENERATOR
+  renderProductCardsHTML(productsList) {
+    if (productsList.length === 0) {
+      return `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No products found matching criteria.</div>`;
     }
 
-    grid.innerHTML = filtered.map(p => {
+    return productsList.map(p => {
       const cartItem = this.cart.find(c => c.id === p.id);
       const qtyInCart = cartItem ? cartItem.quantity : 0;
 
@@ -275,17 +446,14 @@ class AppEngine {
   }
 
   filterCategory(cat) {
-    this.selectedCategory = cat;
-    document.querySelectorAll('.bb-category-circle-card').forEach(card => {
-      card.classList.toggle('active', card.textContent.trim().includes(cat));
-    });
-    this.renderProducts();
-    this.showHomePage();
+    this.openCategoryPage(cat);
   }
 
   handleSearchInput(e) {
     this.searchQuery = e.target.value;
-    this.renderProducts();
+    if (this.searchQuery) {
+      this.openCategoryPage('All');
+    }
   }
 
   addToCart(productId, quantity = 1) {
@@ -325,12 +493,16 @@ class AppEngine {
   saveCart() {
     localStorage.setItem('hotspy_cart', JSON.stringify(this.cart));
     this.updateCartUI();
-    this.renderProducts();
+    const activeCatPage = document.getElementById('dedicatedCategoryPageView');
+    if (activeCatPage && activeCatPage.style.display === 'block') {
+      this.openCategoryPage(this.selectedCategory);
+    } else {
+      this.renderHomeProducts();
+    }
   }
 
   updateCartUI() {
     const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-    
     const mobileBadge = document.getElementById('mobileCartBadge');
     if (mobileBadge) mobileBadge.textContent = totalItems;
 
@@ -350,7 +522,7 @@ class AppEngine {
     const itemsBody = document.getElementById('cartDrawerItems');
     if (itemsBody) {
       if (this.cart.length === 0) {
-        itemsBody.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-muted); font-weight:700;">Your basket is empty. Browse groceries to add items!</div>`;
+        itemsBody.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-muted); font-weight:700;">Your basket is empty.</div>`;
       } else {
         itemsBody.innerHTML = this.cart.map(item => `
           <div style="display:flex; gap:0.75rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-subtle);">
@@ -373,7 +545,13 @@ class AppEngine {
     }
   }
 
-  // AUTH & PROFILE
+  updateMobileNavActive(activeId) {
+    ['mobNavHome', 'mobNavCat', 'mobNavOffers', 'mobNavOrganic', 'mobNavCart'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active', id === activeId);
+    });
+  }
+
   openAuthModal(type = 'login') {
     const modal = document.getElementById('authModal');
     if (modal) {
@@ -422,7 +600,7 @@ class AppEngine {
 
     this.closeAuthModal();
     this.updateAuthStatusUI();
-    this.showToast(`Welcome ${name}! Your account is created.`);
+    this.showToast(`Welcome ${name}! Account created.`);
     this.openCustomerProfilePage('addresses');
   }
 
@@ -527,34 +705,6 @@ class AppEngine {
     }
   }
 
-  openCustomerProfilePage(tab = 'addresses') {
-    if (!this.user) {
-      this.openAuthModal('login');
-      return;
-    }
-
-    const homeContent = document.getElementById('homePageContent');
-    const comboPageView = document.getElementById('dedicatedCombosPageView');
-    const profilePageView = document.getElementById('customerProfilePageView');
-    const invoicePageView = document.getElementById('orderInvoicePageView');
-
-    if (homeContent) homeContent.style.display = 'none';
-    if (comboPageView) comboPageView.style.display = 'none';
-    if (invoicePageView) invoicePageView.style.display = 'none';
-    if (profilePageView) profilePageView.style.display = 'block';
-
-    const avatar = document.getElementById('profileAvatarImg');
-    const nameEl = document.getElementById('profileNameDisplay');
-    const mobileEl = document.getElementById('profileMobileDisplay');
-
-    if (avatar) avatar.src = this.user.avatar || 'assets/turmeric.jpg';
-    if (nameEl) nameEl.textContent = this.user.name;
-    if (mobileEl) mobileEl.textContent = `📞 +91 ${this.user.mobile}`;
-
-    this.switchProfileTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   switchProfileTab(tabName) {
     const secAddr = document.getElementById('profileSectionAddresses');
     const secOrders = document.getElementById('profileSectionOrders');
@@ -624,7 +774,6 @@ class AppEngine {
     `).join('');
   }
 
-  // CHECKOUT & INVOICE
   checkout() {
     if (this.cart.length === 0) return;
     if (!this.user) {
@@ -665,124 +814,12 @@ class AppEngine {
     this.openOrderInvoicePage(newOrder.id);
   }
 
-  openOrderInvoicePage(orderId) {
-    const order = this.orders.find(o => o.id === orderId);
-    if (!order) return;
-
-    const homeContent = document.getElementById('homePageContent');
-    const comboPageView = document.getElementById('dedicatedCombosPageView');
-    const profilePageView = document.getElementById('customerProfilePageView');
-    const invoicePageView = document.getElementById('orderInvoicePageView');
-    const printableBox = document.getElementById('printableOrderInvoice');
-
-    if (homeContent) homeContent.style.display = 'none';
-    if (comboPageView) comboPageView.style.display = 'none';
-    if (profilePageView) profilePageView.style.display = 'none';
-    if (invoicePageView) invoicePageView.style.display = 'block';
-
-    let items = [];
-    try { items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; } catch(e) {}
-
-    let addr = {};
-    try { addr = typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address; } catch(e) {}
-
-    if (printableBox) {
-      printableBox.innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; border-bottom:2px solid var(--header-bg); padding-bottom:1rem;">
-          <div>
-            <h1 style="font-size:1.5rem; color:var(--header-bg); margin:0;">bigbasket ORGANICS</h1>
-            <div style="font-size:0.8rem; color:var(--text-muted);">A TATA Enterprise • Online Supermarket</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:1.15rem; font-weight:800; color:var(--header-bg);">TAX INVOICE</div>
-            <div style="font-size:0.8rem; font-weight:700;">Invoice #: INV-${order.id}</div>
-          </div>
-        </div>
-
-        <div style="margin-bottom:1.25rem; background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md);">
-          <strong>Customer: ${order.customer_name}</strong> (📞 +91 ${order.customer_mobile})<br>
-          <span style="font-size:0.82rem;">Delivery: ${addr.house_no}, ${addr.street}, ${addr.city} - ${addr.pincode}</span>
-        </div>
-
-        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.85rem;">
-          <thead>
-            <tr style="background:var(--header-bg); color:white;">
-              <th style="padding:0.5rem; text-align:left;">Item</th>
-              <th style="padding:0.5rem; text-align:center;">Qty</th>
-              <th style="padding:0.5rem; text-align:right;">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${(items || []).map(item => `
-              <tr style="border-bottom:1px solid var(--border-light);">
-                <td style="padding:0.5rem;"><strong>${item.name}</strong></td>
-                <td style="padding:0.5rem; text-align:center;">${item.quantity}</td>
-                <td style="padding:0.5rem; text-align:right; font-weight:800;">₹${item.price * item.quantity}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-
-        <div style="text-align:right; font-size:1.1rem; font-weight:800; color:var(--header-bg);">
-          Grand Total: ₹${order.total_amount}
-        </div>
-      `;
-    }
-  }
-
-  openComboPage() {
-    const homeContent = document.getElementById('homePageContent');
-    const comboPageView = document.getElementById('dedicatedCombosPageView');
-    const profilePageView = document.getElementById('customerProfilePageView');
-    const invoicePageView = document.getElementById('orderInvoicePageView');
-
-    if (homeContent) homeContent.style.display = 'none';
-    if (profilePageView) profilePageView.style.display = 'none';
-    if (invoicePageView) invoicePageView.style.display = 'none';
-    if (comboPageView) comboPageView.style.display = 'block';
-
-    this.renderDedicatedCombos();
-  }
-
-  renderDedicatedCombos() {
-    const grid = document.getElementById('dedicatedCombosGrid');
-    if (!grid) return;
-
-    grid.innerHTML = this.recipes.map(r => `
-      <div class="bb-product-card">
-        <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">SAVE ₹170</span>
-        <div class="bb-card-img-wrap">
-          <img src="${r.image}">
-        </div>
-        <h3 class="bb-card-title">${r.title}</h3>
-        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
-        <div class="bb-price-row">
-          <span class="bb-sale-price">₹${r.comboPrice}</span>
-          <span class="bb-mrp-price">₹669</span>
-        </div>
-        <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
-      </div>
-    `).join('');
-  }
-
   addComboToCart(recipeId) {
     const r = this.recipes.find(rec => rec.id === recipeId);
     if (!r) return;
     this.cart.push({ id: r.id, name: r.title, price: r.comboPrice, originalPrice: 669, image: r.image, quantity: 1 });
     this.saveCart();
     this.showToast(`Added "${r.title}" to Basket!`);
-  }
-
-  showHomePage() {
-    const homeContent = document.getElementById('homePageContent');
-    const comboPageView = document.getElementById('dedicatedCombosPageView');
-    const profilePageView = document.getElementById('customerProfilePageView');
-    const invoicePageView = document.getElementById('orderInvoicePageView');
-
-    if (homeContent) homeContent.style.display = 'block';
-    if (comboPageView) comboPageView.style.display = 'none';
-    if (profilePageView) profilePageView.style.display = 'none';
-    if (invoicePageView) invoicePageView.style.display = 'none';
   }
 
   openCartDrawer() {
