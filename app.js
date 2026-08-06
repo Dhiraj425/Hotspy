@@ -192,7 +192,8 @@ class AppEngine {
     this.currentSlideIndex = 0;
     this.bannerSliderTimer = null;
 
-    this.homepageSections = [
+    const savedSections = sessionStorage.getItem('hotspy_homepage_sections');
+    this.homepageSections = savedSections ? JSON.parse(savedSections) : [
       { id: 'banners', name: '🖼️ Interactive Banner Slider Carousel', enabled: true },
       { id: 'featured', name: '⭐ Featured Store Products Grid', enabled: true },
       { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
@@ -234,6 +235,12 @@ class AppEngine {
 
       const { data: ords } = await _supabase.from('orders').select('*');
       if (ords && ords.length > 0) this.orders = ords;
+
+      const { data: layoutData } = await _supabase.from('settings').select('*').eq('id', 'homepage_layout');
+      if (layoutData && layoutData.length > 0 && layoutData[0].data) {
+        this.homepageSections = layoutData[0].data;
+        sessionStorage.setItem('hotspy_homepage_sections', JSON.stringify(this.homepageSections));
+      }
     } catch(e) {
       console.warn('Supabase cloud fetch fallback to active memory catalog', e);
     }
@@ -1094,8 +1101,12 @@ class AppEngine {
     const temp = this.homepageSections[idx];
     this.homepageSections[idx] = this.homepageSections[idx - 1];
     this.homepageSections[idx - 1] = temp;
-    this.renderAdminLayoutSections();
     this.saveHomepageLayoutOrder(false);
+    this.renderAdminLayoutSections();
+    const home = document.getElementById('homePageContent');
+    if (home && home.style.display !== 'none') {
+      this.renderHomePageView();
+    }
   }
 
   moveHomepageSectionDown(idx) {
@@ -1103,20 +1114,29 @@ class AppEngine {
     const temp = this.homepageSections[idx];
     this.homepageSections[idx] = this.homepageSections[idx + 1];
     this.homepageSections[idx + 1] = temp;
-    this.renderAdminLayoutSections();
     this.saveHomepageLayoutOrder(false);
+    this.renderAdminLayoutSections();
+    const home = document.getElementById('homePageContent');
+    if (home && home.style.display !== 'none') {
+      this.renderHomePageView();
+    }
   }
 
   toggleHomepageSectionVisibility(secId) {
     const sec = this.homepageSections.find(s => s.id === secId);
     if (sec) {
       sec.enabled = !sec.enabled;
-      this.renderAdminLayoutSections();
       this.saveHomepageLayoutOrder(false);
+      this.renderAdminLayoutSections();
+      const home = document.getElementById('homePageContent');
+      if (home && home.style.display !== 'none') {
+        this.renderHomePageView();
+      }
     }
   }
 
   async saveHomepageLayoutOrder(showToastMsg = true) {
+    sessionStorage.setItem('hotspy_homepage_sections', JSON.stringify(this.homepageSections));
     if (_supabase) {
       try {
         await _supabase.from('settings').upsert({ id: 'homepage_layout', data: this.homepageSections });
