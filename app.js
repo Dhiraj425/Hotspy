@@ -1,6 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
+   URL Hash Routing Engine for Mobile & PC Browser Back Button Compatibility
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -181,12 +182,15 @@ class AppEngine {
   }
 
   async init() {
-    this.renderHomeProducts();
     this.updateCartUI();
     this.updateAuthStatusUI();
 
-    window.addEventListener('hashchange', () => this.checkAdminRoute());
-    this.checkAdminRoute();
+    // LISTEN TO BROWSER & MOBILE BACK/FORWARD BUTTON HASH CHANGES
+    window.addEventListener('hashchange', () => this.handleRouteHashChange());
+    window.addEventListener('popstate', () => this.handleRouteHashChange());
+
+    // Initial page load route parsing
+    this.handleRouteHashChange();
 
     document.addEventListener('click', (e) => {
       const wrapper = document.querySelector('.profile-dropdown-wrapper');
@@ -194,6 +198,80 @@ class AppEngine {
         this.closeProfileDropdown();
       }
     });
+  }
+
+  // ROUTER CONTROLLER: PARSES URL HASH FOR DESKTOP & MOBILE BACK BUTTON SUPPORT
+  handleRouteHashChange() {
+    const hash = window.location.hash || '#/home';
+
+    if (hash === '#admin') {
+      this.openAdminAuthModal();
+      return;
+    }
+
+    if (hash.startsWith('#/category/')) {
+      const catName = decodeURIComponent(hash.replace('#/category/', ''));
+      this.renderCategoryProductsView(catName);
+    } else if (hash.startsWith('#/tracking/')) {
+      const orderId = decodeURIComponent(hash.replace('#/tracking/', ''));
+      this.renderOrderTrackingPageView(orderId);
+    } else if (hash === '#/tracking') {
+      this.renderOrderTrackingPageView(null);
+    } else if (hash === '#/categories') {
+      this.renderCategoryPageView();
+    } else if (hash === '#/combos') {
+      this.renderComboPageView();
+    } else if (hash === '#/traceability') {
+      this.renderTraceabilityPageView();
+    } else if (hash === '#/profile') {
+      this.renderCustomerProfilePageView('addresses');
+    } else if (hash.startsWith('#/invoice/')) {
+      const orderId = decodeURIComponent(hash.replace('#/invoice/', ''));
+      this.renderOrderInvoicePageView(orderId);
+    } else {
+      this.renderHomePageView();
+    }
+  }
+
+  // NAVIGATION ROUTE TRIGGER METHODS (UPDATES WINDOW.LOCATION.HASH)
+  showHomePage() {
+    window.location.hash = '#/home';
+  }
+
+  openCategoryPage() {
+    window.location.hash = '#/categories';
+  }
+
+  openCategoryProductsView(catName = 'Spices') {
+    window.location.hash = `#/category/${encodeURIComponent(catName)}`;
+  }
+
+  openOrderTrackingPage(orderId = null) {
+    if (orderId) {
+      window.location.hash = `#/tracking/${encodeURIComponent(orderId)}`;
+    } else {
+      window.location.hash = '#/tracking';
+    }
+  }
+
+  openComboPage() {
+    window.location.hash = '#/combos';
+  }
+
+  openTraceabilityPage() {
+    window.location.hash = '#/traceability';
+  }
+
+  openCustomerProfilePage(tab = 'addresses') {
+    if (!this.user) {
+      this.openAuthModal('login');
+      return;
+    }
+    window.location.hash = '#/profile';
+  }
+
+  openOrderInvoicePage(orderId) {
+    window.location.hash = `#/invoice/${encodeURIComponent(orderId)}`;
   }
 
   toggleProfileDropdown(e) {
@@ -257,7 +335,7 @@ class AppEngine {
     }
   }
 
-  // --- STRICT DEDICATED PAGE SWITCHER ---
+  // --- STRICT DEDICATED PAGE SWITCHER ENGINE ---
   hideAllPages() {
     const pages = [
       'homePageContent',
@@ -278,8 +356,8 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. STANDALONE HOMEPAGE
-  showHomePage() {
+  // 1. STANDALONE HOMEPAGE RENDER
+  renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
     if (home) home.style.display = 'block';
@@ -295,8 +373,8 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(this.products);
   }
 
-  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE
-  openCategoryPage() {
+  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE RENDER
+  renderCategoryPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
     if (page) page.style.display = 'block';
@@ -305,8 +383,8 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 2B. SPECIFIC CATEGORY PRODUCTS VIEW
-  openCategoryProductsView(catName = 'Spices') {
+  // 2B. SPECIFIC CATEGORY PRODUCTS VIEW RENDER
+  renderCategoryProductsView(catName = 'Spices') {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryProductsView');
     if (page) page.style.display = 'block';
@@ -322,8 +400,8 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 3. MULTI-ORDER TRACKING & 5-STAGE DETAILS CONTROLLER
-  openOrderTrackingPage(specificOrderId = null) {
+  // 3. MULTI-ORDER TRACKING & 5-STAGE DETAILS RENDER
+  renderOrderTrackingPageView(specificOrderId = null) {
     if (!this.user) {
       this.openAuthModal('login');
       return;
@@ -438,10 +516,9 @@ class AppEngine {
     let addr = {};
     try { addr = typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address; } catch(e) {}
 
-    // Map 5 Statuses Index (1: Placed, 2: Accepted, 3: Shipped, 4: Out for Delivery, 5: Delivered)
     const stages = ['Placed', 'Accepted', 'Shipped', 'Out for Delivery', 'Delivered'];
     let currentStageIndex = stages.indexOf(order.status);
-    if (currentStageIndex === -1) currentStageIndex = 3; // Default Out for Delivery
+    if (currentStageIndex === -1) currentStageIndex = 3;
 
     const isDelivered = order.status === 'Delivered';
 
@@ -503,7 +580,7 @@ class AppEngine {
             </div>
           </div>
 
-          <!-- Stage 3: Shipped (with Custom Admin City / Remarks!) -->
+          <!-- Stage 3: Shipped -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 2 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 2 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex > 2 ? '✓' : '3'}
@@ -560,8 +637,8 @@ class AppEngine {
     `;
   }
 
-  // 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE
-  openTraceabilityPage() {
+  // 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE RENDER
+  renderTraceabilityPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedTraceabilityPageView');
     if (page) page.style.display = 'block';
@@ -570,8 +647,8 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 5. STANDALONE DEDICATED RECIPE COMBOS PAGE
-  openComboPage() {
+  // 5. STANDALONE DEDICATED RECIPE COMBOS PAGE RENDER
+  renderComboPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCombosPageView');
     if (page) page.style.display = 'block';
@@ -599,13 +676,8 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 6. STANDALONE DEDICATED CUSTOMER PROFILE PAGE
-  openCustomerProfilePage(tab = 'addresses') {
-    if (!this.user) {
-      this.openAuthModal('login');
-      return;
-    }
-
+  // 6. STANDALONE DEDICATED CUSTOMER PROFILE PAGE RENDER
+  renderCustomerProfilePageView(tab = 'addresses') {
     this.hideAllPages();
     const page = document.getElementById('customerProfilePageView');
     if (page) page.style.display = 'block';
@@ -614,16 +686,16 @@ class AppEngine {
     const nameEl = document.getElementById('profileNameDisplay');
     const mobileEl = document.getElementById('profileMobileDisplay');
 
-    if (avatar) avatar.src = this.user.avatar || 'assets/turmeric.jpg';
-    if (nameEl) nameEl.textContent = this.user.name;
-    if (mobileEl) mobileEl.textContent = `📞 +91 ${this.user.mobile}`;
+    if (avatar) avatar.src = this.user ? (this.user.avatar || 'assets/turmeric.jpg') : 'assets/turmeric.jpg';
+    if (nameEl) nameEl.textContent = this.user ? this.user.name : 'Guest';
+    if (mobileEl) mobileEl.textContent = this.user ? `📞 +91 ${this.user.mobile}` : '';
 
     this.switchProfileTab(tab);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 7. STANDALONE DEDICATED ORDER TAX INVOICE PAGE
-  openOrderInvoicePage(orderId) {
+  // 7. STANDALONE DEDICATED ORDER TAX INVOICE PAGE RENDER
+  renderOrderInvoicePageView(orderId) {
     const order = this.orders.find(o => o.id === orderId);
     if (!order) return;
 
@@ -746,7 +818,6 @@ class AppEngine {
           <td style="padding:0.5rem;">${o.customer_name}<br><span style="font-size:0.72rem; color:var(--text-muted);">+91 ${o.customer_mobile}</span></td>
           <td style="padding:0.5rem; font-weight:800; color:var(--header-bg);">₹${o.total_amount}</td>
           
-          <!-- 5-Stage Status Selector -->
           <td style="padding:0.5rem;">
             <select id="adminStatusSelect_${o.id}" style="padding:0.25rem 0.4rem; font-size:0.78rem; font-weight:700; border-radius:4px; border:1px solid var(--border-light); outline:none;">
               <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>1. Placed</option>
@@ -757,7 +828,6 @@ class AppEngine {
             </select>
           </td>
 
-          <!-- Shipped Remarks / City Location Field -->
           <td style="padding:0.5rem;">
             <input type="text" id="adminRemarksInput_${o.id}" value="${o.shipped_remarks || ''}" placeholder="e.g. In Transit via Kanpur Hub" style="padding:0.25rem 0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px; width:180px;">
           </td>
@@ -850,6 +920,43 @@ class AppEngine {
         </div>
       `;
     }).join('');
+  }
+
+  renderCategoryProducts() {
+    const grid = document.getElementById('categoryProductGrid');
+    if (!grid) return;
+
+    let filtered = this.products;
+    if (this.selectedCategory !== 'All') {
+      filtered = filtered.filter(p => p.category === this.selectedCategory);
+    }
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+    }
+    if (this.minDiscountFilter > 0) {
+      filtered = filtered.filter(p => (p.discountPct || 20) >= this.minDiscountFilter);
+    }
+
+    const sortVal = document.getElementById('catSortSelect') ? document.getElementById('catSortSelect').value : 'relevance';
+    if (sortVal === 'price_low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortVal === 'price_high') {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (sortVal === 'discount') {
+      filtered.sort((a, b) => (b.discountPct || 0) - (a.discountPct || 0));
+    }
+
+    grid.innerHTML = this.renderProductCardsHTML(filtered);
+  }
+
+  sortCategoryProducts() {
+    this.renderCategoryProducts();
+  }
+
+  filterCategoryDiscount(minDiscount) {
+    this.minDiscountFilter = minDiscount === 'all' ? 0 : minDiscount;
+    this.renderCategoryProducts();
   }
 
   filterCategory(cat) {
