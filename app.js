@@ -179,17 +179,6 @@ class AppEngine {
     });
   }
 
-  // --- LIVE ORDER TRACKING CONTROLLER ---
-  openLiveTrackingModal() {
-    const modal = document.getElementById('liveTrackingModal');
-    if (modal) modal.classList.add('open');
-  }
-
-  closeLiveTrackingModal() {
-    const modal = document.getElementById('liveTrackingModal');
-    if (modal) modal.classList.remove('open');
-  }
-
   toggleProfileDropdown(e) {
     if (e) e.stopPropagation();
     const card = document.getElementById('profileDropdownCard');
@@ -251,12 +240,13 @@ class AppEngine {
     }
   }
 
-  // --- STRICT PAGE SWITCHER ---
+  // --- STRICT DEDICATED PAGE SWITCHER ---
   hideAllPages() {
     const pages = [
       'homePageContent',
       'dedicatedCategoryPageView',
       'dedicatedCategoryProductsView',
+      'dedicatedOrderTrackingPageView',
       'dedicatedTraceabilityPageView',
       'dedicatedCombosPageView',
       'customerProfilePageView',
@@ -315,6 +305,15 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
+  // 3. STANDALONE DEDICATED LIVE ORDER TRACKING PAGE VIEW
+  openOrderTrackingPage() {
+    this.hideAllPages();
+    const page = document.getElementById('dedicatedOrderTrackingPageView');
+    if (page) page.style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
   renderCategoryProducts() {
     const grid = document.getElementById('categoryProductGrid');
     if (!grid) return;
@@ -352,7 +351,7 @@ class AppEngine {
     this.renderCategoryProducts();
   }
 
-  // 3. STANDALONE DEDICATED FARM TRACEABILITY PAGE
+  // 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE
   openTraceabilityPage() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedTraceabilityPageView');
@@ -362,7 +361,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 4. STANDALONE DEDICATED RECIPE COMBOS PAGE
+  // 5. STANDALONE DEDICATED RECIPE COMBOS PAGE
   openComboPage() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCombosPageView');
@@ -391,7 +390,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 5. STANDALONE DEDICATED CUSTOMER PROFILE PAGE
+  // 6. STANDALONE DEDICATED CUSTOMER PROFILE PAGE
   openCustomerProfilePage(tab = 'addresses') {
     if (!this.user) {
       this.openAuthModal('login');
@@ -414,7 +413,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 6. STANDALONE DEDICATED ORDER TAX INVOICE PAGE
+  // 7. STANDALONE DEDICATED ORDER TAX INVOICE PAGE
   openOrderInvoicePage(orderId) {
     const order = this.orders.find(o => o.id === orderId);
     if (!order) return;
@@ -474,7 +473,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 7. STANDALONE ADMIN PANEL
+  // 8. STANDALONE ADMIN PANEL
   checkAdminRoute() {
     if (window.location.hash === '#admin') {
       this.openAdminAuthModal();
@@ -849,7 +848,7 @@ class AppEngine {
           <button onclick="app.openOrderInvoicePage('${o.id}')" style="background:var(--header-bg); color:white; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; font-size:0.78rem; cursor:pointer;">
             <i class="fa-solid fa-file-invoice"></i> View Tax Invoice
           </button>
-          <button onclick="app.openLiveTrackingModal()" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;">
+          <button onclick="app.openOrderTrackingPage()" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;">
             <i class="fa-solid fa-truck-fast"></i> Track Delivery
           </button>
         </div>
@@ -894,7 +893,7 @@ class AppEngine {
     this.saveCart();
     this.closeCartDrawer();
     this.showToast(`🎉 Order Placed! ID: ${newOrder.id}`);
-    this.openLiveTrackingModal();
+    this.openOrderTrackingPage();
   }
 
   addComboToCart(recipeId) {
