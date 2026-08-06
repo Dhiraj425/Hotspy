@@ -392,7 +392,7 @@ button {
   font-size: 0.9rem;
 }
 
-/* CIRCULAR CATEGORY STRIP (VISIBLE ON MOBILE ONLY - HIDDEN ON DESKTOP TO PREVENT DUPLICATE NAVIGATION) */
+/* CIRCULAR CATEGORY STRIP (ENHANCED STOREFRONT BANNER ON PC & MOBILE) */
 .bb-category-circles-strip {
   display: flex;
   gap: 1.1rem;
@@ -406,7 +406,32 @@ button {
 
 @media (min-width: 769px) {
   .bb-category-circles-strip {
-    display: none !important;
+    display: flex !important;
+    justify-content: center;
+    gap: 2.2rem;
+    padding: 1.5rem 1rem;
+    background: var(--bg-warm);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin: 1.25rem auto;
+    max-width: 1240px;
+  }
+
+  .bb-category-circle-card {
+    flex: 0 0 92px;
+  }
+
+  .bb-circle-icon-box {
+    width: 66px;
+    height: 66px;
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .bb-circle-label {
+    font-size: 0.82rem;
+    font-weight: 800;
   }
 }
 
