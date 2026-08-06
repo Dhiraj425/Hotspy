@@ -132,20 +132,20 @@
       <!-- INTERACTIVE HOMEPAGE BANNER SLIDER -->
       <div class="slider-container" id="homeBannersContainer"></div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.72rem; font-weight:800; color:var(--header-bg); text-transform:uppercase;">Handpicked Supermarket Items</span>
-          <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">⭐ Featured Store Products</h2>
+          <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg); white-space:nowrap; margin-top:0.1rem;">⭐ Featured Store Products</h2>
         </div>
-        <a href="#/shop" class="btn-secondary" onclick="app.openShopPage(); return false;" style="padding:0.3rem 0.65rem; font-size:0.75rem;">View All Shop <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#/shop" class="btn-secondary" onclick="app.openShopPage(); return false;" style="padding:0.35rem 0.65rem; font-size:0.75rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.35rem; flex-shrink:0;">View All Shop <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
       <div class="product-grid" id="homeProductGrid" style="margin-bottom:1.5rem;"></div>
 
       <div id="homeCombosSection" style="display:none; margin-bottom:1.5rem;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-          <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">🔥 Featured Recipe Combos</h2>
-          <a href="#/combos" class="btn-secondary" onclick="app.openComboPage(); return false;" style="padding:0.3rem 0.65rem; font-size:0.75rem;">All Combos <i class="fa-solid fa-arrow-right"></i></a>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:nowrap; gap:0.5rem;">
+          <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg); white-space:nowrap;">🔥 Featured Recipe Combos</h2>
+          <a href="#/combos" class="btn-secondary" onclick="app.openComboPage(); return false;" style="padding:0.35rem 0.65rem; font-size:0.75rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.35rem; flex-shrink:0;">All Combos <i class="fa-solid fa-arrow-right"></i></a>
         </div>
         <div class="product-grid" id="homeCombosGrid"></div>
       </div>

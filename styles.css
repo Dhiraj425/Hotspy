@@ -1042,6 +1042,12 @@ button {
   }
 }
 
+@media (max-width: 576px) {
+  h2 {
+    font-size: 1rem !important;
+  }
+}
+
 .slider-dots {
   position: absolute !important;
   bottom: 12px !important;
