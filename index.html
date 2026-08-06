@@ -437,6 +437,11 @@
           <span>5. Recipe Combos</span>
         </div>
 
+        <div class="admin-sidebar-link" id="adminSidebarLayout" onclick="app.switchAdminTab('layout')">
+          <i class="fa-solid fa-arrows-up-down"></i>
+          <span>6. Homepage Layout & Section Reordering</span>
+        </div>
+
         <div style="margin-top:auto; pt-1rem; border-top:1px solid var(--border-subtle);">
           <div class="admin-sidebar-link" onclick="app.showHomePage()" style="color:var(--header-bg);">
             <i class="fa-solid fa-arrow-left"></i>
@@ -647,6 +652,21 @@
 
             <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem;"><i class="fa-solid fa-plus"></i> Save & Publish Combo</button>
           </form>
+        </div>
+
+        <!-- Admin Section 6: Homepage Layout & Section Reordering -->
+        <div id="adminSectionLayout" style="display:none; background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-subtle); padding-bottom:0.75rem;">
+            <div>
+              <h3 style="font-size:1.15rem; color:var(--header-bg); font-weight:800;">📐 Homepage Section Layout & Re-ordering Manager</h3>
+              <p style="font-size:0.78rem; color:var(--text-muted);">Re-order homepage sections up/down or toggle visibility on the storefront in real time!</p>
+            </div>
+            <button class="btn-primary" onclick="app.saveHomepageLayoutOrder()" style="padding:0.4rem 0.85rem; font-size:0.8rem;">
+              <i class="fa-solid fa-check"></i> Save & Publish Layout
+            </button>
+          </div>
+
+          <div id="adminLayoutSectionsList" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
         </div>
 
       </main>

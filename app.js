@@ -192,6 +192,12 @@ class AppEngine {
     this.currentSlideIndex = 0;
     this.bannerSliderTimer = null;
 
+    this.homepageSections = [
+      { id: 'banners', name: '🖼️ Interactive Banner Slider Carousel', enabled: true },
+      { id: 'featured', name: '⭐ Featured Store Products Grid', enabled: true },
+      { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
+    ];
+
     this.init();
   }
 
@@ -947,7 +953,7 @@ class AppEngine {
   }
 
   switchAdminTab(tab) {
-    ['orders', 'products', 'addproduct', 'banners', 'combos'].forEach(t => {
+    ['orders', 'products', 'addproduct', 'banners', 'combos', 'layout'].forEach(t => {
       const sec = document.getElementById(`adminSection${t.charAt(0).toUpperCase() + t.slice(1)}`);
       const link = document.getElementById(`adminSidebar${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
@@ -956,6 +962,81 @@ class AppEngine {
     this.renderAdminTables();
     if (tab.toLowerCase() === 'banners') {
       this.updateBannerLivePreview();
+    } else if (tab.toLowerCase() === 'layout') {
+      this.renderAdminLayoutSections();
+    }
+  }
+
+  renderAdminLayoutSections() {
+    const container = document.getElementById('adminLayoutSectionsList');
+    if (!container) return;
+
+    container.innerHTML = this.homepageSections.map((sec, idx) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-warm); border:1px solid var(--border-light); padding:0.85rem 1.15rem; border-radius:var(--radius-md); box-shadow:var(--shadow-sm); flex-wrap:wrap; gap:0.5rem;">
+        <div style="display:flex; align-items:center; gap:0.85rem;">
+          <span style="background:var(--header-bg); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;">
+            ${idx + 1}
+          </span>
+          <div>
+            <strong style="font-size:0.95rem; color:var(--header-bg);">${sec.name}</strong>
+            <div style="font-size:0.75rem; color:${sec.enabled ? '#059669' : '#DC2626'}; font-weight:700;">
+              ${sec.enabled ? '🟢 Visible on Storefront' : '🔴 Hidden from Storefront'}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button class="btn-secondary" onclick="app.moveHomepageSectionUp(${idx})" ${idx === 0 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} style="padding:0.3rem 0.65rem; font-size:0.78rem;">
+            <i class="fa-solid fa-arrow-up"></i> Move Up
+          </button>
+          
+          <button class="btn-secondary" onclick="app.moveHomepageSectionDown(${idx})" ${idx === this.homepageSections.length - 1 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''} style="padding:0.3rem 0.65rem; font-size:0.78rem;">
+            <i class="fa-solid fa-arrow-down"></i> Move Down
+          </button>
+
+          <button class="btn-primary" onclick="app.toggleHomepageSectionVisibility('${sec.id}')" style="background:${sec.enabled ? '#DC2626' : '#10B981'}; padding:0.3rem 0.65rem; font-size:0.78rem;">
+            ${sec.enabled ? '<i class="fa-solid fa-eye-slash"></i> Hide' : '<i class="fa-solid fa-eye"></i> Show'}
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  moveHomepageSectionUp(idx) {
+    if (idx <= 0) return;
+    const temp = this.homepageSections[idx];
+    this.homepageSections[idx] = this.homepageSections[idx - 1];
+    this.homepageSections[idx - 1] = temp;
+    this.renderAdminLayoutSections();
+    this.saveHomepageLayoutOrder(false);
+  }
+
+  moveHomepageSectionDown(idx) {
+    if (idx >= this.homepageSections.length - 1) return;
+    const temp = this.homepageSections[idx];
+    this.homepageSections[idx] = this.homepageSections[idx + 1];
+    this.homepageSections[idx + 1] = temp;
+    this.renderAdminLayoutSections();
+    this.saveHomepageLayoutOrder(false);
+  }
+
+  toggleHomepageSectionVisibility(secId) {
+    const sec = this.homepageSections.find(s => s.id === secId);
+    if (sec) {
+      sec.enabled = !sec.enabled;
+      this.renderAdminLayoutSections();
+      this.saveHomepageLayoutOrder(false);
+    }
+  }
+
+  async saveHomepageLayoutOrder(showToastMsg = true) {
+    if (_supabase) {
+      try {
+        await _supabase.from('settings').upsert({ id: 'homepage_layout', data: this.homepageSections });
+      } catch(e) {}
+    }
+    if (showToastMsg) {
+      this.showToast('🎉 Homepage layout order published successfully!');
     }
   }
 
