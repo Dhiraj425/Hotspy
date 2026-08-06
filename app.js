@@ -192,8 +192,9 @@ class AppEngine {
     this.currentSlideIndex = 0;
     this.bannerSliderTimer = null;
 
-    const savedSections = sessionStorage.getItem('hotspy_homepage_sections');
+    const savedSections = localStorage.getItem('hotspy_homepage_layout');
     this.homepageSections = savedSections ? JSON.parse(savedSections) : [
+      { id: 'categories', name: '🔴 Circular Category Quick Strip', enabled: true },
       { id: 'banners', name: '🖼️ Interactive Banner Slider Carousel', enabled: true },
       { id: 'featured', name: '⭐ Featured Store Products Grid', enabled: true },
       { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
@@ -239,7 +240,7 @@ class AppEngine {
       const { data: layoutData } = await _supabase.from('settings').select('*').eq('id', 'homepage_layout');
       if (layoutData && layoutData.length > 0 && layoutData[0].data) {
         this.homepageSections = layoutData[0].data;
-        sessionStorage.setItem('hotspy_homepage_sections', JSON.stringify(this.homepageSections));
+        localStorage.setItem('hotspy_homepage_layout', JSON.stringify(this.homepageSections));
       }
     } catch(e) {
       console.warn('Supabase cloud fetch fallback to active memory catalog', e);
@@ -396,7 +397,36 @@ class AppEngine {
     this.homepageSections.forEach(sec => {
       if (!sec.enabled) return;
 
-      if (sec.id === 'banners') {
+      if (sec.id === 'categories') {
+        sectionsHTML += `
+          <div class="bb-category-circles-strip" style="margin-bottom:1.25rem;">
+            <div class="bb-category-circle-card active" onclick="app.showHomePage()">
+              <div class="bb-circle-icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
+              <span class="bb-circle-label">Home Store</span>
+            </div>
+            <div class="bb-category-circle-card" onclick="app.openShopPage()">
+              <div class="bb-circle-icon-box" style="background:var(--primary); color:var(--header-dark);"><i class="fa-solid fa-store"></i></div>
+              <span class="bb-circle-label" style="font-weight:800; color:var(--header-bg);">Shop All</span>
+            </div>
+            <div class="bb-category-circle-card" onclick="app.openCategoryProductsView('Spices')">
+              <div class="bb-circle-icon-box"><i class="fa-solid fa-pepper-hot"></i></div>
+              <span class="bb-circle-label">Pure Spices</span>
+            </div>
+            <div class="bb-category-circle-card" onclick="app.openCategoryProductsView('Teas')">
+              <div class="bb-circle-icon-box"><i class="fa-solid fa-mug-hot"></i></div>
+              <span class="bb-circle-label">Himalayan Teas</span>
+            </div>
+            <div class="bb-category-circle-card" onclick="app.openCategoryProductsView('Oils & Grains')">
+              <div class="bb-circle-icon-box"><i class="fa-solid fa-bottle-droplet"></i></div>
+              <span class="bb-circle-label">Cold-Pressed Oils</span>
+            </div>
+            <div class="bb-category-circle-card" onclick="app.openCategoryPage('All')">
+              <div class="bb-circle-icon-box"><i class="fa-solid fa-border-all"></i></div>
+              <span class="bb-circle-label">Categories</span>
+            </div>
+          </div>
+        `;
+      } else if (sec.id === 'banners') {
         sectionsHTML += `<div class="slider-container" id="homeBannersContainer" style="margin-bottom:1.5rem;"></div>`;
       } else if (sec.id === 'featured') {
         const featuredProds = this.products.filter(p => p.isFeatured);
