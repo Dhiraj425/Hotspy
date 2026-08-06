@@ -1036,6 +1036,12 @@ button {
 .slider-arrow.prev { left: 12px !important; }
 .slider-arrow.next { right: 12px !important; }
 
+@media (max-width: 768px) {
+  .slider-arrow {
+    display: none !important;
+  }
+}
+
 .slider-dots {
   position: absolute !important;
   bottom: 12px !important;

@@ -415,6 +415,8 @@ class AppEngine {
     const container = document.getElementById('homeBannersContainer');
     if (!container) return;
 
+    if (this.bannerSliderTimer) clearInterval(this.bannerSliderTimer);
+
     if (this.banners.length === 0) {
       container.innerHTML = ``;
       return;
@@ -455,8 +457,28 @@ class AppEngine {
       ` : ''}
     `;
 
+    // Mobile Finger Touch Swipe Gesture Listener
+    const wrapper = document.getElementById('bannerSliderWrapper');
+    if (wrapper) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      wrapper.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      wrapper.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 40) {
+          this.nextBannerSlide();
+        } else if (touchEndX > touchStartX + 40) {
+          this.prevBannerSlide();
+        }
+      }, { passive: true });
+    }
+
     if (this.banners.length > 1) {
-      this.bannerSliderTimer = setInterval(() => this.nextBannerSlide(), 5000);
+      this.bannerSliderTimer = setInterval(() => this.nextBannerSlide(), 4000);
     }
   }
 
