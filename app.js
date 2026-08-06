@@ -979,6 +979,7 @@ class AppEngine {
           </span>
           <div>
             <strong style="font-size:0.95rem; color:var(--header-bg);">${sec.name}</strong>
+            ${sec.isCustom ? `<span style="background:var(--primary); color:var(--header-dark); font-size:0.65rem; font-weight:800; padding:0.12rem 0.4rem; border-radius:10px; margin-left:0.4rem;">CUSTOM SECTION</span>` : ''}
             <div style="font-size:0.75rem; color:${sec.enabled ? '#059669' : '#DC2626'}; font-weight:700;">
               ${sec.enabled ? '🟢 Visible on Storefront' : '🔴 Hidden from Storefront'}
             </div>
@@ -997,9 +998,59 @@ class AppEngine {
           <button class="btn-primary" onclick="app.toggleHomepageSectionVisibility('${sec.id}')" style="background:${sec.enabled ? '#DC2626' : '#10B981'}; padding:0.3rem 0.65rem; font-size:0.78rem;">
             ${sec.enabled ? '<i class="fa-solid fa-eye-slash"></i> Hide' : '<i class="fa-solid fa-eye"></i> Show'}
           </button>
+
+          ${sec.isCustom ? `
+            <button class="btn-primary" onclick="app.deleteCustomSectionFromAdmin('${sec.id}')" style="background:#991B1B; padding:0.3rem 0.65rem; font-size:0.78rem;">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          ` : ''}
         </div>
       </div>
     `).join('');
+
+    const picker = document.getElementById('adminNewSecProductsPicker');
+    if (picker) {
+      picker.innerHTML = this.products.map(p => `
+        <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; cursor:pointer;">
+          <input type="checkbox" class="new-sec-prod-checkbox" value="${p.id}"> ${p.name.slice(0, 22)}...
+        </label>
+      `).join('');
+    }
+  }
+
+  createNewCustomSectionFromAdmin() {
+    const title = document.getElementById('adminNewSecTitle').value.trim();
+    const subtitle = document.getElementById('adminNewSecSubtitle').value.trim();
+    
+    const checkboxes = document.querySelectorAll('.new-sec-prod-checkbox:checked');
+    const selectedIds = Array.from(checkboxes).map(c => c.value);
+
+    if (!title || selectedIds.length === 0) {
+      this.showToast('Please enter section title and select at least 1 product!', 'error');
+      return;
+    }
+
+    const newSec = {
+      id: `custom_${Date.now()}`,
+      name: title,
+      subtitle: subtitle,
+      productIds: selectedIds,
+      isCustom: true,
+      enabled: true
+    };
+
+    this.homepageSections.push(newSec);
+    this.renderAdminLayoutSections();
+    this.saveHomepageLayoutOrder(false);
+    this.showToast(`🎉 Created Custom Section "${title}"!`);
+    this.showHomePage();
+  }
+
+  deleteCustomSectionFromAdmin(secId) {
+    this.homepageSections = this.homepageSections.filter(s => s.id !== secId);
+    this.renderAdminLayoutSections();
+    this.saveHomepageLayoutOrder(false);
+    this.showToast('Deleted custom section!');
   }
 
   moveHomepageSectionUp(idx) {

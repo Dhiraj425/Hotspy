@@ -667,6 +667,32 @@
           </div>
 
           <div id="adminLayoutSectionsList" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+
+          <div style="margin-top:1.5rem; pt-1.25rem; border-top:2px solid var(--border-subtle);">
+            <h4 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:0.75rem;">➕ Create a Brand New Custom Homepage Section</h4>
+            
+            <form onsubmit="event.preventDefault(); app.createNewCustomSectionFromAdmin();">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Section Title</label>
+                  <input type="text" id="adminNewSecTitle" placeholder="e.g. 🌿 Monsoon Special Herbal Blends" required style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Subtitle / Tagline</label>
+                  <input type="text" id="adminNewSecSubtitle" placeholder="e.g. Handpicked organic wellness items with up to 30% OFF" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+              </div>
+
+              <div style="margin-bottom:1.15rem;">
+                <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Select Products for this Section</label>
+                <div id="adminNewSecProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:0.5rem; max-height:160px; overflow-y:auto; border:1px solid var(--border-light); padding:0.65rem; border-radius:4px;"></div>
+              </div>
+
+              <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem;">
+                <i class="fa-solid fa-plus-circle"></i> Create & Publish Section
+              </button>
+            </form>
+          </div>
         </div>
 
       </main>
