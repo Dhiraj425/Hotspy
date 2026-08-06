@@ -161,9 +161,62 @@ class AppEngine {
     this.updateCartUI();
     this.updateAuthStatusUI();
     this.renderDedicatedCombos();
+
+    // Listen for #admin secret URL hash
+    window.addEventListener('hashchange', () => this.checkAdminRoute());
+    this.checkAdminRoute();
   }
 
-  // RENDER PRODUCTS (EXACT MATCH TO BIGBASKET SCREENSHOT)
+  // --- SECRET ADMIN SECURITY ROUTE (#admin) ---
+  checkAdminRoute() {
+    if (window.location.hash === '#admin') {
+      this.openAdminAuthModal();
+    }
+  }
+
+  openAdminAuthModal() {
+    const modal = document.getElementById('adminAuthModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  closeAdminAuthModal() {
+    const modal = document.getElementById('adminAuthModal');
+    if (modal) modal.classList.remove('open');
+    if (window.location.hash === '#admin') {
+      window.location.hash = '';
+    }
+  }
+
+  verifyAdminSecurityKey() {
+    const passkeyInput = document.getElementById('adminPasskeyInput');
+    const passkey = passkeyInput ? passkeyInput.value : '';
+    
+    if (passkey === 'admin123') {
+      this.closeAdminAuthModal();
+      this.openAdminMode();
+      this.showToast('Unlocked Admin Management Suite!');
+    } else {
+      this.showToast('Invalid Admin Security Key!', 'error');
+    }
+  }
+
+  openAdminMode() {
+    const storefront = document.getElementById('storefrontWrapper');
+    const adminPanel = document.getElementById('adminWrapper');
+    if (adminPanel) adminPanel.style.display = 'block';
+    if (storefront) storefront.style.display = 'none';
+    this.renderAdminTables();
+  }
+
+  closeAdminMode() {
+    const storefront = document.getElementById('storefrontWrapper');
+    const adminPanel = document.getElementById('adminWrapper');
+    if (adminPanel) adminPanel.style.display = 'none';
+    if (storefront) storefront.style.display = 'block';
+    window.location.hash = '';
+  }
+
+  // RENDER PRODUCTS
   renderProducts() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -740,20 +793,6 @@ class AppEngine {
   closeCartDrawer() {
     const drawer = document.getElementById('cartDrawerBackdrop');
     if (drawer) drawer.classList.remove('open');
-  }
-
-  toggleAdminMode() {
-    const storefront = document.getElementById('storefrontWrapper');
-    const adminPanel = document.getElementById('adminWrapper');
-
-    if (adminPanel.style.display === 'block') {
-      adminPanel.style.display = 'none';
-      storefront.style.display = 'block';
-    } else {
-      adminPanel.style.display = 'block';
-      storefront.style.display = 'none';
-      this.renderAdminTables();
-    }
   }
 
   switchAdminTab(tab) {

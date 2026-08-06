@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=5.0">
+  <link rel="stylesheet" href="styles.css?v=6.0">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
   <!-- BigBasket Header (Deep Teal Green #024731) -->
   <header class="bb-header">
     <div class="container" style="padding:0;">
-      <!-- Row 1: Logo & Profile Icon -->
+      <!-- Row 1: Logo & Profile Icon (Zero Admin Buttons on Customer Header!) -->
       <div class="bb-header-top">
         <a href="#" class="bb-brand-logo" onclick="app.showHomePage(); return false;">
           <span class="bb-brand-title">bigbasket</span>
@@ -35,9 +35,6 @@
         </a>
 
         <div style="display:flex; align-items:center; gap:0.65rem;">
-          <button class="btn-primary" id="adminModeBtn" onclick="app.toggleAdminMode()" style="padding:0.35rem 0.65rem; font-size:0.75rem; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);">
-            <i class="fa-solid fa-sliders"></i> Admin
-          </button>
           <div class="bb-header-profile-icon" id="userAuthBtn" onclick="app.openProfileMenuModal()" title="Profile & Account">
             <i class="fa-regular fa-circle-user"></i>
           </div>
@@ -200,13 +197,14 @@
 
   </div>
 
-  <!-- Admin Panel Control Wrapper -->
+  <!-- Admin Panel Control Wrapper (HIDDEN VIA DEDICATED SECURITY URL & PASSCODE) -->
   <div id="adminWrapper" style="display:none; padding:1.5rem 1rem;" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:2px solid var(--header-bg);">
       <div>
-        <h1 style="font-size:1.5rem; font-weight:800; color:var(--header-bg);">⚙️ bigbasket Admin Suite</h1>
+        <h1 style="font-size:1.5rem; font-weight:800; color:var(--header-bg);">🔒 Secure Admin Management Suite</h1>
+        <p style="font-size:0.78rem; color:var(--text-muted);">Restricted Manager Control Center</p>
       </div>
-      <button class="btn-primary" onclick="app.toggleAdminMode()"><i class="fa-solid fa-store"></i> Storefront</button>
+      <button class="btn-primary" onclick="app.closeAdminMode()"><i class="fa-solid fa-store"></i> Return to Storefront</button>
     </div>
 
     <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap;">
@@ -256,6 +254,32 @@
       <span class="mobile-cart-badge" id="mobileCartBadge">0</span>
     </div>
   </nav>
+
+  <!-- POPUP MODAL: SECURE ADMIN AUTH PASSCODE -->
+  <div id="adminAuthModal" class="modal-backdrop" onclick="if(event.target === this) app.closeAdminAuthModal()">
+    <div class="auth-modal-card" style="max-width:380px; text-align:center;">
+      <button class="modal-close-btn" onclick="app.closeAdminAuthModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div style="background:var(--header-bg); color:white; padding:1.5rem;">
+        <div style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin:0 auto 0.5rem;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 style="font-size:1.2rem; font-weight:800;">Admin Security Authentication</h3>
+        <p style="font-size:0.78rem; opacity:0.85;">Enter Admin Security Key to unlock Control Panel</p>
+      </div>
+
+      <div style="padding:1.5rem;">
+        <form onsubmit="event.preventDefault(); app.verifyAdminSecurityKey();">
+          <div style="margin-bottom:1rem;">
+            <label style="display:block; font-size:0.8rem; font-weight:700; text-align:left; margin-bottom:0.35rem;">Admin Security Key</label>
+            <input type="password" id="adminPasskeyInput" style="width:100%; padding:0.65rem; border:1px solid var(--border-light); border-radius:var(--radius-sm); outline:none; font-size:0.9rem;" placeholder="Enter security key (default: admin123)" required>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;">
+            <i class="fa-solid fa-key"></i> Unlock Admin Panel
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- POPUP MODAL: MOBILE NUMBER AUTH -->
   <div id="authModal" class="modal-backdrop" onclick="if(event.target === this) app.closeAuthModal()">
@@ -309,7 +333,7 @@
     </div>
   </div>
 
-  <!-- POPUP MODAL: PROFILE MENU -->
+  <!-- POPUP MODAL: PROFILE MENU (ZERO ADMIN BUTTONS FOR CUSTOMERS) -->
   <div id="profileMenuModal" class="modal-backdrop" onclick="if(event.target === this) app.closeProfileMenuModal()">
     <div class="auth-modal-card" style="max-width:360px;">
       <div style="background:var(--header-bg); padding:1.25rem; color:white; position:relative;">
@@ -320,7 +344,6 @@
         <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
           <li><a href="#" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.65rem; padding:0.5rem; font-weight:700;"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
           <li><a href="#comboPage" onclick="app.openComboPage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.65rem; padding:0.5rem; font-weight:800; color:var(--header-bg);"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Recipe Combos</a></li>
-          <li><a href="#" onclick="app.toggleAdminMode(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.65rem; padding:0.5rem; font-weight:700;"><i class="fa-solid fa-sliders" style="color:var(--header-bg);"></i> Admin Panel</a></li>
         </ul>
         <div id="profileMenuFooterBox" style="margin-top:0.75rem; padding-top:0.5rem; border-top:1px solid var(--border-subtle);"></div>
       </div>
@@ -367,6 +390,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=5.0"></script>
+  <script src="app.js?v=6.0"></script>
 </body>
 </html>
