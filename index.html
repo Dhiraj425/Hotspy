@@ -153,12 +153,12 @@
 
     <!-- 2. STANDALONE SHOP ALL PRODUCTS PAGE VIEW -->
     <div id="shopPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">Complete Catalog</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">🛍️ Shop All Store Products</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;">🛍️ Shop All Store Products</h1>
         </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div class="product-grid" id="shopProductGrid"></div>
@@ -166,12 +166,12 @@
 
     <!-- 3. STANDALONE BANNER COLLECTION PRODUCTS PAGE VIEW -->
     <div id="bannerProductsPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">PROMOTIONAL SELECTION</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;" id="bannerPageTitle">Banner Collection</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;" id="bannerPageTitle">Banner Collection</h1>
         </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div class="product-grid" id="bannerProductGrid"></div>
@@ -179,12 +179,12 @@
 
     <!-- 4. STANDALONE DEDICATED CATEGORIES DIRECTORY PAGE -->
     <div id="dedicatedCategoryPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">Supermarket Directory</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">All Grocery Categories</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;">All Grocery Categories</h1>
         </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:1rem;" id="categoriesDirectoryGrid">
@@ -232,12 +232,12 @@
 
     <!-- 4B. DEDICATED SPECIFIC CATEGORY PRODUCTS VIEW -->
     <div id="dedicatedCategoryProductsView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;" id="specificCatBreadcrumb">Home / Categories / Spices</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;" id="specificCatTitle">Pure Spices Storefront</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;" id="specificCatTitle">Pure Spices Storefront</h1>
         </div>
-        <button class="btn-secondary" onclick="app.openCategoryPage('All');" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-border-all"></i> All Categories</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.openCategoryPage('All');" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-border-all"></i> All Categories</button>
       </div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:0.65rem 0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
@@ -263,12 +263,12 @@
 
     <!-- 5. STANDALONE DEDICATED MULTI-ORDER TRACKING PAGE VIEW -->
     <div id="dedicatedOrderTrackingPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">⚡ 5-STAGE EXPRESS TRACKING</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">My Orders & Live Tracking</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;">My Orders & Live Tracking</h1>
         </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div id="orderListViewContainer">
@@ -281,12 +281,12 @@
 
     <!-- 6. STANDALONE DEDICATED RECIPE COMBOS PAGE -->
     <div id="dedicatedCombosPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light); flex-wrap:nowrap; gap:0.5rem;">
         <div>
           <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">Super Saver Bundles</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">🔥 Chef Recipe Pairing Bundles</h1>
+          <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem; white-space:nowrap;">🔥 Chef Recipe Pairing Bundles</h1>
         </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div class="product-grid" id="dedicatedCombosGrid"></div>
@@ -294,9 +294,9 @@
 
     <!-- 7. STANDALONE DEDICATED CUSTOMER PROFILE PAGE -->
     <div id="customerProfilePageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">My Account & Orders</h1>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:nowrap; gap:0.5rem;">
+        <h1 style="font-size:1.3rem; font-weight:800; color:var(--header-bg); white-space:nowrap;">My Account & Orders</h1>
+        <button class="btn-secondary page-back-home-btn" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem; white-space:nowrap; flex-shrink:0;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
       <div style="display:grid; grid-template-columns: 1fr; gap:1rem;">

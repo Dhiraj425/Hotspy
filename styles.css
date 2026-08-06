@@ -1040,9 +1040,15 @@ button {
   .slider-arrow {
     display: none !important;
   }
+  .page-back-home-btn {
+    display: none !important;
+  }
 }
 
 @media (max-width: 576px) {
+  h1 {
+    font-size: 1.15rem !important;
+  }
   h2 {
     font-size: 1rem !important;
   }
