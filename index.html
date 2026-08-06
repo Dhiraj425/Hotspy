@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=15.0">
+  <link rel="stylesheet" href="styles.css?v=16.0">
 </head>
 <body>
 
@@ -61,7 +61,7 @@
               <ul class="dropdown-menu-list">
                 <li><a href="#" onclick="app.showHomePage(); app.closeProfileDropdown();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
                 <li><a href="#" onclick="app.openCategoryPage('All'); app.closeProfileDropdown();"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Directory</a></li>
-                <li><a href="#" onclick="app.openOrderTrackingPage(); app.closeProfileDropdown();"><i class="fa-solid fa-truck-fast" style="color:var(--header-bg);"></i> Live Delivery Tracker</a></li>
+                <li><a href="#" onclick="app.openOrderTrackingPage(); app.closeProfileDropdown();"><i class="fa-solid fa-truck-fast" style="color:var(--header-bg);"></i> Track Orders & History</a></li>
                 <li><a href="#" onclick="app.openComboPage(); app.closeProfileDropdown();"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
                 <li><a href="#" onclick="app.openTraceabilityPage(); app.closeProfileDropdown();"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
               </ul>
@@ -216,81 +216,25 @@
       <div class="product-grid" id="categoryProductGrid"></div>
     </div>
 
-    <!-- 3. STANDALONE DEDICATED LIVE ORDER TRACKING PAGE VIEW -->
+    <!-- 3. STANDALONE DEDICATED MULTI-ORDER TRACKING PAGE VIEW -->
     <div id="dedicatedOrderTrackingPageView" class="container" style="display:none; padding:1.25rem 1rem;">
+      <!-- Header Bar -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
-          <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">⚡ 10-MIN EXPRESS DELIVERY</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">Live Delivery Tracking</h1>
+          <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">⚡ 5-STAGE EXPRESS TRACKING</span>
+          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">My Orders & Live Tracking</h1>
         </div>
         <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
       </div>
 
-      <!-- ETA Banner Card -->
-      <div style="background:var(--header-bg); color:white; padding:1.5rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; text-align:center; box-shadow:var(--shadow-lg);">
-        <span style="background:var(--primary); color:var(--header-dark); font-size:0.72rem; font-weight:900; padding:0.2rem 0.65rem; border-radius:var(--radius-full); text-transform:uppercase;">
-          Live Order Status • ORD-8492
-        </span>
-        <h2 style="font-size:1.6rem; font-weight:800; margin:0.5rem 0 0.2rem;">Arriving in 8 Minutes</h2>
-        <p style="font-size:0.85rem; opacity:0.9;">Delivering to: Flat 402, Royal Residency, Gomti Nagar, Lucknow</p>
+      <!-- VIEW A: MULTIPLE ORDERS LIST CARDS -->
+      <div id="orderListViewContainer">
+        <h3 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:0.85rem;">Select Order to View 5-Stage Live Details</h3>
+        <div id="allOrdersListCardsGrid" style="display:flex; flex-direction:column; gap:0.85rem;"></div>
       </div>
 
-      <!-- Live Timeline Steps Card -->
-      <div style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
-        <h3 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:1.25rem;">Order Progress</h3>
-
-        <div style="display:flex; flex-direction:column; gap:1.25rem; position:relative;">
-          <div style="display:flex; align-items:flex-start; gap:0.85rem;">
-            <div style="width:32px; height:32px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">✓</div>
-            <div>
-              <strong style="font-size:0.9rem; color:var(--header-bg);">1. Order Confirmed</strong>
-              <div style="font-size:0.78rem; color:var(--text-muted);">Payment Received • Lucknow Express Hub (16:30 PM)</div>
-            </div>
-          </div>
-
-          <div style="display:flex; align-items:flex-start; gap:0.85rem;">
-            <div style="width:32px; height:32px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">✓</div>
-            <div>
-              <strong style="font-size:0.9rem; color:var(--header-bg);">2. Packed & Quality Sealed</strong>
-              <div style="font-size:0.78rem; color:var(--text-muted);">100% Organic Purity Certificate Attached (16:32 PM)</div>
-            </div>
-          </div>
-
-          <div style="display:flex; align-items:flex-start; gap:0.85rem;">
-            <div style="width:32px; height:32px; border-radius:50%; background:var(--primary); color:var(--header-dark); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0; box-shadow:var(--shadow-md);">
-              <i class="fa-solid fa-truck-fast"></i>
-            </div>
-            <div>
-              <strong style="font-size:0.9rem; color:var(--header-bg);">3. Out for Express Delivery ⚡</strong>
-              <div style="font-size:0.78rem; color:var(--text-muted);">Rider is 1.2 km away on Main Road</div>
-            </div>
-          </div>
-
-          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:0.5;">
-            <div style="width:32px; height:32px; border-radius:50%; background:var(--border-light); color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">4</div>
-            <div>
-              <strong style="font-size:0.9rem; color:var(--text-muted);">4. Delivered to Doorstep</strong>
-              <div style="font-size:0.78rem; color:var(--text-muted);">Handed over to customer</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rider Details Card -->
-      <div style="background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light); display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow-sm);">
-        <div style="display:flex; align-items:center; gap:0.85rem;">
-          <div style="width:48px; height:48px; border-radius:50%; background:var(--header-bg); color:white; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-            <i class="fa-solid fa-motorcycle"></i>
-          </div>
-          <div>
-            <strong style="font-size:0.95rem; color:var(--header-bg);">Raju Sharma (Delivery Executive)</strong>
-            <div style="font-size:0.78rem; color:var(--text-muted);">Honda Activa EV • UP32 EV 4012</div>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="app.showToast('Calling Rider Raju Sharma (+91 9812345678)...')" style="padding:0.45rem 0.85rem; font-size:0.8rem;">
-          <i class="fa-solid fa-phone"></i> Call Rider
-        </button>
-      </div>
+      <!-- VIEW B: SPECIFIC ORDER 5-STAGE TRACKING DETAILS (RENDERED DYNAMICALLY) -->
+      <div id="specificOrderTrackingContainer" style="display:none;"></div>
     </div>
 
     <!-- 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE -->
@@ -383,6 +327,55 @@
       <div id="printableOrderInvoice" style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);"></div>
     </div>
 
+  </div>
+
+  <!-- STANDALONE ADMIN PANEL VIEW (WITH 5-STAGE STATUS & SHIPPED CITY REMARKS CONTROL) -->
+  <div id="adminWrapper" style="display:none; padding:1.25rem 1rem;" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:2px solid var(--header-bg);">
+      <div>
+        <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">🔒 Secure Admin Suite</h1>
+      </div>
+      <button class="btn-primary" onclick="app.closeAdminMode()" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-store"></i> Storefront</button>
+    </div>
+
+    <div style="display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <button class="btn-secondary active" id="adminTabOrdersBtn" onclick="app.switchAdminTab('orders')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Orders (5-Stage Status)</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Products</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('recipes')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Recipes</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('traceability')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Traceability</button>
+    </div>
+
+    <!-- Admin Section: 5-Stage Order Management -->
+    <div id="adminSectionOrders" style="background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto;">
+      <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Manage 5-Stage Live Customer Orders</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.4rem;">Order ID</th>
+            <th style="padding:0.4rem;">Customer</th>
+            <th style="padding:0.4rem;">Amount</th>
+            <th style="padding:0.4rem;">5-Stage Status</th>
+            <th style="padding:0.4rem;">Shipped City / Remarks</th>
+            <th style="padding:0.4rem;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminOrdersTable"></tbody>
+      </table>
+    </div>
+
+    <div id="adminSectionProducts" style="display:none; background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.4rem;">Img</th>
+            <th style="padding:0.4rem;">Name</th>
+            <th style="padding:0.4rem;">Price</th>
+            <th style="padding:0.4rem;">Stock</th>
+          </tr>
+        </thead>
+        <tbody id="adminProductTable"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
@@ -528,6 +521,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=15.0"></script>
+  <script src="app.js?v=16.0"></script>
 </body>
 </html>

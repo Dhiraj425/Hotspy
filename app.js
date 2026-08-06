@@ -111,37 +111,60 @@ const INITIAL_PRODUCTS = [
   }
 ];
 
-const INITIAL_RECIPES = [
+const INITIAL_ORDERS = [
   {
-    id: 'rec_1',
-    title: '🌿 Golden Immunity Boost Combo',
-    tag: 'Best Seller',
-    image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
-    description: 'Lakadong Turmeric Powder (250g) + Malabar Black Pepper Whole (100g)',
-    productIds: ['prod_1', 'prod_2'],
-    comboPrice: 499
+    id: 'ORD-8492',
+    customer_mobile: '9876543210',
+    customer_name: 'Aarav Sharma',
+    items: JSON.stringify([
+      { name: 'Pure Organic Lakadong Turmeric Powder', price: 249, quantity: 1 },
+      { name: 'Single-Origin Malabar Black Pepper Whole', price: 349, quantity: 1 }
+    ]),
+    shipping_address: JSON.stringify({ house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010' }),
+    subtotal: 598,
+    total_amount: 598,
+    status: 'Out for Delivery',
+    shipped_remarks: 'Out for 10-Min Express Delivery via Rider Raju Sharma',
+    date: '2026-08-06 16:30'
+  },
+  {
+    id: 'ORD-7310',
+    customer_mobile: '9876543210',
+    customer_name: 'Aarav Sharma',
+    items: JSON.stringify([
+      { name: 'Cold-Pressed Organic Mustard Oil (Kachi Ghani)', price: 199, quantity: 1 },
+      { name: 'Roasted Organic Flax Seeds & Chia Munch', price: 149, quantity: 1 }
+    ]),
+    shipping_address: JSON.stringify({ house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010' }),
+    subtotal: 348,
+    total_amount: 348,
+    status: 'Shipped',
+    shipped_remarks: 'In Transit through Kanpur Logistics Express Hub - Arriving Lucknow Today',
+    date: '2026-08-05 14:15'
+  },
+  {
+    id: 'ORD-6120',
+    customer_mobile: '9876543210',
+    customer_name: 'Aarav Sharma',
+    items: JSON.stringify([
+      { name: 'Himalayan Whole Leaf First Flush Green Tea', price: 399, quantity: 1 },
+      { name: 'Farm Fresh Organic Royal Green Cardamom (8mm+)', price: 499, quantity: 1 }
+    ]),
+    shipping_address: JSON.stringify({ house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010' }),
+    subtotal: 898,
+    total_amount: 898,
+    status: 'Delivered',
+    shipped_remarks: 'Delivered successfully and signed by customer Aarav Sharma',
+    date: '2026-08-02 11:00'
   }
 ];
-
-const BATCH_DATABASE = {
-  'HS-LKO-2026': {
-    farmer: 'Rameshwar Farmers Co-op (Lucknow)',
-    location: 'Gomti Valley Organic Zone, UP',
-    harvestDate: 'June 18, 2026',
-    labResult: '100% Pure - Pesticide Residue 0.00%',
-    soilType: 'Alluvial Organic Soil',
-    certNo: 'NPOP/NAB/001492'
-  }
-};
 
 class AppEngine {
   constructor() {
     this.products = JSON.parse(localStorage.getItem('hotspy_products')) || INITIAL_PRODUCTS;
-    this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || INITIAL_RECIPES;
-    this.batchDatabase = JSON.parse(localStorage.getItem('hotspy_batch_database')) || BATCH_DATABASE;
+    this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || [];
     this.cart = JSON.parse(localStorage.getItem('hotspy_cart')) || [];
-    this.wishlist = JSON.parse(localStorage.getItem('hotspy_wishlist')) || [];
-    this.orders = JSON.parse(localStorage.getItem('hotspy_orders')) || [];
+    this.orders = JSON.parse(localStorage.getItem('hotspy_orders')) || INITIAL_ORDERS;
     this.userProfiles = JSON.parse(localStorage.getItem('hotspy_user_profiles')) || [
       { mobile: '9876543210', name: 'Aarav Sharma', password: 'password123', avatar: 'assets/turmeric.jpg', created_at: '2026-08-01' }
     ];
@@ -149,16 +172,10 @@ class AppEngine {
       { id: 'addr_1', user_mobile: '9876543210', full_name: 'Aarav Sharma', mobile: '9876543210', house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010', address_type: 'Home', is_default: true }
     ];
 
-    this.user = JSON.parse(sessionStorage.getItem('hotspy_auth_session')) || null;
+    this.user = JSON.parse(sessionStorage.getItem('hotspy_auth_session')) || this.userProfiles[0];
     this.selectedCategory = 'All';
     this.searchQuery = '';
     this.minDiscountFilter = 0;
-
-    try {
-      this.supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-    } catch(e) {
-      this.supabase = null;
-    }
 
     this.init();
   }
@@ -305,50 +322,242 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 3. STANDALONE DEDICATED LIVE ORDER TRACKING PAGE VIEW
-  openOrderTrackingPage() {
+  // 3. MULTI-ORDER TRACKING & 5-STAGE DETAILS CONTROLLER
+  openOrderTrackingPage(specificOrderId = null) {
+    if (!this.user) {
+      this.openAuthModal('login');
+      return;
+    }
+
     this.hideAllPages();
     const page = document.getElementById('dedicatedOrderTrackingPageView');
     if (page) page.style.display = 'block';
 
+    const listContainer = document.getElementById('orderListViewContainer');
+    const detailContainer = document.getElementById('specificOrderTrackingContainer');
+
+    if (specificOrderId) {
+      if (listContainer) listContainer.style.display = 'none';
+      if (detailContainer) {
+        detailContainer.style.display = 'block';
+        this.renderSpecific5StageOrderTracking(specificOrderId);
+      }
+    } else {
+      if (detailContainer) detailContainer.style.display = 'none';
+      if (listContainer) {
+        listContainer.style.display = 'block';
+        this.renderAllOrderCards();
+      }
+    }
+
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  renderCategoryProducts() {
-    const grid = document.getElementById('categoryProductGrid');
-    if (!grid) return;
+  // RENDER ALL ORDERS CARDS LIST (FOR MULTIPLE & PAST ORDERS)
+  renderAllOrderCards() {
+    const grid = document.getElementById('allOrdersListCardsGrid');
+    if (!grid || !this.user) return;
 
-    let filtered = this.products;
-    if (this.selectedCategory !== 'All') {
-      filtered = filtered.filter(p => p.category === this.selectedCategory);
-    }
-    if (this.searchQuery) {
-      const q = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
-    }
-    if (this.minDiscountFilter > 0) {
-      filtered = filtered.filter(p => (p.discountPct || 20) >= this.minDiscountFilter);
-    }
+    const userOrders = this.orders.filter(o => o.customer_mobile === this.user.mobile);
 
-    const sortVal = document.getElementById('catSortSelect') ? document.getElementById('catSortSelect').value : 'relevance';
-    if (sortVal === 'price_low') {
-      filtered.sort((a, b) => a.price - b.price);
-    } else if (sortVal === 'price_high') {
-      filtered.sort((a, b) => b.price - a.price);
-    } else if (sortVal === 'discount') {
-      filtered.sort((a, b) => (b.discountPct || 0) - (a.discountPct || 0));
+    if (userOrders.length === 0) {
+      grid.innerHTML = `
+        <div style="background:white; padding:2rem; text-align:center; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+          <div style="font-size:2rem; color:var(--text-muted); margin-bottom:0.5rem;"><i class="fa-solid fa-basket-shopping"></i></div>
+          <h3 style="font-size:1.1rem; color:var(--header-bg); margin-bottom:0.25rem;">No Active or Past Orders</h3>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">Place your first organic grocery order today!</p>
+          <button class="btn-primary" onclick="app.showHomePage()">Shop Now</button>
+        </div>
+      `;
+      return;
     }
 
-    grid.innerHTML = this.renderProductCardsHTML(filtered);
+    grid.innerHTML = userOrders.map(o => {
+      let items = [];
+      try { items = typeof o.items === 'string' ? JSON.parse(o.items) : o.items; } catch(e) {}
+      
+      let badgeBg = 'var(--primary-light)';
+      let badgeColor = 'var(--header-bg)';
+      if (o.status === 'Delivered') {
+        badgeBg = '#D1FAE5';
+        badgeColor = '#065F46';
+      } else if (o.status === 'Out for Delivery') {
+        badgeBg = '#FEF3C7';
+        badgeColor = '#92400E';
+      }
+
+      return `
+        <div onclick="app.openOrderTrackingPage('${o.id}')" style="background:white; border:1px solid var(--border-light); border-radius:var(--radius-md); padding:1.15rem; cursor:pointer; box-shadow:var(--shadow-sm); transition:var(--transition-fast);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-light)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem; border-bottom:1px solid var(--border-subtle); padding-bottom:0.55rem;">
+            <div>
+              <strong style="font-size:0.95rem; color:var(--header-bg);">${o.id}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${o.date || '2026-08-06'}</div>
+            </div>
+            <span style="background:${badgeBg}; color:${badgeColor}; font-size:0.75rem; font-weight:800; padding:0.25rem 0.65rem; border-radius:var(--radius-full);">
+              ${o.status}
+            </span>
+          </div>
+
+          <div style="margin-bottom:0.75rem;">
+            <div style="font-size:0.82rem; font-weight:700; color:var(--text-main); margin-bottom:0.25rem;">
+              Items (${(items || []).length}): ${(items || []).map(i => i.name).join(', ')}
+            </div>
+            ${o.shipped_remarks ? `
+              <div style="font-size:0.75rem; color:var(--header-bg); font-weight:700; background:var(--bg-warm); padding:0.35rem 0.55rem; border-radius:4px; margin-top:0.35rem;">
+                <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i> Status Note: ${o.shipped_remarks}
+              </div>
+            ` : ''}
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; pt-0.5rem; border-top:1px solid var(--border-subtle);">
+            <div style="font-size:1.05rem; font-weight:800; color:var(--header-bg);">
+              Total: ₹${o.total_amount}
+            </div>
+            <button class="btn-primary" style="padding:0.35rem 0.75rem; font-size:0.78rem;">
+              View 5-Stage Live Details <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
-  sortCategoryProducts() {
-    this.renderCategoryProducts();
-  }
+  // RENDER SPECIFIC ORDER 5-STAGE TRACKING DETAILS
+  renderSpecific5StageOrderTracking(orderId) {
+    const container = document.getElementById('specificOrderTrackingContainer');
+    if (!container) return;
 
-  filterCategoryDiscount(minDiscount) {
-    this.minDiscountFilter = minDiscount === 'all' ? 0 : minDiscount;
-    this.renderCategoryProducts();
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) {
+      container.innerHTML = `<div>Order not found.</div>`;
+      return;
+    }
+
+    let items = [];
+    try { items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; } catch(e) {}
+    let addr = {};
+    try { addr = typeof order.shipping_address === 'string' ? JSON.parse(order.shipping_address) : order.shipping_address; } catch(e) {}
+
+    // Map 5 Statuses Index (1: Placed, 2: Accepted, 3: Shipped, 4: Out for Delivery, 5: Delivered)
+    const stages = ['Placed', 'Accepted', 'Shipped', 'Out for Delivery', 'Delivered'];
+    let currentStageIndex = stages.indexOf(order.status);
+    if (currentStageIndex === -1) currentStageIndex = 3; // Default Out for Delivery
+
+    const isDelivered = order.status === 'Delivered';
+
+    container.innerHTML = `
+      <div style="margin-bottom:1rem;">
+        <button class="btn-secondary" onclick="app.openOrderTrackingPage()" style="padding:0.3rem 0.65rem; font-size:0.78rem;">
+          <i class="fa-solid fa-arrow-left"></i> All My Orders List
+        </button>
+      </div>
+
+      <!-- SUCCESS CELEBRATION BANNER IF DELIVERED -->
+      ${isDelivered ? `
+        <div style="background:#D1FAE5; border:2px solid #10B981; color:#065F46; padding:1.5rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; text-align:center; box-shadow:var(--shadow-md);">
+          <div style="width:50px; height:50px; border-radius:50%; background:#10B981; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 0.5rem;">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h2 style="font-size:1.45rem; font-weight:800; margin-bottom:0.25rem;">Order Delivered Successfully! 🎉</h2>
+          <p style="font-size:0.85rem; margin-bottom:0.85rem;">Thank you for shopping with bigbasket Organics!</p>
+          <button class="btn-primary" onclick="app.openOrderInvoicePage('${order.id}')" style="background:#065F46;">
+            <i class="fa-solid fa-file-invoice"></i> Download Tax Invoice
+          </button>
+        </div>
+      ` : `
+        <!-- ETA Header Banner -->
+        <div style="background:var(--header-bg); color:white; padding:1.5rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; text-align:center; box-shadow:var(--shadow-lg);">
+          <span style="background:var(--primary); color:var(--header-dark); font-size:0.72rem; font-weight:900; padding:0.2rem 0.65rem; border-radius:var(--radius-full); text-transform:uppercase;">
+            Live 5-Stage Status • ${order.id}
+          </span>
+          <h2 style="font-size:1.5rem; font-weight:800; margin:0.5rem 0 0.2rem;">${order.status}</h2>
+          <p style="font-size:0.85rem; opacity:0.9;">Delivering to: ${addr.house_no || 'Flat 402, Royal Residency'}, ${addr.city || 'Lucknow'}</p>
+        </div>
+      `}
+
+      <!-- 5-STAGE PROGRESS TIMELINE -->
+      <div style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
+        <h3 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:1.25rem;">5-Stage Live Delivery Progress</h3>
+
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          
+          <!-- Stage 1: Placed -->
+          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 0 ? '1' : '0.5'};">
+            <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 0 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
+              ${currentStageIndex > 0 ? '✓' : '1'}
+            </div>
+            <div>
+              <strong style="font-size:0.9rem; color:var(--header-bg);">1. Order Placed</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Payment Verified & Order Received in Store Database</div>
+            </div>
+          </div>
+
+          <!-- Stage 2: Accepted -->
+          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 1 ? '1' : '0.5'};">
+            <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 1 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
+              ${currentStageIndex > 1 ? '✓' : '2'}
+            </div>
+            <div>
+              <strong style="font-size:0.9rem; color:var(--header-bg);">2. Order Accepted</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Accepted by Supermarket Manager • 100% Stock Reserved</div>
+            </div>
+          </div>
+
+          <!-- Stage 3: Shipped (with Custom Admin City / Remarks!) -->
+          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 2 ? '1' : '0.5'};">
+            <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 2 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
+              ${currentStageIndex > 2 ? '✓' : '3'}
+            </div>
+            <div>
+              <strong style="font-size:0.9rem; color:var(--header-bg);">3. Order Shipped & In Transit</strong>
+              <div style="font-size:0.8rem; font-weight:700; color:var(--header-bg); background:var(--bg-warm); padding:0.35rem 0.65rem; border-radius:4px; margin-top:0.25rem;">
+                <i class="fa-solid fa-truck" style="color:var(--primary);"></i> ${order.shipped_remarks || 'Dispatched via Express Courier from Regional Logistics Hub'}
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 4: Out for Delivery -->
+          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 3 ? '1' : '0.5'};">
+            <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 3 ? 'var(--primary)' : 'var(--border-light)'}; color:${currentStageIndex >= 3 ? 'var(--header-dark)' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
+              ${currentStageIndex > 3 ? '✓' : '<i class="fa-solid fa-motorcycle"></i>'}
+            </div>
+            <div>
+              <strong style="font-size:0.9rem; color:var(--header-bg);">4. Out for Delivery ⚡</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Assigned to EV Rider Raju Sharma (Lucknow Delivery Belt)</div>
+            </div>
+          </div>
+
+          <!-- Stage 5: Delivered -->
+          <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 4 ? '1' : '0.5'};">
+            <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 4 ? '#10B981' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
+              ${currentStageIndex >= 4 ? '✓' : '5'}
+            </div>
+            <div>
+              <strong style="font-size:0.9rem; color:var(--header-bg);">5. Delivered Successfully</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Handed over to customer at doorstep</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ORDERED ITEMS & ADDRESS SUMMARY -->
+      <div style="display:grid; grid-template-columns:1fr; gap:1rem;">
+        <div style="background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+          <h3 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.65rem;">Ordered Products (${(items || []).length})</h3>
+          ${(items || []).map(i => `
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:0.35rem 0; border-bottom:1px solid var(--border-subtle);">
+              <span><strong>${i.name}</strong> × ${i.quantity}</span>
+              <span style="font-weight:800; color:var(--header-bg);">₹${i.price * i.quantity}</span>
+            </div>
+          `).join('')}
+          <div style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-top:0.65rem; pt-0.5rem; border-top:2px solid var(--border-light);">
+            <span>Grand Total</span>
+            <span>₹${order.total_amount}</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE
@@ -473,7 +682,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 8. STANDALONE ADMIN PANEL
+  // 8. STANDALONE SECURE ADMIN PANEL WITH 5-STAGE STATUS & SHIPPED REMARKS CONTROL
   checkAdminRoute() {
     if (window.location.hash === '#admin') {
       this.openAdminAuthModal();
@@ -518,6 +727,79 @@ class AppEngine {
 
   closeAdminMode() {
     this.showHomePage();
+  }
+
+  switchAdminTab(tab) {
+    ['Orders', 'Products', 'Recipes', 'Traceability'].forEach(t => {
+      const sec = document.getElementById(`adminSection${t}`);
+      if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
+    });
+    this.renderAdminTables();
+  }
+
+  renderAdminTables() {
+    const ordersTable = document.getElementById('adminOrdersTable');
+    if (ordersTable) {
+      ordersTable.innerHTML = this.orders.map(o => `
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:0.5rem;"><strong>${o.id}</strong></td>
+          <td style="padding:0.5rem;">${o.customer_name}<br><span style="font-size:0.72rem; color:var(--text-muted);">+91 ${o.customer_mobile}</span></td>
+          <td style="padding:0.5rem; font-weight:800; color:var(--header-bg);">₹${o.total_amount}</td>
+          
+          <!-- 5-Stage Status Selector -->
+          <td style="padding:0.5rem;">
+            <select id="adminStatusSelect_${o.id}" style="padding:0.25rem 0.4rem; font-size:0.78rem; font-weight:700; border-radius:4px; border:1px solid var(--border-light); outline:none;">
+              <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>1. Placed</option>
+              <option value="Accepted" ${o.status === 'Accepted' ? 'selected' : ''}>2. Accepted</option>
+              <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>3. Shipped</option>
+              <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>4. Out for Delivery</option>
+              <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>5. Delivered</option>
+            </select>
+          </td>
+
+          <!-- Shipped Remarks / City Location Field -->
+          <td style="padding:0.5rem;">
+            <input type="text" id="adminRemarksInput_${o.id}" value="${o.shipped_remarks || ''}" placeholder="e.g. In Transit via Kanpur Hub" style="padding:0.25rem 0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px; width:180px;">
+          </td>
+
+          <td style="padding:0.5rem;">
+            <button class="btn-primary" onclick="app.updateOrderStatusFromAdmin('${o.id}')" style="padding:0.25rem 0.55rem; font-size:0.72rem;">
+              Save Status
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    const prodTable = document.getElementById('adminProductTable');
+    if (prodTable) {
+      prodTable.innerHTML = this.products.map(p => `
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:0.4rem;"><img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px;"></td>
+          <td style="padding:0.4rem;"><strong>${p.name}</strong></td>
+          <td style="padding:0.4rem; font-weight:800; color:var(--header-bg);">₹${p.price}</td>
+          <td style="padding:0.4rem;"><span style="color:var(--header-bg); font-weight:700;">In Stock</span></td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  updateOrderStatusFromAdmin(orderId) {
+    const select = document.getElementById(`adminStatusSelect_${orderId}`);
+    const remarksInput = document.getElementById(`adminRemarksInput_${orderId}`);
+
+    if (!select) return;
+    const newStatus = select.value;
+    const newRemarks = remarksInput ? remarksInput.value.trim() : '';
+
+    const order = this.orders.find(o => o.id === orderId);
+    if (order) {
+      order.status = newStatus;
+      order.shipped_remarks = newRemarks;
+      localStorage.setItem('hotspy_orders', JSON.stringify(this.orders));
+      this.showToast(`Updated ${orderId} status to "${newStatus}"!`);
+      this.renderAdminTables();
+    }
   }
 
   // PRODUCT CARD HTML GENERATOR
@@ -848,8 +1130,8 @@ class AppEngine {
           <button onclick="app.openOrderInvoicePage('${o.id}')" style="background:var(--header-bg); color:white; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; font-size:0.78rem; cursor:pointer;">
             <i class="fa-solid fa-file-invoice"></i> View Tax Invoice
           </button>
-          <button onclick="app.openOrderTrackingPage()" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;">
-            <i class="fa-solid fa-truck-fast"></i> Track Delivery
+          <button onclick="app.openOrderTrackingPage('${o.id}')" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;">
+            <i class="fa-solid fa-truck-fast"></i> Track 5-Stage Status
           </button>
         </div>
       </div>
@@ -882,8 +1164,9 @@ class AppEngine {
       shipping_address: JSON.stringify(defaultAddr),
       subtotal: subtotal,
       total_amount: subtotal,
-      status: 'Out for Express Delivery',
-      date: new Date().toISOString().split('T')[0]
+      status: 'Placed',
+      shipped_remarks: 'Order Placed Successfully by Customer',
+      date: new Date().toISOString().replace('T', ' ').slice(0, 16)
     };
 
     this.orders.unshift(newOrder);
@@ -893,7 +1176,7 @@ class AppEngine {
     this.saveCart();
     this.closeCartDrawer();
     this.showToast(`🎉 Order Placed! ID: ${newOrder.id}`);
-    this.openOrderTrackingPage();
+    this.openOrderTrackingPage(newOrder.id);
   }
 
   addComboToCart(recipeId) {
@@ -914,32 +1197,11 @@ class AppEngine {
     if (drawer) drawer.classList.remove('open');
   }
 
-  switchAdminTab(tab) {
-    ['Products', 'Recipes', 'Traceability', 'Orders', 'Users'].forEach(t => {
-      const sec = document.getElementById(`adminSection${t}`);
-      if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
-    });
-  }
-
-  renderAdminTables() {
-    const prodTable = document.getElementById('adminProductTable');
-    if (prodTable) {
-      prodTable.innerHTML = this.products.map(p => `
-        <tr style="border-bottom:1px solid var(--border-subtle);">
-          <td style="padding:0.4rem;"><img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px;"></td>
-          <td style="padding:0.4rem;"><strong>${p.name}</strong></td>
-          <td style="padding:0.4rem; font-weight:800; color:var(--header-bg);">₹${p.price}</td>
-          <td style="padding:0.4rem;"><span style="color:var(--header-bg); font-weight:700;">In Stock</span></td>
-        </tr>
-      `).join('');
-    }
-  }
-
   verifyBatchFromInput() {
     const input = document.getElementById('traceBatchInput');
     const code = input ? input.value.trim() : '';
     const resultCard = document.getElementById('traceResultCard');
-    const info = (this.batchDatabase && code) ? this.batchDatabase[code.toUpperCase()] : null;
+    const info = (BATCH_DATABASE && code) ? BATCH_DATABASE[code.toUpperCase()] : null;
 
     if (!info) {
       this.showToast(`Batch "${code}" not found. Try HS-LKO-2026`, 'error');
