@@ -170,8 +170,79 @@ class AppEngine {
 
     window.addEventListener('hashchange', () => this.checkAdminRoute());
     this.checkAdminRoute();
+
+    // Close Profile Dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const wrapper = document.querySelector('.profile-dropdown-wrapper');
+      if (wrapper && !wrapper.contains(e.target)) {
+        this.closeProfileDropdown();
+      }
+    });
   }
 
+  // --- INLINE PROFILE DROPDOWN CARD CONTROLLER (NO POPUP MODAL) ---
+  toggleProfileDropdown(e) {
+    if (e) e.stopPropagation();
+    const card = document.getElementById('profileDropdownCard');
+    if (!card) return;
+
+    if (card.classList.contains('show')) {
+      this.closeProfileDropdown();
+    } else {
+      this.renderProfileDropdownContent();
+      card.classList.add('show');
+    }
+  }
+
+  closeProfileDropdown() {
+    const card = document.getElementById('profileDropdownCard');
+    if (card) card.classList.remove('show');
+  }
+
+  renderProfileDropdownContent() {
+    const headerBox = document.getElementById('dropdownHeaderBox');
+    const footerBox = document.getElementById('dropdownFooterBox');
+
+    if (headerBox) {
+      if (this.user) {
+        headerBox.innerHTML = `
+          <img src="${this.user.avatar || 'assets/turmeric.jpg'}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); flex-shrink:0;">
+          <div style="flex:1; overflow:hidden;">
+            <div style="font-weight:800; font-size:0.9rem; color:white; cursor:pointer;" onclick="app.openCustomerProfilePage('addresses'); app.closeProfileDropdown();">
+              ${this.user.name} <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i>
+            </div>
+            <div style="font-size:0.72rem; opacity:0.85;">📞 +91 ${this.user.mobile}</div>
+          </div>
+        `;
+      } else {
+        headerBox.innerHTML = `
+          <div style="width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+            <i class="fa-regular fa-circle-user"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:0.88rem; color:white;">Guest Customer</div>
+            <button onclick="app.openAuthModal('login'); app.closeProfileDropdown();" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.2rem 0.55rem; border-radius:var(--radius-sm); font-size:0.7rem; font-weight:800; margin-top:0.2rem; cursor:pointer;">
+              Login / Register
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    if (footerBox) {
+      if (this.user) {
+        footerBox.innerHTML = `
+          <button onclick="app.openLogoutConfirmModal(); app.closeProfileDropdown();" style="width:100%; padding:0.4rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.78rem; cursor:pointer;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+          </button>
+        `;
+      } else {
+        footerBox.innerHTML = ``;
+      }
+    }
+  }
+
+  // --- STRICT PAGE SWITCHER ---
   hideAllPages() {
     const pages = [
       'homePageContent',
@@ -207,7 +278,7 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(this.products);
   }
 
-  // 2. STANDALONE DEDICATED CATEGORY PAGE WITH FULL FILTERS & SORTING
+  // 2. STANDALONE DEDICATED CATEGORY PAGE
   openCategoryPage(catName = 'All') {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
@@ -539,7 +610,10 @@ class AppEngine {
   updateCartUI() {
     const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
     const mobileBadge = document.getElementById('mobileCartBadge');
+    const desktopCartCount = document.getElementById('desktopCartCount');
+
     if (mobileBadge) mobileBadge.textContent = totalItems;
+    if (desktopCartCount) desktopCartCount.textContent = totalItems;
 
     const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const grandTotalEl = document.getElementById('cartGrandTotal');
@@ -658,57 +732,6 @@ class AppEngine {
     this.openCustomerProfilePage('addresses');
   }
 
-  openProfileMenuModal() {
-    const modal = document.getElementById('profileMenuModal');
-    const headerBox = document.getElementById('profileMenuHeaderBox');
-    const footerBox = document.getElementById('profileMenuFooterBox');
-
-    if (headerBox) {
-      if (this.user) {
-        headerBox.innerHTML = `
-          <img src="${this.user.avatar || 'assets/turmeric.jpg'}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); flex-shrink:0;">
-          <div style="flex:1;">
-            <div style="font-weight:800; font-size:1rem; color:white; cursor:pointer;" onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();">
-              ${this.user.name} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
-            </div>
-            <div style="font-size:0.75rem; opacity:0.85;">📞 +91 ${this.user.mobile}</div>
-          </div>
-        `;
-      } else {
-        headerBox.innerHTML = `
-          <div style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
-            <i class="fa-regular fa-circle-user"></i>
-          </div>
-          <div style="flex:1;">
-            <div style="font-weight:800; font-size:1rem; color:white;">Guest Customer</div>
-            <button onclick="app.openAuthModal('login'); app.closeProfileMenuModal();" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.25rem 0.65rem; border-radius:var(--radius-sm); font-size:0.72rem; font-weight:800; margin-top:0.25rem;">
-              Login / Register
-            </button>
-          </div>
-        `;
-      }
-    }
-
-    if (footerBox) {
-      if (this.user) {
-        footerBox.innerHTML = `
-          <button onclick="app.openLogoutConfirmModal();" style="width:100%; padding:0.5rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.8rem; cursor:pointer;">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-          </button>
-        `;
-      } else {
-        footerBox.innerHTML = ``;
-      }
-    }
-
-    if (modal) modal.classList.add('open');
-  }
-
-  closeProfileMenuModal() {
-    const modal = document.getElementById('profileMenuModal');
-    if (modal) modal.classList.remove('open');
-  }
-
   openLogoutConfirmModal() {
     const modal = document.getElementById('logoutConfirmModal');
     if (modal) modal.classList.add('open');
@@ -723,7 +746,7 @@ class AppEngine {
     this.user = null;
     sessionStorage.removeItem('hotspy_auth_session');
     this.closeLogoutConfirmModal();
-    this.closeProfileMenuModal();
+    this.closeProfileDropdown();
     this.updateAuthStatusUI();
     this.showHomePage();
     this.showToast('Logged out successfully.');

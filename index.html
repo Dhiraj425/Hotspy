@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=8.0">
+  <link rel="stylesheet" href="styles.css?v=9.0">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
   <!-- BigBasket Header (Deep Teal Green #024731) -->
   <header class="bb-header">
     <div class="container" style="padding:0;">
-      <!-- Row 1: Logo Icon (Brand text hidden on mobile view!) & Profile Icon -->
+      <!-- Row 1: Logo Icon (Brand text hidden on mobile view!) & Profile Wrapper -->
       <div class="bb-header-top">
         <a href="#" class="bb-brand-logo" onclick="app.showHomePage(); return false;">
           <div class="bb-brand-icon">bb</div>
@@ -35,9 +35,28 @@
           <span class="bb-brand-tag">ORGANICS</span>
         </a>
 
-        <div style="display:flex; align-items:center; gap:0.65rem;">
-          <div class="bb-header-profile-icon" id="userAuthBtn" onclick="app.openProfileMenuModal()" title="Profile & Account">
+        <!-- Profile Relative Wrapper for Inline Animated Dropdown -->
+        <div class="profile-dropdown-wrapper">
+          <div class="bb-header-profile-icon" id="userAuthBtn" onclick="app.toggleProfileDropdown(event)" title="Profile & Account">
             <i class="fa-regular fa-circle-user"></i>
+          </div>
+
+          <!-- INLINE ANIMATED PROFILE DROPDOWN CARD (NO POPUP MODAL) -->
+          <div class="profile-dropdown-card" id="profileDropdownCard">
+            <div class="dropdown-header-box" id="dropdownHeaderBox">
+              <!-- Rendered by app.js -->
+            </div>
+
+            <ul class="dropdown-menu-list">
+              <li><a href="#" onclick="app.showHomePage(); app.closeProfileDropdown();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
+              <li><a href="#" onclick="app.openCategoryPage('All'); app.closeProfileDropdown();"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Catalog</a></li>
+              <li><a href="#" onclick="app.openComboPage(); app.closeProfileDropdown();"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
+              <li><a href="#" onclick="app.openTraceabilityPage(); app.closeProfileDropdown();"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
+            </ul>
+
+            <div id="dropdownFooterBox" style="padding:0.5rem; border-top:1px solid var(--border-subtle);">
+              <!-- Rendered by app.js -->
+            </div>
           </div>
         </div>
       </div>
@@ -62,7 +81,33 @@
     </div>
   </header>
 
-  <!-- Circular Category Icons Strip (Switches to Dedicated Standalone Full Pages) -->
+  <!-- DESKTOP / LAPTOP NAVIGATION BAR (DISPLAYED ON PC / LAPTOP VIEWS) -->
+  <nav class="desktop-nav-bar">
+    <div class="container desktop-nav-inner">
+      <div style="display:flex; align-items:center; gap:1.5rem;">
+        <button class="bb-mega-btn" onclick="app.openCategoryPage('All')">
+          <i class="fa-solid fa-bars"></i> Shop by Category <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>
+        </button>
+
+        <ul class="desktop-nav-links">
+          <li><a href="#" onclick="app.showHomePage();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home</a></li>
+          <li><a href="#" onclick="app.openCategoryPage('Spices');"><i class="fa-solid fa-pepper-hot"></i> Pure Spices</a></li>
+          <li><a href="#" onclick="app.openCategoryPage('Teas');"><i class="fa-solid fa-mug-hot"></i> Whole Leaf Teas</a></li>
+          <li><a href="#" onclick="app.openCategoryPage('Oils & Grains');"><i class="fa-solid fa-bottle-droplet"></i> Staples & Oils</a></li>
+          <li><a href="#" onclick="app.openComboPage();" style="color:var(--header-bg); font-weight:800;"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
+          <li><a href="#" onclick="app.openTraceabilityPage();"><i class="fa-solid fa-seedling"></i> Farm Origin</a></li>
+        </ul>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <button onclick="app.openCartDrawer()" style="display:flex; align-items:center; gap:0.5rem; background:var(--primary-light); color:var(--header-bg); border:1px solid var(--primary-mint); padding:0.4rem 0.85rem; border-radius:var(--radius-sm); font-weight:800; font-size:0.82rem;">
+          <i class="fa-solid fa-basket-shopping" style="color:var(--header-bg);"></i> Basket (<span id="desktopCartCount">0</span>)
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Circular Category Icons Strip (Mobile / Tablet Quick Nav) -->
   <div class="bb-category-circles-strip">
     <div class="bb-category-circle-card active" onclick="app.showHomePage()">
       <div class="bb-circle-icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
@@ -97,7 +142,7 @@
     <main id="homePageContent" class="container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg);">BIG INDIAN GROCERY SALE</h2>
-        <span style="font-size:0.8rem; font-weight:700; color:var(--primary-deep); cursor:pointer;" onclick="app.openCategoryPage('All')">View All ></span>
+        <span style="font-size:0.8rem; font-weight:700; color:var(--primary-deep); cursor:pointer;" onclick="app.openCategoryPage('All')">Browse Catalog ></span>
       </div>
 
       <div class="product-grid" id="homeProductGrid">
@@ -105,7 +150,7 @@
       </div>
     </main>
 
-    <!-- 2. STANDALONE DEDICATED CATEGORY CATALOG PAGE (WITH FULL FILTERS & SEARCH) -->
+    <!-- 2. STANDALONE DEDICATED CATEGORY CATALOG PAGE -->
     <div id="dedicatedCategoryPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -115,7 +160,6 @@
         <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Back</button>
       </div>
 
-      <!-- Category Catalog Filter Toolbar -->
       <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:0.65rem 0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
         <div style="display:flex; align-items:center; gap:0.5rem;">
           <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">Sort By:</span>
@@ -139,7 +183,7 @@
       </div>
     </div>
 
-    <!-- 3. STANDALONE DEDICATED FARM TRACEABILITY PAGE (FULL FEATURES) -->
+    <!-- 3. STANDALONE DEDICATED FARM TRACEABILITY PAGE -->
     <div id="dedicatedTraceabilityPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -149,7 +193,6 @@
         <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Back</button>
       </div>
 
-      <!-- Traceability Search Box -->
       <div style="background:var(--header-bg); color:white; padding:1.75rem 1.25rem; border-radius:var(--radius-lg); text-align:center; box-shadow:var(--shadow-lg); margin-bottom:1.5rem;">
         <span style="background:rgba(255,255,255,0.15); color:white; font-size:0.72rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:var(--radius-full); display:inline-block; margin-bottom:0.65rem;">
           <i class="fa-solid fa-tractor"></i> Direct Partner Farming Co-ops
@@ -165,7 +208,6 @@
         <div id="traceResultCard" style="display:none; background:white; color:var(--text-main); padding:1.15rem; border-radius:var(--radius-md); text-align:left;"></div>
       </div>
 
-      <!-- Partner Farmers Directory Grid -->
       <h3 style="font-size:1.1rem; color:var(--header-bg); margin-bottom:0.75rem;">Verified Farming Partner Networks</h3>
       <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:1rem;">
         <div style="background:white; border:1px solid var(--border-light); padding:1rem; border-radius:var(--radius-md);">
@@ -250,7 +292,7 @@
 
   </div>
 
-  <!-- STANDALONE ADMIN PANEL VIEW (RESTRICTED PASSCODE ROUTE) -->
+  <!-- STANDALONE ADMIN PANEL VIEW -->
   <div id="adminWrapper" style="display:none; padding:1.25rem 1rem;" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:2px solid var(--header-bg);">
       <div>
@@ -385,25 +427,6 @@
     </div>
   </div>
 
-  <!-- POPUP MODAL: PROFILE MENU -->
-  <div id="profileMenuModal" class="modal-backdrop" onclick="if(event.target === this) app.closeProfileMenuModal()">
-    <div class="auth-modal-card" style="max-width:340px;">
-      <div style="background:var(--header-bg); padding:1.15rem; color:white; position:relative;">
-        <button class="modal-close-btn" onclick="app.closeProfileMenuModal()"><i class="fa-solid fa-xmark"></i></button>
-        <div id="profileMenuHeaderBox" style="display:flex; align-items:center; gap:0.65rem;"></div>
-      </div>
-      <div style="padding:0.85rem;">
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.35rem;">
-          <li><a href="#" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.6rem; padding:0.45rem; font-weight:700;"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
-          <li><a href="#" onclick="app.openCategoryPage('All'); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.6rem; padding:0.45rem; font-weight:700;"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Catalog</a></li>
-          <li><a href="#" onclick="app.openComboPage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.6rem; padding:0.45rem; font-weight:800; color:var(--header-bg);"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
-          <li><a href="#" onclick="app.openTraceabilityPage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.6rem; padding:0.45rem; font-weight:700;"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
-        </ul>
-        <div id="profileMenuFooterBox" style="margin-top:0.65rem; padding-top:0.4rem; border-top:1px solid var(--border-subtle);"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- POPUP MODAL: CUSTOM LOGOUT CONFIRMATION -->
   <div id="logoutConfirmModal" class="modal-backdrop" onclick="if(event.target === this) app.closeLogoutConfirmModal()">
     <div class="auth-modal-card" style="max-width:340px; text-align:center; padding:1.25rem;">
@@ -444,6 +467,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=8.0"></script>
+  <script src="app.js?v=9.0"></script>
 </body>
 </html>
