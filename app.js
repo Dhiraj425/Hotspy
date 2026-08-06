@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   Dedicated Standalone Admin Page View Engine (#/admin)
+   Dedicated Standalone Admin Portal Engine (#/admin) with Top Header & Sidebar
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -303,6 +303,11 @@ class AppEngine {
   }
 
   hideAllPages() {
+    // Show Customer Header Elements by default
+    document.querySelectorAll('.customer-view-element').forEach(el => {
+      el.style.display = '';
+    });
+
     const pages = [
       'homePageContent',
       'shopPageView',
@@ -632,7 +637,7 @@ class AppEngine {
 
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 4 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 4 ? '#10B981' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
-              ${currentStageIndex >= 4 ? '✓' : '5'}
+              ${currentStageIndex > 4 ? '✓' : '5'}
             </div>
             <div>
               <strong style="font-size:0.9rem; color:var(--header-bg);">5. Delivered Successfully</strong>
@@ -766,24 +771,33 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 9. STANDALONE DEDICATED ADMIN SUITE PAGE VIEW (#/admin)
+  // 9. 100% EXCLUSIVE STANDALONE ADMIN PORTAL VIEW (#/admin)
   renderAdminPageView() {
     this.hideAllPages();
+
+    // HIDE ALL CUSTOMER VIEW ELEMENTS COMPLETELY
+    document.querySelectorAll('.customer-view-element').forEach(el => {
+      el.style.display = 'none';
+    });
+
     const storefront = document.getElementById('storefrontWrapper');
     const adminWrapper = document.getElementById('adminWrapper');
     const loginCard = document.getElementById('adminLoginCardContainer');
     const dashboard = document.getElementById('adminDashboardContainer');
+    const headerLogoutBtn = document.getElementById('adminLogoutHeaderBtn');
 
     if (storefront) storefront.style.display = 'none';
     if (adminWrapper) adminWrapper.style.display = 'block';
 
     if (this.isAdminAuthenticated) {
       if (loginCard) loginCard.style.display = 'none';
-      if (dashboard) dashboard.style.display = 'block';
-      this.renderAdminTables();
+      if (dashboard) dashboard.style.display = 'flex';
+      if (headerLogoutBtn) headerLogoutBtn.style.display = 'inline-flex';
+      this.switchAdminTab('orders');
     } else {
       if (dashboard) dashboard.style.display = 'none';
       if (loginCard) loginCard.style.display = 'block';
+      if (headerLogoutBtn) headerLogoutBtn.style.display = 'none';
     }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -799,7 +813,7 @@ class AppEngine {
       this.showToast('Unlocked Supermarket Admin Portal!');
       this.renderAdminPageView();
     } else {
-      this.showToast('Invalid Security Key! Password is admin123', 'error');
+      this.showToast('Invalid Passcode! Key is admin123', 'error');
     }
   }
 
@@ -811,9 +825,11 @@ class AppEngine {
   }
 
   switchAdminTab(tab) {
-    ['Orders', 'Products', 'Addproduct', 'Banners', 'Combos'].forEach(t => {
+    ['orders', 'products', 'addproduct', 'banners', 'combos'].forEach(t => {
       const sec = document.getElementById(`adminSection${t.charAt(0).toUpperCase() + t.slice(1)}`);
+      const link = document.getElementById(`adminSidebar${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
+      if (link) link.classList.toggle('active', t.toLowerCase() === tab.toLowerCase());
     });
     this.renderAdminTables();
   }
@@ -823,11 +839,11 @@ class AppEngine {
     if (ordersTable) {
       ordersTable.innerHTML = this.orders.map(o => `
         <tr style="border-bottom:1px solid var(--border-subtle);">
-          <td style="padding:0.5rem;"><strong>${o.id}</strong></td>
-          <td style="padding:0.5rem;">${o.customer_name}<br><span style="font-size:0.72rem; color:var(--text-muted);">+91 ${o.customer_mobile}</span></td>
-          <td style="padding:0.5rem; font-weight:800; color:var(--header-bg);">₹${o.total_amount}</td>
+          <td style="padding:0.55rem;"><strong>${o.id}</strong></td>
+          <td style="padding:0.55rem;">${o.customer_name}<br><span style="font-size:0.72rem; color:var(--text-muted);">+91 ${o.customer_mobile}</span></td>
+          <td style="padding:0.55rem; font-weight:800; color:var(--header-bg);">₹${o.total_amount}</td>
           
-          <td style="padding:0.5rem;">
+          <td style="padding:0.55rem;">
             <select id="adminStatusSelect_${o.id}" style="padding:0.25rem 0.4rem; font-size:0.78rem; font-weight:700; border-radius:4px; border:1px solid var(--border-light); outline:none;">
               <option value="Placed" ${o.status === 'Placed' ? 'selected' : ''}>1. Placed</option>
               <option value="Accepted" ${o.status === 'Accepted' ? 'selected' : ''}>2. Accepted</option>
@@ -837,11 +853,11 @@ class AppEngine {
             </select>
           </td>
 
-          <td style="padding:0.5rem;">
+          <td style="padding:0.55rem;">
             <input type="text" id="adminRemarksInput_${o.id}" value="${o.shipped_remarks || ''}" placeholder="e.g. In Transit via Kanpur Hub" style="padding:0.25rem 0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px; width:180px;">
           </td>
 
-          <td style="padding:0.5rem;">
+          <td style="padding:0.55rem;">
             <button class="btn-primary" onclick="app.updateOrderStatusFromAdmin('${o.id}')" style="padding:0.25rem 0.55rem; font-size:0.72rem;">
               Save Status
             </button>
@@ -854,7 +870,7 @@ class AppEngine {
     if (prodTable) {
       prodTable.innerHTML = this.products.map(p => `
         <tr style="border-bottom:1px solid var(--border-subtle);">
-          <td style="padding:0.4rem;"><img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px;"></td>
+          <td style="padding:0.4rem;"><img src="${p.image}" style="width:32px; height:32px; object-fit:cover; border-radius:4px;"></td>
           <td style="padding:0.4rem;"><strong>${p.name}</strong></td>
           <td style="padding:0.4rem; font-weight:800; color:var(--header-bg);">₹${p.price}</td>
           
