@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   Full Admin Suite Control Engine: Products, Featured Flags, Banners, Combos, 5-Stage Orders
+   Dedicated Standalone Admin Page View Engine (#/admin)
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -167,6 +167,8 @@ class AppEngine {
     ];
 
     this.user = JSON.parse(sessionStorage.getItem('hotspy_auth_session')) || this.userProfiles[0];
+    this.isAdminAuthenticated = sessionStorage.getItem('hotspy_admin_auth') === 'true';
+
     this.selectedCategory = 'All';
     this.searchQuery = '';
     this.minDiscountFilter = 0;
@@ -194,12 +196,9 @@ class AppEngine {
   handleRouteHashChange() {
     const hash = window.location.hash || '#/home';
 
-    if (hash === '#admin') {
-      this.openAdminAuthModal();
-      return;
-    }
-
-    if (hash === '#/shop') {
+    if (hash === '#/admin' || hash === '#admin') {
+      this.renderAdminPageView();
+    } else if (hash === '#/shop') {
       this.renderShopPageView();
     } else if (hash.startsWith('#/banner/')) {
       const title = decodeURIComponent(hash.replace('#/banner/', ''));
@@ -244,6 +243,7 @@ class AppEngine {
     window.location.hash = '#/profile';
   }
   openOrderInvoicePage(orderId) { window.location.hash = `#/invoice/${encodeURIComponent(orderId)}`; }
+  openAdminPage() { window.location.hash = '#/admin'; }
 
   toggleProfileDropdown(e) {
     if (e) e.stopPropagation();
@@ -323,7 +323,7 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. STANDALONE HOMEPAGE RENDER
+  // 1. HOMEPAGE RENDER
   renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
@@ -331,7 +331,7 @@ class AppEngine {
 
     this.updateMobileNavActive('mobNavHome');
 
-    // Render Banners
+    // Banners
     const bannersContainer = document.getElementById('homeBannersContainer');
     if (bannersContainer) {
       bannersContainer.innerHTML = this.banners.map(b => `
@@ -350,12 +350,12 @@ class AppEngine {
       `).join('');
     }
 
-    // Render Featured Products
+    // Featured Products
     const featuredProds = this.products.filter(p => p.isFeatured);
     const grid = document.getElementById('homeProductGrid');
     if (grid) grid.innerHTML = this.renderProductCardsHTML(featuredProds);
 
-    // Render Homepage Combos
+    // Homepage Combos
     const hpCombos = this.recipes.filter(r => r.showOnHomepage);
     const combosSec = document.getElementById('homeCombosSection');
     const combosGrid = document.getElementById('homeCombosGrid');
@@ -382,7 +382,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 2. SHOP ALL PRODUCTS PAGE
+  // 2. SHOP PAGE
   renderShopPageView() {
     this.hideAllPages();
     const page = document.getElementById('shopPageView');
@@ -766,51 +766,48 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 9. SECURE ADMIN PANEL WITH ALL CONTROLS
-  checkAdminRoute() {
-    if (window.location.hash === '#admin') {
-      this.openAdminAuthModal();
-    }
-  }
-
-  openAdminAuthModal() {
-    const modal = document.getElementById('adminAuthModal');
-    if (modal) modal.classList.add('open');
-  }
-
-  closeAdminAuthModal() {
-    const modal = document.getElementById('adminAuthModal');
-    if (modal) modal.classList.remove('open');
-    if (window.location.hash === '#admin') {
-      window.location.hash = '';
-    }
-  }
-
-  verifyAdminSecurityKey() {
-    const passkeyInput = document.getElementById('adminPasskeyInput');
-    const passkey = passkeyInput ? passkeyInput.value : '';
-    
-    if (passkey === 'admin123') {
-      this.closeAdminAuthModal();
-      this.openAdminMode();
-      this.showToast('Unlocked Full Admin Management Suite!');
-    } else {
-      this.showToast('Invalid Admin Security Key!', 'error');
-    }
-  }
-
-  openAdminMode() {
+  // 9. STANDALONE DEDICATED ADMIN SUITE PAGE VIEW (#/admin)
+  renderAdminPageView() {
     this.hideAllPages();
     const storefront = document.getElementById('storefrontWrapper');
-    const adminPanel = document.getElementById('adminWrapper');
-    if (adminPanel) adminPanel.style.display = 'block';
+    const adminWrapper = document.getElementById('adminWrapper');
+    const loginCard = document.getElementById('adminLoginCardContainer');
+    const dashboard = document.getElementById('adminDashboardContainer');
+
     if (storefront) storefront.style.display = 'none';
-    this.renderAdminTables();
+    if (adminWrapper) adminWrapper.style.display = 'block';
+
+    if (this.isAdminAuthenticated) {
+      if (loginCard) loginCard.style.display = 'none';
+      if (dashboard) dashboard.style.display = 'block';
+      this.renderAdminTables();
+    } else {
+      if (dashboard) dashboard.style.display = 'none';
+      if (loginCard) loginCard.style.display = 'block';
+    }
+
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  closeAdminMode() {
-    this.showHomePage();
+  verifyAdminSecurityKey() {
+    const input = document.getElementById('adminPagePasskeyInput');
+    const passkey = input ? input.value.trim() : '';
+
+    if (passkey === 'admin123') {
+      this.isAdminAuthenticated = true;
+      sessionStorage.setItem('hotspy_admin_auth', 'true');
+      this.showToast('Unlocked Supermarket Admin Portal!');
+      this.renderAdminPageView();
+    } else {
+      this.showToast('Invalid Security Key! Password is admin123', 'error');
+    }
+  }
+
+  lockAdminPortal() {
+    this.isAdminAuthenticated = false;
+    sessionStorage.removeItem('hotspy_admin_auth');
+    this.showToast('Locked Admin Portal.');
+    this.renderAdminPageView();
   }
 
   switchAdminTab(tab) {
@@ -1017,7 +1014,6 @@ class AppEngine {
     }
   }
 
-  // PRODUCT CARD HTML GENERATOR
   renderProductCardsHTML(productsList) {
     if (productsList.length === 0) {
       return `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No products found matching criteria.</div>`;
