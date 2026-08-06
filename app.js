@@ -228,18 +228,21 @@ class AppEngine {
       if (prods && prods.length > 0) this.products = prods;
 
       const { data: bans } = await _supabase.from('banners').select('*');
-      if (bans && bans.length > 0) this.banners = bans;
+      if (bans && bans.length > 0) {
+        const layoutConfig = bans.find(b => b.id === 'layout_config');
+        if (layoutConfig && layoutConfig.productIds) {
+          this.homepageSections = typeof layoutConfig.productIds === 'string' 
+            ? JSON.parse(layoutConfig.productIds) 
+            : layoutConfig.productIds;
+        }
+        this.banners = bans.filter(b => b.id !== 'layout_config');
+      }
 
       const { data: recs } = await _supabase.from('recipes').select('*');
       if (recs && recs.length > 0) this.recipes = recs;
 
       const { data: ords } = await _supabase.from('orders').select('*');
       if (ords && ords.length > 0) this.orders = ords;
-
-      const { data: layoutData } = await _supabase.from('settings').select('*').eq('id', 'homepage_layout');
-      if (layoutData && layoutData.length > 0 && layoutData[0].data) {
-        this.homepageSections = layoutData[0].data;
-      }
     } catch(e) {
       console.warn('Supabase cloud fetch fallback to active memory catalog', e);
     }
@@ -1166,13 +1169,21 @@ class AppEngine {
   async saveHomepageLayoutOrder(showToastMsg = true) {
     if (_supabase) {
       try {
-        await _supabase.from('settings').upsert({ id: 'homepage_layout', data: this.homepageSections });
+        await _supabase.from('banners').upsert([{
+          id: 'layout_config',
+          title: 'Homepage Layout Config',
+          subtitle: 'System layout order setting',
+          badge: 'SYSTEM',
+          ctaText: 'Config',
+          overlayImg: '',
+          productIds: JSON.stringify(this.homepageSections)
+        }]);
       } catch(e) {
         console.warn('Supabase layout save error', e);
       }
     }
     if (showToastMsg) {
-      this.showToast('🎉 Homepage layout order published successfully!');
+      this.showToast('🎉 Homepage layout order published to Supabase Cloud!');
     }
   }
 
