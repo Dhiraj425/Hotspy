@@ -171,7 +171,6 @@ class AppEngine {
     window.addEventListener('hashchange', () => this.checkAdminRoute());
     this.checkAdminRoute();
 
-    // Close Profile Dropdown when clicking outside
     document.addEventListener('click', (e) => {
       const wrapper = document.querySelector('.profile-dropdown-wrapper');
       if (wrapper && !wrapper.contains(e.target)) {
@@ -180,7 +179,6 @@ class AppEngine {
     });
   }
 
-  // --- INLINE PROFILE DROPDOWN CARD CONTROLLER (NO POPUP MODAL) ---
   toggleProfileDropdown(e) {
     if (e) e.stopPropagation();
     const card = document.getElementById('profileDropdownCard');
@@ -293,6 +291,16 @@ class AppEngine {
     this.renderCategoryProducts();
     this.updateMobileNavActive('mobNavCat');
     window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  selectCategoryFromPage(catName) {
+    this.selectedCategory = catName;
+    const bread = document.getElementById('catBreadcrumb');
+    const title = document.getElementById('catPageTitle');
+    if (bread) bread.textContent = `Home / Catalog / ${catName}`;
+    if (title) title.textContent = catName === 'All' ? 'All Groceries & Staples' : `${catName} Storefront`;
+
+    this.renderCategoryProducts();
   }
 
   renderCategoryProducts() {
