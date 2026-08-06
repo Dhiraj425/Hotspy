@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   Interactive Banner Slider Engine & Admin Live Preview Banner Builder
+   Backend Integration: Direct Supabase Cloud Backend Sync Engine (NO LOCAL STORAGE)
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -12,7 +12,12 @@ const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.SUPABASE_ANON
   ? window.SUPABASE_ANON_KEY 
   : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_ANON_KEY ? window.ENV.SUPABASE_ANON_KEY : "https://sbqmpnyzocgqdgjkjeta.supabase.co");
 
-// Supermarket Catalog Data
+// Initialize Supabase Client
+const _supabase = (typeof window !== 'undefined' && window.supabase) 
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+  : null;
+
+// Initial Catalog Fallbacks
 const INITIAL_PRODUCTS = [
   {
     id: 'prod_1',
@@ -166,15 +171,15 @@ const INITIAL_ORDERS = [
 
 class AppEngine {
   constructor() {
-    this.products = JSON.parse(localStorage.getItem('hotspy_products')) || INITIAL_PRODUCTS;
-    this.banners = JSON.parse(localStorage.getItem('hotspy_banners')) || INITIAL_BANNERS;
-    this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || INITIAL_RECIPES;
-    this.cart = JSON.parse(localStorage.getItem('hotspy_cart')) || [];
-    this.orders = JSON.parse(localStorage.getItem('hotspy_orders')) || INITIAL_ORDERS;
-    this.userProfiles = JSON.parse(localStorage.getItem('hotspy_user_profiles')) || [
+    this.products = [...INITIAL_PRODUCTS];
+    this.banners = [...INITIAL_BANNERS];
+    this.recipes = [...INITIAL_RECIPES];
+    this.cart = [];
+    this.orders = [...INITIAL_ORDERS];
+    this.userProfiles = [
       { mobile: '9876543210', name: 'Aarav Sharma', password: 'password123', avatar: 'assets/turmeric.jpg', created_at: '2026-08-01' }
     ];
-    this.userAddresses = JSON.parse(localStorage.getItem('hotspy_user_addresses')) || [
+    this.userAddresses = [
       { id: 'addr_1', user_mobile: '9876543210', full_name: 'Aarav Sharma', mobile: '9876543210', house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010', address_type: 'Home', is_default: true }
     ];
 
@@ -191,6 +196,8 @@ class AppEngine {
   }
 
   async init() {
+    await this.syncSupabaseBackendData();
+
     this.updateCartUI();
     this.updateAuthStatusUI();
 
@@ -205,6 +212,25 @@ class AppEngine {
         this.closeProfileDropdown();
       }
     });
+  }
+
+  async syncSupabaseBackendData() {
+    if (!_supabase) return;
+    try {
+      const { data: prods } = await _supabase.from('products').select('*');
+      if (prods && prods.length > 0) this.products = prods;
+
+      const { data: bans } = await _supabase.from('banners').select('*');
+      if (bans && bans.length > 0) this.banners = bans;
+
+      const { data: recs } = await _supabase.from('recipes').select('*');
+      if (recs && recs.length > 0) this.recipes = recs;
+
+      const { data: ords } = await _supabase.from('orders').select('*');
+      if (ords && ords.length > 0) this.orders = ords;
+    } catch(e) {
+      console.warn('Supabase cloud fetch fallback to active memory catalog', e);
+    }
   }
 
   handleRouteHashChange() {
@@ -404,8 +430,8 @@ class AppEngine {
               <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
                 ${b.badge || '🔥 EXCLUSIVE DEAL'}
               </span>
-              <h2 style="font-size:1.35rem; font-weight:800; margin:0.4rem 0 0.2rem; line-height:1.25;">${b.title}</h2>
-              <p style="font-size:0.8rem; opacity:0.9; margin-bottom:0.75rem;">${b.subtitle || 'Click to view banner collection!'}</p>
+              <h2 style="font-size:1.35rem; font-weight:800; margin:0.4rem 0 0.2rem; line-height:1.25; color:white;">${b.title}</h2>
+              <p style="font-size:0.8rem; opacity:0.9; margin-bottom:0.75rem; color:white;">${b.subtitle || 'Click to view banner collection!'}</p>
               
               <button class="btn-primary" onclick="app.openBannerProductsPage('${b.title}', ${JSON.stringify(b.productIds || []).replace(/"/g, '&quot;')})" style="background:var(--primary); color:var(--header-dark); padding:0.45rem 0.85rem; font-size:0.8rem;">
                 ${b.ctaText || 'View Banner Collection'} <i class="fa-solid fa-arrow-right"></i>
@@ -850,7 +876,6 @@ class AppEngine {
   renderAdminPageView() {
     this.hideAllPages();
 
-    // HIDE ALL CUSTOMER VIEW ELEMENTS COMPLETELY
     document.querySelectorAll('.customer-view-element').forEach(el => {
       el.style.display = 'none';
     });
@@ -1033,14 +1058,16 @@ class AppEngine {
     `;
   }
 
-  deleteBannerFromAdmin(bannerId) {
+  async deleteBannerFromAdmin(bannerId) {
     this.banners = this.banners.filter(b => b.id !== bannerId);
-    localStorage.setItem('hotspy_banners', JSON.stringify(this.banners));
+    if (_supabase) {
+      try { await _supabase.from('banners').delete().eq('id', bannerId); } catch(e) {}
+    }
     this.showToast('Deleted Banner slide!');
     this.renderAdminTables();
   }
 
-  addNewProductFromAdmin() {
+  async addNewProductFromAdmin() {
     const name = document.getElementById('adminNewProdName').value.trim();
     const category = document.getElementById('adminNewProdCategory').value;
     const price = parseInt(document.getElementById('adminNewProdPrice').value, 10);
@@ -1072,7 +1099,10 @@ class AppEngine {
     };
 
     this.products.unshift(newProd);
-    localStorage.setItem('hotspy_products', JSON.stringify(this.products));
+
+    if (_supabase) {
+      try { await _supabase.from('products').insert([newProd]); } catch(e) {}
+    }
 
     this.showToast(`🎉 Added product "${name}" to Catalog!`);
     this.renderAdminTables();
@@ -1080,7 +1110,7 @@ class AppEngine {
     else this.openShopPage();
   }
 
-  createNewBannerFromAdmin() {
+  async createNewBannerFromAdmin() {
     const title = document.getElementById('adminBannerTitle').value.trim();
     const subtitle = document.getElementById('adminBannerSubtitle').value.trim();
     const badge = document.getElementById('adminBannerBadge').value.trim() || '🔥 EXCLUSIVE DEAL';
@@ -1106,24 +1136,29 @@ class AppEngine {
     };
 
     this.banners.unshift(newBanner);
-    localStorage.setItem('hotspy_banners', JSON.stringify(this.banners));
+
+    if (_supabase) {
+      try { await _supabase.from('banners').insert([newBanner]); } catch(e) {}
+    }
 
     this.showToast(`🎉 Published Banner Slide "${title}"!`);
     this.renderAdminTables();
     this.showHomePage();
   }
 
-  toggleProductFeatured(productId) {
+  async toggleProductFeatured(productId) {
     const p = this.products.find(item => item.id === productId);
     if (p) {
       p.isFeatured = !p.isFeatured;
-      localStorage.setItem('hotspy_products', JSON.stringify(this.products));
+      if (_supabase) {
+        try { await _supabase.from('products').update({ isFeatured: p.isFeatured }).eq('id', productId); } catch(e) {}
+      }
       this.showToast(`Updated "${p.name}" featured state to: ${p.isFeatured}`);
       this.renderAdminTables();
     }
   }
 
-  createNewComboFromAdmin() {
+  async createNewComboFromAdmin() {
     const title = document.getElementById('adminComboTitle').value.trim();
     const price = parseInt(document.getElementById('adminComboPrice').value, 10);
     const showHp = document.getElementById('adminComboShowHomepage').checked;
@@ -1149,7 +1184,10 @@ class AppEngine {
     };
 
     this.recipes.unshift(newCombo);
-    localStorage.setItem('hotspy_recipes', JSON.stringify(this.recipes));
+
+    if (_supabase) {
+      try { await _supabase.from('recipes').insert([newCombo]); } catch(e) {}
+    }
 
     this.showToast(`🎉 Created Combo "${title}"!`);
     this.renderAdminTables();
@@ -1157,7 +1195,7 @@ class AppEngine {
     else this.openComboPage();
   }
 
-  updateOrderStatusFromAdmin(orderId) {
+  async updateOrderStatusFromAdmin(orderId) {
     const select = document.getElementById(`adminStatusSelect_${orderId}`);
     const remarksInput = document.getElementById(`adminRemarksInput_${orderId}`);
 
@@ -1169,7 +1207,9 @@ class AppEngine {
     if (order) {
       order.status = newStatus;
       order.shipped_remarks = newRemarks;
-      localStorage.setItem('hotspy_orders', JSON.stringify(this.orders));
+      if (_supabase) {
+        try { await _supabase.from('orders').update({ status: newStatus, shipped_remarks: newRemarks }).eq('id', orderId); } catch(e) {}
+      }
       this.showToast(`Updated ${orderId} status to "${newStatus}"!`);
       this.renderAdminTables();
     }
@@ -1284,7 +1324,7 @@ class AppEngine {
       });
     }
 
-    this.saveCart();
+    this.updateCartUI();
     this.showToast(`Added "${prod.name}" to Basket!`);
   }
 
@@ -1297,18 +1337,7 @@ class AppEngine {
       this.cart = this.cart.filter(c => c.id !== productId);
     }
 
-    this.saveCart();
-  }
-
-  saveCart() {
-    localStorage.setItem('hotspy_cart', JSON.stringify(this.cart));
     this.updateCartUI();
-    const activeCatView = document.getElementById('dedicatedCategoryProductsView');
-    if (activeCatView && activeCatView.style.display === 'block') {
-      this.renderCategoryProducts();
-    } else {
-      this.renderHomeProducts();
-    }
   }
 
   updateCartUI() {
@@ -1409,7 +1438,10 @@ class AppEngine {
     this.user = newUser;
 
     sessionStorage.setItem('hotspy_auth_session', JSON.stringify(newUser));
-    localStorage.setItem('hotspy_user_profiles', JSON.stringify(this.userProfiles));
+
+    if (_supabase) {
+      try { await _supabase.from('profiles').insert([newUser]); } catch(e) {}
+    }
 
     this.closeAuthModal();
     this.updateAuthStatusUI();
@@ -1541,7 +1573,7 @@ class AppEngine {
     `).join('');
   }
 
-  checkout() {
+  async checkout() {
     if (this.cart.length === 0) return;
     if (!this.user) {
       this.openAuthModal('login');
@@ -1573,10 +1605,13 @@ class AppEngine {
     };
 
     this.orders.unshift(newOrder);
-    localStorage.setItem('hotspy_orders', JSON.stringify(this.orders));
+
+    if (_supabase) {
+      try { await _supabase.from('orders').insert([newOrder]); } catch(e) {}
+    }
 
     this.cart = [];
-    this.saveCart();
+    this.updateCartUI();
     this.closeCartDrawer();
     this.showToast(`🎉 Order Placed! ID: ${newOrder.id}`);
     this.openOrderTrackingPage(newOrder.id);
@@ -1586,7 +1621,7 @@ class AppEngine {
     const r = this.recipes.find(rec => rec.id === recipeId);
     if (!r) return;
     this.cart.push({ id: r.id, name: r.title, price: r.comboPrice, originalPrice: 669, image: r.image, quantity: 1 });
-    this.saveCart();
+    this.updateCartUI();
     this.showToast(`Added "${r.title}" to Basket!`);
   }
 
