@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   URL Hash Routing Engine: Shop Page, Featured Section, Banner Collections, Admin Combo Creator
+   Full Admin Suite Control Engine: Products, Featured Flags, Banners, Combos, 5-Stage Orders
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -12,7 +12,7 @@ const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.SUPABASE_ANON
   ? window.SUPABASE_ANON_KEY 
   : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_ANON_KEY ? window.ENV.SUPABASE_ANON_KEY : "https://sbqmpnyzocgqdgjkjeta.supabase.co");
 
-// Supermarket Catalog Data with Featured Flags
+// Supermarket Catalog Data
 const INITIAL_PRODUCTS = [
   {
     id: 'prod_1',
@@ -112,6 +112,15 @@ const INITIAL_PRODUCTS = [
   }
 ];
 
+const INITIAL_BANNERS = [
+  {
+    id: 'ban_1',
+    title: 'Organic Golden Spice Harvest',
+    subtitle: 'Click to view exclusive banner-selected organic products!',
+    productIds: ['prod_1', 'prod_2', 'prod_5']
+  }
+];
+
 const INITIAL_RECIPES = [
   {
     id: 'rec_1',
@@ -146,6 +155,7 @@ const INITIAL_ORDERS = [
 class AppEngine {
   constructor() {
     this.products = JSON.parse(localStorage.getItem('hotspy_products')) || INITIAL_PRODUCTS;
+    this.banners = JSON.parse(localStorage.getItem('hotspy_banners')) || INITIAL_BANNERS;
     this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || INITIAL_RECIPES;
     this.cart = JSON.parse(localStorage.getItem('hotspy_cart')) || [];
     this.orders = JSON.parse(localStorage.getItem('hotspy_orders')) || INITIAL_ORDERS;
@@ -181,7 +191,6 @@ class AppEngine {
     });
   }
 
-  // ROUTER CONTROLLER FOR HASH ROUTING
   handleRouteHashChange() {
     const hash = window.location.hash || '#/home';
 
@@ -217,63 +226,32 @@ class AppEngine {
     }
   }
 
-  // NAVIGATION ROUTE TRIGGER METHODS
-  showHomePage() {
-    window.location.hash = '#/home';
-  }
-
-  openShopPage() {
-    window.location.hash = '#/shop';
-  }
-
+  showHomePage() { window.location.hash = '#/home'; }
+  openShopPage() { window.location.hash = '#/shop'; }
   openBannerProductsPage(title, productIds = []) {
     this.currentBannerProductIds = productIds;
     window.location.hash = `#/banner/${encodeURIComponent(title)}`;
   }
-
-  openCategoryPage() {
-    window.location.hash = '#/categories';
-  }
-
-  openCategoryProductsView(catName = 'Spices') {
-    window.location.hash = `#/category/${encodeURIComponent(catName)}`;
-  }
-
+  openCategoryPage() { window.location.hash = '#/categories'; }
+  openCategoryProductsView(catName = 'Spices') { window.location.hash = `#/category/${encodeURIComponent(catName)}`; }
   openOrderTrackingPage(orderId = null) {
-    if (orderId) {
-      window.location.hash = `#/tracking/${encodeURIComponent(orderId)}`;
-    } else {
-      window.location.hash = '#/tracking';
-    }
+    if (orderId) window.location.hash = `#/tracking/${encodeURIComponent(orderId)}`;
+    else window.location.hash = '#/tracking';
   }
-
-  openComboPage() {
-    window.location.hash = '#/combos';
-  }
-
+  openComboPage() { window.location.hash = '#/combos'; }
   openCustomerProfilePage(tab = 'addresses') {
-    if (!this.user) {
-      this.openAuthModal('login');
-      return;
-    }
+    if (!this.user) { this.openAuthModal('login'); return; }
     window.location.hash = '#/profile';
   }
-
-  openOrderInvoicePage(orderId) {
-    window.location.hash = `#/invoice/${encodeURIComponent(orderId)}`;
-  }
+  openOrderInvoicePage(orderId) { window.location.hash = `#/invoice/${encodeURIComponent(orderId)}`; }
 
   toggleProfileDropdown(e) {
     if (e) e.stopPropagation();
     const card = document.getElementById('profileDropdownCard');
     if (!card) return;
 
-    if (card.classList.contains('show')) {
-      this.closeProfileDropdown();
-    } else {
-      this.renderProfileDropdownContent();
-      card.classList.add('show');
-    }
+    if (card.classList.contains('show')) this.closeProfileDropdown();
+    else { this.renderProfileDropdownContent(); card.classList.add('show'); }
   }
 
   closeProfileDropdown() {
@@ -324,7 +302,6 @@ class AppEngine {
     }
   }
 
-  // --- STRICT DEDICATED PAGE SWITCHER ENGINE ---
   hideAllPages() {
     const pages = [
       'homePageContent',
@@ -346,7 +323,7 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. STANDALONE HOMEPAGE RENDER (SHOWS ONLY FEATURED PRODUCTS & HOMEPAGE COMBOS)
+  // 1. STANDALONE HOMEPAGE RENDER
   renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
@@ -354,12 +331,31 @@ class AppEngine {
 
     this.updateMobileNavActive('mobNavHome');
 
-    // Filter featured products only for homepage
+    // Render Banners
+    const bannersContainer = document.getElementById('homeBannersContainer');
+    if (bannersContainer) {
+      bannersContainer.innerHTML = this.banners.map(b => `
+        <div style="background:linear-gradient(135deg, #024731 0%, #064E3B 100%); color:white; padding:1.25rem; border-radius:var(--radius-lg); margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-md);">
+          <div>
+            <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
+              🔥 Exclusive Banner Deal
+            </span>
+            <h2 style="font-size:1.35rem; font-weight:800; margin:0.35rem 0 0.2rem;">${b.title}</h2>
+            <p style="font-size:0.8rem; opacity:0.9;">${b.subtitle || 'Click to view banner collection!'}</p>
+          </div>
+          <button class="btn-primary" onclick="app.openBannerProductsPage('${b.title}', ${JSON.stringify(b.productIds || []).replace(/"/g, '&quot;')})" style="background:var(--primary); color:var(--header-dark); padding:0.5rem 1rem; font-size:0.85rem;">
+            View Banner Collection <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // Render Featured Products
     const featuredProds = this.products.filter(p => p.isFeatured);
     const grid = document.getElementById('homeProductGrid');
     if (grid) grid.innerHTML = this.renderProductCardsHTML(featuredProds);
 
-    // Render homepage combos if enabled
+    // Render Homepage Combos
     const hpCombos = this.recipes.filter(r => r.showOnHomepage);
     const combosSec = document.getElementById('homeCombosSection');
     const combosGrid = document.getElementById('homeCombosGrid');
@@ -367,7 +363,7 @@ class AppEngine {
       combosSec.style.display = 'block';
       combosGrid.innerHTML = hpCombos.map(r => `
         <div class="bb-product-card">
-          <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">HOMEPAGE FEATURED</span>
+          <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">FEATURED COMBO</span>
           <div class="bb-card-img-wrap">
             <img src="${r.image}">
           </div>
@@ -386,7 +382,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 2. STANDALONE SHOP ALL PRODUCTS PAGE RENDER (ALL STORE ITEMS)
+  // 2. SHOP ALL PRODUCTS PAGE
   renderShopPageView() {
     this.hideAllPages();
     const page = document.getElementById('shopPageView');
@@ -399,7 +395,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 3. STANDALONE BANNER COLLECTION PRODUCTS PAGE RENDER
+  // 3. BANNER COLLECTION PRODUCTS PAGE
   renderBannerProductsPageView(title) {
     this.hideAllPages();
     const page = document.getElementById('bannerProductsPageView');
@@ -419,7 +415,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 4. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE RENDER
+  // 4. CATEGORIES DIRECTORY
   renderCategoryPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
@@ -429,7 +425,6 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 4B. SPECIFIC CATEGORY PRODUCTS VIEW RENDER
   renderCategoryProductsView(catName = 'Spices') {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryProductsView');
@@ -446,7 +441,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 5. MULTI-ORDER TRACKING & 5-STAGE DETAILS RENDER
+  // 5. LIVE ORDER TRACKING
   renderOrderTrackingPageView(specificOrderId = null) {
     if (!this.user) {
       this.openAuthModal('login');
@@ -477,7 +472,6 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // RENDER ALL ORDERS CARDS LIST (FOR MULTIPLE & PAST ORDERS)
   renderAllOrderCards() {
     const grid = document.getElementById('allOrdersListCardsGrid');
     if (!grid || !this.user) return;
@@ -503,11 +497,9 @@ class AppEngine {
       let badgeBg = 'var(--primary-light)';
       let badgeColor = 'var(--header-bg)';
       if (o.status === 'Delivered') {
-        badgeBg = '#D1FAE5';
-        badgeColor = '#065F46';
+        badgeBg = '#D1FAE5'; badgeColor = '#065F46';
       } else if (o.status === 'Out for Delivery') {
-        badgeBg = '#FEF3C7';
-        badgeColor = '#92400E';
+        badgeBg = '#FEF3C7'; badgeColor = '#92400E';
       }
 
       return `
@@ -546,16 +538,12 @@ class AppEngine {
     }).join('');
   }
 
-  // RENDER SPECIFIC ORDER 5-STAGE TRACKING DETAILS
   renderSpecific5StageOrderTracking(orderId) {
     const container = document.getElementById('specificOrderTrackingContainer');
     if (!container) return;
 
     const order = this.orders.find(o => o.id === orderId);
-    if (!order) {
-      container.innerHTML = `<div>Order not found.</div>`;
-      return;
-    }
+    if (!order) { container.innerHTML = `<div>Order not found.</div>`; return; }
 
     let items = [];
     try { items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items; } catch(e) {}
@@ -575,7 +563,6 @@ class AppEngine {
         </button>
       </div>
 
-      <!-- SUCCESS CELEBRATION BANNER IF DELIVERED -->
       ${isDelivered ? `
         <div style="background:#D1FAE5; border:2px solid #10B981; color:#065F46; padding:1.5rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; text-align:center; box-shadow:var(--shadow-md);">
           <div style="width:50px; height:50px; border-radius:50%; background:#10B981; color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 0.5rem;">
@@ -588,7 +575,6 @@ class AppEngine {
           </button>
         </div>
       ` : `
-        <!-- ETA Header Banner -->
         <div style="background:var(--header-bg); color:white; padding:1.5rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; text-align:center; box-shadow:var(--shadow-lg);">
           <span style="background:var(--primary); color:var(--header-dark); font-size:0.72rem; font-weight:900; padding:0.2rem 0.65rem; border-radius:var(--radius-full); text-transform:uppercase;">
             Live 5-Stage Status • ${order.id}
@@ -598,7 +584,6 @@ class AppEngine {
         </div>
       `}
 
-      <!-- 5-STAGE PROGRESS TIMELINE -->
       <div style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.5rem; box-shadow:var(--shadow-sm);">
         <h3 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:1.25rem;">5-Stage Live Delivery Progress</h3>
 
@@ -657,7 +642,6 @@ class AppEngine {
         </div>
       </div>
 
-      <!-- ORDERED ITEMS SUMMARY -->
       <div style="display:grid; grid-template-columns:1fr; gap:1rem;">
         <div style="background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
           <h3 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.65rem;">Ordered Products (${(items || []).length})</h3>
@@ -676,7 +660,7 @@ class AppEngine {
     `;
   }
 
-  // 6. STANDALONE DEDICATED RECIPE COMBOS PAGE RENDER
+  // 6. RECIPE COMBOS PAGE
   renderComboPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCombosPageView');
@@ -704,7 +688,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 7. STANDALONE DEDICATED CUSTOMER PROFILE PAGE RENDER
+  // 7. CUSTOMER PROFILE PAGE
   renderCustomerProfilePageView(tab = 'addresses') {
     this.hideAllPages();
     const page = document.getElementById('customerProfilePageView');
@@ -722,7 +706,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 8. STANDALONE DEDICATED ORDER TAX INVOICE PAGE RENDER
+  // 8. TAX INVOICE PAGE
   renderOrderInvoicePageView(orderId) {
     const order = this.orders.find(o => o.id === orderId);
     if (!order) return;
@@ -782,7 +766,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 9. SECURE ADMIN PANEL WITH FEATURED TOGGLE & COMBO CREATOR
+  // 9. SECURE ADMIN PANEL WITH ALL CONTROLS
   checkAdminRoute() {
     if (window.location.hash === '#admin') {
       this.openAdminAuthModal();
@@ -809,7 +793,7 @@ class AppEngine {
     if (passkey === 'admin123') {
       this.closeAdminAuthModal();
       this.openAdminMode();
-      this.showToast('Unlocked Admin Management Suite!');
+      this.showToast('Unlocked Full Admin Management Suite!');
     } else {
       this.showToast('Invalid Admin Security Key!', 'error');
     }
@@ -830,8 +814,8 @@ class AppEngine {
   }
 
   switchAdminTab(tab) {
-    ['Orders', 'Products', 'Combos'].forEach(t => {
-      const sec = document.getElementById(`adminSection${t}`);
+    ['Orders', 'Products', 'Addproduct', 'Banners', 'Combos'].forEach(t => {
+      const sec = document.getElementById(`adminSection${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
     });
     this.renderAdminTables();
@@ -886,6 +870,15 @@ class AppEngine {
       `).join('');
     }
 
+    const bannerPicker = document.getElementById('adminBannerProductsPicker');
+    if (bannerPicker) {
+      bannerPicker.innerHTML = this.products.map(p => `
+        <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; cursor:pointer;">
+          <input type="checkbox" class="banner-prod-checkbox" value="${p.id}"> ${p.name.slice(0, 22)}...
+        </label>
+      `).join('');
+    }
+
     const comboPicker = document.getElementById('adminComboProductsPicker');
     if (comboPicker) {
       comboPicker.innerHTML = this.products.map(p => `
@@ -894,6 +887,72 @@ class AppEngine {
         </label>
       `).join('');
     }
+  }
+
+  addNewProductFromAdmin() {
+    const name = document.getElementById('adminNewProdName').value.trim();
+    const category = document.getElementById('adminNewProdCategory').value;
+    const price = parseInt(document.getElementById('adminNewProdPrice').value, 10);
+    const mrp = parseInt(document.getElementById('adminNewProdMrp').value, 10);
+    const badge = document.getElementById('adminNewProdBadge').value.trim() || 'NEW';
+    const image = document.getElementById('adminNewProdImg').value.trim();
+    const isFeatured = document.getElementById('adminNewProdFeatured').checked;
+
+    if (!name || !price || !image) {
+      this.showToast('Please fill all required product fields!', 'error');
+      return;
+    }
+
+    const newProd = {
+      id: `prod_${Date.now()}`,
+      name: name,
+      category: category,
+      brand: 'HOTSPY ORGANICS',
+      price: price,
+      originalPrice: mrp || Math.round(price * 1.25),
+      rating: 4.9,
+      reviews: 12,
+      image: image,
+      badge: badge,
+      discountPct: Math.round(((mrp - price) / mrp) * 100) || 20,
+      origin: 'Lucknow Co-op',
+      batchNo: 'HS-LKO-2026',
+      isFeatured: isFeatured
+    };
+
+    this.products.unshift(newProd);
+    localStorage.setItem('hotspy_products', JSON.stringify(this.products));
+
+    this.showToast(`🎉 Added product "${name}" to Catalog!`);
+    this.renderAdminTables();
+    if (isFeatured) this.showHomePage();
+    else this.openShopPage();
+  }
+
+  createNewBannerFromAdmin() {
+    const title = document.getElementById('adminBannerTitle').value.trim();
+    const subtitle = document.getElementById('adminBannerSubtitle').value.trim();
+    const checkboxes = document.querySelectorAll('.banner-prod-checkbox:checked');
+    const selectedIds = Array.from(checkboxes).map(c => c.value);
+
+    if (!title || selectedIds.length === 0) {
+      this.showToast('Please enter banner title and pick at least 1 product!', 'error');
+      return;
+    }
+
+    const newBanner = {
+      id: `ban_${Date.now()}`,
+      title: title,
+      subtitle: subtitle,
+      productIds: selectedIds
+    };
+
+    this.banners.unshift(newBanner);
+    localStorage.setItem('hotspy_banners', JSON.stringify(this.banners));
+
+    this.showToast(`🎉 Created Banner "${title}"!`);
+    this.renderAdminTables();
+    this.showHomePage();
   }
 
   toggleProductFeatured(productId) {
@@ -936,11 +995,8 @@ class AppEngine {
 
     this.showToast(`🎉 Created Combo "${title}"!`);
     this.renderAdminTables();
-    if (showHp) {
-      this.showHomePage();
-    } else {
-      this.openComboPage();
-    }
+    if (showHp) this.showHomePage();
+    else this.openComboPage();
   }
 
   updateOrderStatusFromAdmin(orderId) {
@@ -1039,18 +1095,12 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(filtered);
   }
 
-  sortCategoryProducts() {
-    this.renderCategoryProducts();
-  }
-
+  sortCategoryProducts() { this.renderCategoryProducts(); }
   filterCategoryDiscount(minDiscount) {
     this.minDiscountFilter = minDiscount === 'all' ? 0 : minDiscount;
     this.renderCategoryProducts();
   }
-
-  filterCategory(cat) {
-    this.openCategoryProductsView(cat);
-  }
+  filterCategory(cat) { this.openCategoryProductsView(cat); }
 
   handleSearchInput(e) {
     this.searchQuery = e.target.value;

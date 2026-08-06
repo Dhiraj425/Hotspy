@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=18.0">
+  <link rel="stylesheet" href="styles.css?v=19.0">
 </head>
 <body>
 
@@ -128,19 +128,8 @@
     <!-- 1. STANDALONE HOMEPAGE VIEW (FEATURED PRODUCTS + PROMOTIONAL BANNERS + HOMEPAGE COMBOS) -->
     <main id="homePageContent" class="container">
       
-      <!-- Homepage Interactive Banner Section -->
-      <div style="background:linear-gradient(135deg, #024731 0%, #064E3B 100%); color:white; padding:1.25rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-md);">
-        <div>
-          <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
-            🔥 Exclusive Banner Deal
-          </span>
-          <h2 style="font-size:1.35rem; font-weight:800; margin:0.35rem 0 0.2rem;">Organic Golden Spice Harvest</h2>
-          <p style="font-size:0.8rem; opacity:0.9;">Click to view exclusive banner-selected organic products!</p>
-        </div>
-        <button class="btn-primary" onclick="app.openBannerProductsPage('Organic Golden Spice Harvest', ['prod_1', 'prod_2', 'prod_5'])" style="background:var(--primary); color:var(--header-dark); padding:0.5rem 1rem; font-size:0.85rem;">
-          View Banner Collection <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </div>
+      <!-- Homepage Dynamic Banners Container -->
+      <div id="homeBannersContainer" style="margin-bottom:1.5rem;"></div>
 
       <!-- Featured Products Header -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -152,11 +141,9 @@
       </div>
 
       <!-- Featured Products Grid -->
-      <div class="product-grid" id="homeProductGrid" style="margin-bottom:1.5rem;">
-        <!-- Rendered dynamically by app.js -->
-      </div>
+      <div class="product-grid" id="homeProductGrid" style="margin-bottom:1.5rem;"></div>
 
-      <!-- Homepage Combos Section (Only show combos flagged for homepage) -->
+      <!-- Homepage Combos Section -->
       <div id="homeCombosSection" style="display:none; margin-bottom:1.5rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
           <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">🔥 Featured Recipe Combos</h2>
@@ -360,19 +347,21 @@
 
   </div>
 
-  <!-- STANDALONE SECURE ADMIN PANEL VIEW -->
+  <!-- COMPLETE ADMIN MANAGEMENT SUITE (100% FULL CONTROL OVER EVERYTHING) -->
   <div id="adminWrapper" style="display:none; padding:1.25rem 1rem;" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:2px solid var(--header-bg);">
       <div>
-        <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">🔒 Secure Admin Suite</h1>
+        <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">🔒 Full Supermarket Admin Suite</h1>
       </div>
-      <button class="btn-primary" onclick="app.closeAdminMode()" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-store"></i> Storefront</button>
+      <button class="btn-primary" onclick="app.closeAdminMode()" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-store"></i> View Live Storefront</button>
     </div>
 
     <div style="display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap;">
-      <button class="btn-secondary active" id="adminTabOrdersBtn" onclick="app.switchAdminTab('orders')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Orders (5-Stage Status)</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Products & Featured Toggle</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('combos')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Create Combo Products</button>
+      <button class="btn-secondary active" id="adminTabOrdersBtn" onclick="app.switchAdminTab('orders')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">1. Manage Orders & 5-Stage Status</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">2. Catalog & Homepage Featured Toggle</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('addproduct')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">3. Add New Product</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('banners')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">4. Create Homepage Banners</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('combos')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">5. Create Combo Products</button>
     </div>
 
     <!-- Admin Section 1: Orders -->
@@ -409,8 +398,82 @@
       </table>
     </div>
 
-    <!-- Admin Section 3: Create Combo Products with Homepage Toggle -->
-    <div id="adminSectionCombos" style="display:none; background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+    <!-- Admin Section 3: Add New Product Form -->
+    <div id="adminSectionAddproduct" style="display:none; background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Add New Product to Store Catalog</h3>
+      <form onsubmit="event.preventDefault(); app.addNewProductFromAdmin();">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Product Name</label>
+            <input type="text" id="adminNewProdName" placeholder="e.g. Cold-Pressed Virgin Coconut Oil" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Category</label>
+            <select id="adminNewProdCategory" style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+              <option value="Spices">Spices</option>
+              <option value="Teas">Teas</option>
+              <option value="Oils & Grains">Oils & Grains</option>
+              <option value="Organic">Organic</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Price (₹)</label>
+            <input type="number" id="adminNewProdPrice" placeholder="299" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">MRP Original Price (₹)</label>
+            <input type="number" id="adminNewProdMrp" placeholder="399" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Discount Badge Text</label>
+            <input type="text" id="adminNewProdBadge" placeholder="25% की छूट" style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Product Image URL</label>
+          <input type="url" id="adminNewProdImg" placeholder="https://images.unsplash.com/photo-..." required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.82rem; font-weight:700; color:var(--header-bg); cursor:pointer;">
+            <input type="checkbox" id="adminNewProdFeatured" checked> ⭐ Show as Featured Product on Homepage
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Product to Catalog</button>
+      </form>
+    </div>
+
+    <!-- Admin Section 4: Create Homepage Promotional Banner -->
+    <div id="adminSectionBanners" style="display:none; background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Create Homepage Promotional Banner & Assign Products</h3>
+      <form onsubmit="event.preventDefault(); app.createNewBannerFromAdmin();">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Banner Title</label>
+            <input type="text" id="adminBannerTitle" placeholder="e.g. Himalayan Tea Harvest Festival" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Tagline / Subtitle</label>
+            <input type="text" id="adminBannerSubtitle" placeholder="e.g. Up to 40% OFF on all Himalayan Herbal Blends" style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Select Products for this Banner Collection</label>
+          <div id="adminBannerProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0.5rem; max-height:160px; overflow-y:auto; border:1px solid var(--border-light); padding:0.5rem; border-radius:4px;"></div>
+        </div>
+
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Create Homepage Banner</button>
+      </form>
+    </div>
+
+    <!-- Admin Section 5: Create Combo Products -->
+    <div id="adminSectionCombos" style="display:none; background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
       <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Create Custom Combo Product</h3>
       <form onsubmit="event.preventDefault(); app.createNewComboFromAdmin();">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
@@ -440,7 +503,7 @@
     </div>
   </div>
 
-  <!-- STICKY MOBILE BOTTOM NAVIGATION BAR (REPLACED ORGANIC WITH SHOP PAGE) -->
+  <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
   <nav class="mobile-bottom-nav">
     <div class="mobile-nav-item active" id="mobNavHome" onclick="app.showHomePage()">
       <i class="fa-solid fa-house"></i>
@@ -583,6 +646,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=18.0"></script>
+  <script src="app.js?v=19.0"></script>
 </body>
 </html>
