@@ -1,6 +1,6 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
-   Supabase Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
+   Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -11,7 +11,7 @@ const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.SUPABASE_ANON
   ? window.SUPABASE_ANON_KEY 
   : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_ANON_KEY ? window.ENV.SUPABASE_ANON_KEY : "https://sbqmpnyzocgqdgjkjeta.supabase.co");
 
-// Default Supermarket Catalog Data
+// Supermarket Catalog Data
 const INITIAL_PRODUCTS = [
   {
     id: 'prod_1',
@@ -23,11 +23,10 @@ const INITIAL_PRODUCTS = [
     rating: 4.8,
     reviews: 342,
     image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
-    badge: '22% OFF',
+    badge: '20% की छूट',
     origin: 'Lucknow Farm',
     batchNo: 'HS-LKO-2026',
-    inStock: true,
-    desc: 'High curcumin (7.5%+) organic Lakadong turmeric powder. Cold-processed to lock in essential oils.'
+    inStock: true
   },
   {
     id: 'prod_2',
@@ -39,11 +38,10 @@ const INITIAL_PRODUCTS = [
     rating: 4.9,
     reviews: 215,
     image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60',
-    badge: '22% OFF',
+    badge: '22% की छूट',
     origin: 'Kerala Highlands',
     batchNo: 'HS-KRL-2026',
-    inStock: true,
-    desc: 'Bold TGSEB grade sun-dried black peppercorns with intense aroma and sharp heat.'
+    inStock: true
   },
   {
     id: 'prod_3',
@@ -55,11 +53,10 @@ const INITIAL_PRODUCTS = [
     rating: 4.7,
     reviews: 189,
     image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60',
-    badge: '20% OFF',
+    badge: '20% की छूट',
     origin: 'Himalayan Foothills',
     batchNo: 'HS-HIM-2026',
-    inStock: true,
-    desc: '100% Whole leaf loose green tea packed with antioxidants and delicate floral notes.'
+    inStock: true
   },
   {
     id: 'prod_4',
@@ -71,11 +68,10 @@ const INITIAL_PRODUCTS = [
     rating: 4.9,
     reviews: 410,
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500&auto=format&fit=crop&q=60',
-    badge: '23% OFF',
+    badge: '45% की छूट',
     origin: 'Lucknow Co-op',
     batchNo: 'HS-OIL-2026',
-    inStock: true,
-    desc: 'Traditional wood-pressed pungent mustard oil. 100% natural, unrefined, zero chemicals.'
+    inStock: true
   },
   {
     id: 'prod_5',
@@ -87,40 +83,37 @@ const INITIAL_PRODUCTS = [
     rating: 4.9,
     reviews: 156,
     image: 'https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=500&auto=format&fit=crop&q=60',
-    badge: '23% OFF',
+    badge: '23% की छूट',
     origin: 'Idukki Kerala',
     batchNo: 'HS-CARD-2026',
-    inStock: true,
-    desc: 'Extra large 8mm+ pods with intense aromatic oil content. Handpicked from forest farms.'
+    inStock: true
   },
   {
     id: 'prod_6',
     name: 'Roasted Organic Flax Seeds & Chia Munch',
-    category: 'Snacks',
+    category: 'Organic',
     brand: 'HOTSPY BITES',
     price: 149,
     originalPrice: 199,
     rating: 4.6,
     reviews: 98,
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60',
-    badge: '25% OFF',
+    badge: '25% की छूट',
     origin: 'Lucknow Belt',
     batchNo: 'HS-SNK-2026',
-    inStock: true,
-    desc: 'Crunchy lightly salted superfood mix packed with Omega-3 and dietary fiber.'
+    inStock: true
   }
 ];
 
 const INITIAL_RECIPES = [
   {
     id: 'rec_1',
-    title: '🌿 Golden Immunity Boost Pack',
-    tag: 'Best Seller Combo',
+    title: '🌿 Golden Immunity Boost Combo',
+    tag: 'Best Seller',
     image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
-    description: 'Lakadong Turmeric Powder (250g) + Malabar Black Pepper Whole (100g) for maximum curcumin absorption!',
+    description: 'Lakadong Turmeric Powder (250g) + Malabar Black Pepper Whole (100g)',
     productIds: ['prod_1', 'prod_2'],
-    comboPrice: 499,
-    displayLocation: 'dedicated_page'
+    comboPrice: 499
   }
 ];
 
@@ -135,7 +128,6 @@ const BATCH_DATABASE = {
   }
 };
 
-// Main App Engine Class
 class AppEngine {
   constructor() {
     this.products = JSON.parse(localStorage.getItem('hotspy_products')) || INITIAL_PRODUCTS;
@@ -155,7 +147,6 @@ class AppEngine {
     this.selectedCategory = 'All';
     this.searchQuery = '';
 
-    // Initialize Supabase Client
     try {
       this.supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
     } catch(e) {
@@ -168,18 +159,11 @@ class AppEngine {
   async init() {
     this.renderProducts();
     this.updateCartUI();
-    this.updateWishlistCount();
     this.updateAuthStatusUI();
     this.renderDedicatedCombos();
-    
-    // Attempt Supabase cloud fetches
-    await this.fetchProductsFromSupabase();
-    await this.fetchUserProfilesFromSupabase();
-    await this.fetchUserAddressesFromSupabase();
-    await this.fetchOrdersFromSupabase();
   }
 
-  // --- CATALOG & SEARCH RENDERER ---
+  // RENDER PRODUCTS (EXACT MATCH TO BIGBASKET SCREENSHOT)
   renderProducts() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -190,57 +174,48 @@ class AppEngine {
     }
     if (this.searchQuery) {
       const q = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || (p.brand && p.brand.toLowerCase().includes(q)));
-    }
-
-    if (filtered.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted); font-weight:700;">No products found matching your search. Try "Turmeric" or "Pepper"!</div>`;
-      return;
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
     }
 
     grid.innerHTML = filtered.map(p => {
-      const isWish = this.wishlist.includes(p.id);
       const cartItem = this.cart.find(c => c.id === p.id);
       const qtyInCart = cartItem ? cartItem.quantity : 0;
 
       return `
-        <div class="product-card">
-          <span class="discount-badge">${p.badge}</span>
-          <button class="wishlist-heart-btn ${isWish ? 'active' : ''}" onclick="app.toggleWishlist('${p.id}')">
-            <i class="fa-${isWish ? 'solid' : 'regular'} fa-heart"></i>
-          </button>
-
-          <div class="card-img-wrap" onclick="app.openQuickView('${p.id}')">
-            <img src="${p.image}" alt="${p.name}" loading="lazy">
+        <div class="bb-product-card">
+          <span class="bb-discount-pill">${p.badge}</span>
+          
+          <div class="bb-card-img-wrap">
+            <img src="${p.image}" alt="${p.name}">
+            
+            ${qtyInCart > 0 ? '' : `
+              <button class="bb-square-add-btn" onclick="app.addToCart('${p.id}')" title="Add to Basket">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            `}
           </div>
 
-          <div class="card-brand">${p.brand || 'HOTSPY'}</div>
-          <h3 class="card-title" onclick="app.openQuickView('${p.id}')">${p.name}</h3>
+          <div class="bb-card-brand">${p.brand || 'HOTSPY'}</div>
+          <h3 class="bb-card-title">${p.name}</h3>
 
-          <select class="pack-size-selector">
+          <select class="bb-pack-size-select">
             <option value="250g">250 g - ₹${p.price}</option>
             <option value="500g">500 g - ₹${Math.round(p.price * 1.85)}</option>
             <option value="1kg">1 kg - ₹${Math.round(p.price * 3.5)}</option>
           </select>
 
-          <div class="card-price-row">
-            <span class="current-price">₹${p.price}</span>
-            <span class="mrp-price">₹${p.originalPrice}</span>
+          <div class="bb-price-row">
+            <span class="bb-sale-price">₹${p.price}</span>
+            <span class="bb-mrp-price">₹${p.originalPrice}</span>
           </div>
 
-          <div class="card-action-btn-wrap">
-            ${qtyInCart > 0 ? `
-              <div class="quantity-stepper">
-                <button class="stepper-btn" onclick="app.updateCartQty('${p.id}', -1)">-</button>
-                <span class="stepper-val">${qtyInCart}</span>
-                <button class="stepper-btn" onclick="app.updateCartQty('${p.id}', 1)">+</button>
-              </div>
-            ` : `
-              <button class="add-btn" onclick="app.addToCart('${p.id}')">
-                <i class="fa-solid fa-cart-plus"></i> ADD
-              </button>
-            `}
-          </div>
+          ${qtyInCart > 0 ? `
+            <div class="bb-stepper-control">
+              <button class="bb-stepper-btn" onclick="app.updateCartQty('${p.id}', -1)">-</button>
+              <span class="bb-stepper-val">${qtyInCart}</span>
+              <button class="bb-stepper-btn" onclick="app.updateCartQty('${p.id}', 1)">+</button>
+            </div>
+          ` : ''}
         </div>
       `;
     }).join('');
@@ -248,10 +223,11 @@ class AppEngine {
 
   filterCategory(cat) {
     this.selectedCategory = cat;
-    document.querySelectorAll('.category-quick-card').forEach(card => {
+    document.querySelectorAll('.bb-category-circle-card').forEach(card => {
       card.classList.toggle('active', card.textContent.trim().includes(cat));
     });
     this.renderProducts();
+    this.showHomePage();
   }
 
   handleSearchInput(e) {
@@ -259,12 +235,6 @@ class AppEngine {
     this.renderProducts();
   }
 
-  executeSearch() {
-    this.renderProducts();
-    window.location.href = '#store';
-  }
-
-  // --- CART & STEPPER CONTROLLER ---
   addToCart(productId, quantity = 1) {
     const prod = this.products.find(p => p.id === productId);
     if (!prod) return;
@@ -284,7 +254,7 @@ class AppEngine {
     }
 
     this.saveCart();
-    this.showToast(`Added "${prod.name}" to your basket!`);
+    this.showToast(`Added "${prod.name}" to Basket!`);
   }
 
   updateCartQty(productId, delta) {
@@ -306,53 +276,42 @@ class AppEngine {
   }
 
   updateCartUI() {
-    const badge = document.getElementById('cartBadge');
     const totalItems = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-    if (badge) badge.textContent = totalItems;
+    
+    const mobileBadge = document.getElementById('mobileCartBadge');
+    if (mobileBadge) mobileBadge.textContent = totalItems;
 
     const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const subtotalEl = document.getElementById('cartSubtotal');
     const grandTotalEl = document.getElementById('cartGrandTotal');
-    if (subtotalEl) subtotalEl.textContent = `₹${subtotal}`;
     if (grandTotalEl) grandTotalEl.textContent = `₹${subtotal}`;
 
-    // Free Shipping Progress Bar
     const bar = document.getElementById('freeShippingBar');
     if (bar) {
       const target = 999;
       const remaining = Math.max(0, target - subtotal);
-      const pct = Math.min(100, Math.round((subtotal / target) * 100));
-
-      bar.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span>${remaining > 0 ? `Add <strong>₹${remaining}</strong> more for <strong>FREE Express Delivery</strong>` : `🎉 <strong>Congratulations! FREE Express Delivery Unlocked!</strong>`}</span>
-          <span style="font-weight:800;">${pct}%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" style="width: ${pct}%;"></div>
-        </div>
-      `;
+      bar.innerHTML = remaining > 0 
+        ? `Add <strong>₹${remaining}</strong> more for <strong>FREE Express Delivery</strong>`
+        : `🎉 <strong>FREE Express Delivery Unlocked!</strong>`;
     }
 
-    // Render Drawer Items
     const itemsBody = document.getElementById('cartDrawerItems');
     if (itemsBody) {
       if (this.cart.length === 0) {
-        itemsBody.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-muted); font-weight:700;">Your basket is empty. Browse supermarket staples to add items!</div>`;
+        itemsBody.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-muted); font-weight:700;">Your basket is empty. Browse groceries to add items!</div>`;
       } else {
         itemsBody.innerHTML = this.cart.map(item => `
-          <div class="cart-item-card">
-            <img src="${item.image}">
-            <div class="cart-item-info">
-              <div class="cart-item-title">${item.name}</div>
-              <div class="cart-item-price">₹${item.price}</div>
-              <div style="margin-top:0.4rem; display:flex; align-items:center; gap:0.5rem;">
-                <div class="quantity-stepper" style="padding:0.15rem 0.4rem;">
-                  <button class="stepper-btn" onclick="app.updateCartQty('${item.id}', -1)" style="width:22px; height:22px;">-</button>
-                  <span class="stepper-val" style="font-size:0.85rem; padding:0 0.4rem;">${item.quantity}</span>
-                  <button class="stepper-btn" onclick="app.updateCartQty('${item.id}', 1)" style="width:22px; height:22px;">+</button>
+          <div style="display:flex; gap:0.75rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-subtle);">
+            <img src="${item.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+            <div style="flex:1;">
+              <div style="font-size:0.85rem; font-weight:700; color:var(--text-main);">${item.name}</div>
+              <div style="font-size:0.88rem; font-weight:800; color:var(--header-bg);">₹${item.price}</div>
+              <div style="margin-top:0.35rem; display:flex; align-items:center; gap:0.5rem;">
+                <div class="bb-stepper-control" style="padding:0.1rem 0.35rem;">
+                  <button class="bb-stepper-btn" onclick="app.updateCartQty('${item.id}', -1)" style="width:20px; height:20px;">-</button>
+                  <span class="bb-stepper-val" style="font-size:0.8rem; padding:0 0.35rem;">${item.quantity}</span>
+                  <button class="bb-stepper-btn" onclick="app.updateCartQty('${item.id}', 1)" style="width:20px; height:20px;">+</button>
                 </div>
-                <button onclick="app.updateCartQty('${item.id}', -${item.quantity})" style="color:#EF4444; font-size:0.78rem; font-weight:700; cursor:pointer;">Remove</button>
+                <button onclick="app.updateCartQty('${item.id}', -${item.quantity})" style="color:#EF4444; font-size:0.75rem; font-weight:700;">Remove</button>
               </div>
             </div>
           </div>
@@ -361,26 +320,7 @@ class AppEngine {
     }
   }
 
-  // --- WISHLIST ---
-  toggleWishlist(productId) {
-    if (this.wishlist.includes(productId)) {
-      this.wishlist = this.wishlist.filter(id => id !== productId);
-      this.showToast('Removed item from your wishlist');
-    } else {
-      this.wishlist.push(productId);
-      this.showToast('Added item to your wishlist ❤️');
-    }
-    localStorage.setItem('hotspy_wishlist', JSON.stringify(this.wishlist));
-    this.updateWishlistCount();
-    this.renderProducts();
-  }
-
-  updateWishlistCount() {
-    const badge = document.getElementById('wishlistBadge');
-    if (badge) badge.textContent = this.wishlist.length;
-  }
-
-  // --- AUTH & USER PROFILE ---
+  // AUTH & PROFILE
   openAuthModal(type = 'login') {
     const modal = document.getElementById('authModal');
     if (modal) {
@@ -418,10 +358,7 @@ class AppEngine {
     const mobile = document.getElementById('signupMobile').value.trim();
     const password = document.getElementById('signupPassword').value;
 
-    if (!name || !mobile || !password) {
-      this.showToast('Please fill all required fields!', 'error');
-      return;
-    }
+    if (!name || !mobile || !password) return;
 
     const newUser = { mobile, name, password, avatar: 'assets/turmeric.jpg', created_at: new Date().toISOString() };
     this.userProfiles.push(newUser);
@@ -434,12 +371,6 @@ class AppEngine {
     this.updateAuthStatusUI();
     this.showToast(`Welcome ${name}! Your account is created.`);
     this.openCustomerProfilePage('addresses');
-
-    if (this.supabase) {
-      try {
-        await this.supabase.from('customer_profiles').upsert({ mobile, name, password, avatar: 'assets/turmeric.jpg' });
-      } catch(e) {}
-    }
   }
 
   async handleLogin() {
@@ -448,7 +379,7 @@ class AppEngine {
 
     let user = this.userProfiles.find(u => u.mobile === mobile);
     if (!user || user.password !== password) {
-      this.showToast('Invalid Mobile Number or Password. Please try again.', 'error');
+      this.showToast('Invalid Mobile Number or Password.', 'error');
       return;
     }
 
@@ -461,20 +392,6 @@ class AppEngine {
     this.openCustomerProfilePage('addresses');
   }
 
-  quickDemoLogin(role) {
-    if (role === 'admin') {
-      this.toggleAdminMode();
-    } else {
-      const demoUser = { mobile: '9876543210', name: 'Aarav Sharma', password: 'password123', avatar: 'assets/turmeric.jpg' };
-      this.user = demoUser;
-      sessionStorage.setItem('hotspy_auth_session', JSON.stringify(demoUser));
-      this.closeAuthModal();
-      this.updateAuthStatusUI();
-      this.showToast('Logged in as Demo Customer (Aarav Sharma)!');
-      this.openCustomerProfilePage('addresses');
-    }
-  }
-
   openProfileMenuModal() {
     const modal = document.getElementById('profileMenuModal');
     const headerBox = document.getElementById('profileMenuHeaderBox');
@@ -483,27 +400,23 @@ class AppEngine {
     if (headerBox) {
       if (this.user) {
         headerBox.innerHTML = `
-          <img src="${this.user.avatar || 'assets/turmeric.jpg'}" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--primary-mint); flex-shrink:0;">
+          <img src="${this.user.avatar || 'assets/turmeric.jpg'}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); flex-shrink:0;">
           <div style="flex:1;">
-            <div style="font-weight:800; font-size:1.05rem; cursor:pointer; color:white;" onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();">
-              ${this.user.name} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem; color:var(--primary-mint);"></i>
+            <div style="font-weight:800; font-size:1rem; color:white; cursor:pointer;" onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();">
+              ${this.user.name} <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
             </div>
-            <div style="font-size:0.78rem; opacity:0.85;">📞 +91 ${this.user.mobile}</div>
-            <button onclick="app.openCustomerProfilePage('addresses'); app.closeProfileMenuModal();" style="background:var(--primary); color:white; border:none; padding:0.25rem 0.65rem; border-radius:var(--radius-sm); font-size:0.72rem; font-weight:800; margin-top:0.35rem; cursor:pointer;">
-              <i class="fa-solid fa-id-card"></i> View Full Profile Page
-            </button>
+            <div style="font-size:0.75rem; opacity:0.85;">📞 +91 ${this.user.mobile}</div>
           </div>
         `;
       } else {
         headerBox.innerHTML = `
-          <div style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;">
-            <i class="fa-solid fa-user"></i>
+          <div style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+            <i class="fa-regular fa-circle-user"></i>
           </div>
           <div style="flex:1;">
-            <div style="font-weight:800; font-size:1.05rem; color:white;">Guest Customer</div>
-            <div style="font-size:0.78rem; opacity:0.85;">Login to access saved addresses & orders</div>
-            <button onclick="app.openAuthModal('login'); app.closeProfileMenuModal();" style="background:var(--primary); color:white; border:none; padding:0.35rem 0.75rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:800; margin-top:0.35rem; cursor:pointer;">
-              <i class="fa-solid fa-right-to-bracket"></i> Login / Register
+            <div style="font-weight:800; font-size:1rem; color:white;">Guest Customer</div>
+            <button onclick="app.openAuthModal('login'); app.closeProfileMenuModal();" style="background:var(--primary); color:var(--header-dark); border:none; padding:0.25rem 0.65rem; border-radius:var(--radius-sm); font-size:0.72rem; font-weight:800; margin-top:0.25rem;">
+              Login / Register
             </button>
           </div>
         `;
@@ -514,7 +427,7 @@ class AppEngine {
       if (this.user) {
         footerBox.innerHTML = `
           <button onclick="app.openLogoutConfirmModal();" style="width:100%; padding:0.5rem; background:#FEE2E2; color:#DC2626; border:none; border-radius:var(--radius-sm); font-weight:700; font-size:0.8rem; cursor:pointer;">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout Account
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
           </button>
         `;
       } else {
@@ -555,16 +468,12 @@ class AppEngine {
     if (!userBtn) return;
 
     if (this.user) {
-      userBtn.title = `Profile Menu (${this.user.name})`;
       userBtn.innerHTML = `<i class="fa-solid fa-circle-user" style="color:var(--primary);"></i>`;
     } else {
-      userBtn.title = 'Account & Store Menu';
-      userBtn.innerHTML = `<i class="fa-regular fa-user"></i>`;
+      userBtn.innerHTML = `<i class="fa-regular fa-circle-user"></i>`;
     }
-    userBtn.onclick = () => this.openProfileMenuModal();
   }
 
-  // --- CUSTOMER PROFILE DASHBOARD & ADDRESSES ---
   openCustomerProfilePage(tab = 'addresses') {
     if (!this.user) {
       this.openAuthModal('login');
@@ -584,16 +493,10 @@ class AppEngine {
     const avatar = document.getElementById('profileAvatarImg');
     const nameEl = document.getElementById('profileNameDisplay');
     const mobileEl = document.getElementById('profileMobileDisplay');
-    const ordersCount = document.getElementById('profileOrdersCount');
-    const wishlistCount = document.getElementById('profileWishlistCount');
 
     if (avatar) avatar.src = this.user.avatar || 'assets/turmeric.jpg';
     if (nameEl) nameEl.textContent = this.user.name;
     if (mobileEl) mobileEl.textContent = `📞 +91 ${this.user.mobile}`;
-
-    const myOrders = this.orders.filter(o => o.customer_mobile === this.user.mobile);
-    if (ordersCount) ordersCount.textContent = myOrders.length;
-    if (wishlistCount) wishlistCount.textContent = this.wishlist.length;
 
     this.switchProfileTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -627,134 +530,64 @@ class AppEngine {
     const userAddrs = this.userAddresses.filter(a => a.user_mobile === this.user.mobile);
 
     if (userAddrs.length === 0) {
-      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted); background:var(--bg-warm); border-radius:var(--radius-md);">No saved delivery addresses. Click "+ Add New Delivery Address" to add your address!</div>`;
+      grid.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No saved addresses. Click "+ Add Address"!</div>`;
       return;
     }
 
     grid.innerHTML = userAddrs.map(a => `
-      <div style="background:white; border:${a.is_default ? '2px solid var(--primary)' : '1px solid var(--border-light)'}; padding:1.25rem; border-radius:var(--radius-md);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-          <span style="background:var(--primary-light); color:var(--primary-deep); font-size:0.75rem; font-weight:800; padding:0.2rem 0.5rem; border-radius:4px;">${a.address_type || 'Home'}</span>
-          ${a.is_default ? '<span style="color:var(--primary); font-size:0.75rem; font-weight:800;">✓ Default Address</span>' : ''}
+      <div style="background:white; border:${a.is_default ? '2px solid var(--header-bg)' : '1px solid var(--border-light)'}; padding:1rem; border-radius:var(--radius-md);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+          <span style="background:var(--primary-light); color:var(--header-bg); font-size:0.72rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:4px;">${a.address_type || 'Home'}</span>
+          ${a.is_default ? '<span style="color:var(--header-bg); font-size:0.75rem; font-weight:800;">✓ Default</span>' : ''}
         </div>
-        <strong style="color:var(--primary-deep);">${a.full_name}</strong>
-        <div style="font-size:0.85rem; color:var(--text-main); margin:0.35rem 0;">${a.house_no}, ${a.street}<br>${a.city}, ${a.state} - <strong>${a.pincode}</strong></div>
-        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">📞 Mobile: +91 ${a.mobile}</div>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:0.5rem; border-top:1px solid var(--border-subtle);">
-          <label style="font-size:0.8rem; font-weight:700; cursor:pointer;">
-            <input type="radio" name="defaultAddrRadio" ${a.is_default ? 'checked' : ''} onchange="app.setDefaultAddress('${a.id}')"> Default Address
-          </label>
-          <button onclick="app.deleteAddress('${a.id}')" style="color:#EF4444; font-size:0.8rem; font-weight:700;">Delete</button>
-        </div>
+        <strong style="color:var(--header-bg); font-size:0.92rem;">${a.full_name}</strong>
+        <div style="font-size:0.82rem; color:var(--text-main); margin:0.25rem 0;">${a.house_no}, ${a.street}<br>${a.city}, ${a.state} - <strong>${a.pincode}</strong></div>
+        <div style="font-size:0.78rem; color:var(--text-muted); font-weight:700;">📞 +91 ${a.mobile}</div>
       </div>
     `).join('');
   }
 
-  openAddAddressModal() {
-    if (!this.user) return;
-    document.getElementById('amAddrId').value = '';
-    document.getElementById('amFullName').value = this.user.name;
-    document.getElementById('amMobile').value = this.user.mobile;
-    document.getElementById('amHouseNo').value = '';
-    document.getElementById('amStreet').value = '';
-    document.getElementById('amIsDefault').checked = true;
+  renderProfileOrders() {
+    const grid = document.getElementById('profileOrdersGrid');
+    if (!grid || !this.user) return;
 
-    const modal = document.getElementById('addressModal');
-    if (modal) modal.classList.add('open');
-  }
-
-  closeAddressModal() {
-    const modal = document.getElementById('addressModal');
-    if (modal) modal.classList.remove('open');
-  }
-
-  async saveAddressFromForm() {
-    if (!this.user) return;
-
-    const fullName = document.getElementById('amFullName').value.trim();
-    const mobile = document.getElementById('amMobile').value.trim();
-    const houseNo = document.getElementById('amHouseNo').value.trim();
-    const street = document.getElementById('amStreet').value.trim();
-    const city = document.getElementById('amCity').value.trim();
-    const state = document.getElementById('amState').value.trim();
-    const pincode = document.getElementById('amPincode').value.trim();
-    const isDefault = document.getElementById('amIsDefault').checked;
-
-    if (isDefault) {
-      this.userAddresses.forEach(a => {
-        if (a.user_mobile === this.user.mobile) a.is_default = false;
-      });
-    }
-
-    const newAddr = {
-      id: `addr_${Date.now()}`,
-      user_mobile: this.user.mobile,
-      full_name: fullName,
-      mobile: mobile,
-      house_no: houseNo,
-      street: street,
-      city: city,
-      state: state,
-      pincode: pincode,
-      address_type: 'Home',
-      is_default: isDefault
-    };
-
-    this.userAddresses.push(newAddr);
-    localStorage.setItem('hotspy_user_addresses', JSON.stringify(this.userAddresses));
-
-    this.closeAddressModal();
-    this.renderProfileAddresses();
-    this.showToast('Delivery address saved!');
-
-    if (this.supabase) {
-      try {
-        await this.supabase.from('customer_addresses').upsert(newAddr);
-      } catch(e) {}
-    }
-  }
-
-  setDefaultAddress(addrId) {
-    if (!this.user) return;
-    this.userAddresses.forEach(a => {
-      if (a.user_mobile === this.user.mobile) a.is_default = (a.id === addrId);
-    });
-    localStorage.setItem('hotspy_user_addresses', JSON.stringify(this.userAddresses));
-    this.renderProfileAddresses();
-    this.showToast('Default delivery address updated!');
-  }
-
-  deleteAddress(addrId) {
-    this.userAddresses = this.userAddresses.filter(a => a.id !== addrId);
-    localStorage.setItem('hotspy_user_addresses', JSON.stringify(this.userAddresses));
-    this.renderProfileAddresses();
-    this.showToast('Deleted address.');
-  }
-
-  // --- CHECKOUT & ORDER INVOICE ---
-  async checkout() {
-    if (this.cart.length === 0) {
-      this.showToast('Your basket is empty!', 'error');
+    const myOrders = this.orders.filter(o => o.customer_mobile === this.user.mobile);
+    if (myOrders.length === 0) {
+      grid.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">No past orders found.</div>`;
       return;
     }
 
+    grid.innerHTML = myOrders.map(o => `
+      <div style="background:white; border:1px solid var(--border-light); padding:1rem; border-radius:var(--radius-md);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+          <strong>Order ID: ${o.id}</strong>
+          <span style="background:var(--primary-light); color:var(--header-bg); font-size:0.72rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:4px;">${o.status}</span>
+        </div>
+        <div style="font-size:1.1rem; font-weight:800; color:var(--header-bg); margin-bottom:0.5rem;">Total: ₹${o.total_amount}</div>
+        <button onclick="app.openOrderInvoicePage('${o.id}')" style="background:var(--header-bg); color:white; border:none; padding:0.35rem 0.75rem; border-radius:4px; font-weight:700; font-size:0.78rem; cursor:pointer;">
+          <i class="fa-solid fa-file-invoice"></i> View Tax Invoice
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // CHECKOUT & INVOICE
+  checkout() {
+    if (this.cart.length === 0) return;
     if (!this.user) {
       this.openAuthModal('login');
-      this.showToast('Please login with your mobile number to complete your order!', 'error');
       return;
     }
 
-    const defaultAddr = this.userAddresses.find(a => a.user_mobile === this.user.mobile && a.is_default) || 
-                        this.userAddresses.find(a => a.user_mobile === this.user.mobile) || {
-                          full_name: this.user.name,
-                          mobile: this.user.mobile,
-                          house_no: 'Flat 402, Royal Residency',
-                          street: 'Gomti Nagar Main Road',
-                          city: 'Lucknow',
-                          state: 'Uttar Pradesh',
-                          pincode: '226010'
-                        };
+    const defaultAddr = this.userAddresses.find(a => a.user_mobile === this.user.mobile && a.is_default) || {
+      full_name: this.user.name,
+      mobile: this.user.mobile,
+      house_no: 'Flat 402, Royal Residency',
+      street: 'Gomti Nagar Main Road',
+      city: 'Lucknow',
+      state: 'Uttar Pradesh',
+      pincode: '226010'
+    };
 
     const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const newOrder = {
@@ -765,7 +598,6 @@ class AppEngine {
       shipping_address: JSON.stringify(defaultAddr),
       subtotal: subtotal,
       total_amount: subtotal,
-      payment_method: 'COD (Cash on Delivery)',
       status: 'Processing',
       date: new Date().toISOString().split('T')[0]
     };
@@ -773,26 +605,10 @@ class AppEngine {
     this.orders.unshift(newOrder);
     localStorage.setItem('hotspy_orders', JSON.stringify(this.orders));
 
-    if (this.supabase) {
-      try {
-        await this.supabase.from('orders').insert({
-          id: newOrder.id,
-          customer_mobile: newOrder.customer_mobile,
-          customer_name: newOrder.customer_name,
-          items: newOrder.items,
-          shipping_address: newOrder.shipping_address,
-          subtotal: newOrder.subtotal,
-          total_amount: newOrder.total_amount,
-          payment_method: newOrder.payment_method,
-          status: newOrder.status
-        });
-      } catch(e) {}
-    }
-
     this.cart = [];
     this.saveCart();
     this.closeCartDrawer();
-    this.showToast(`🎉 Order Placed! Order ID: ${newOrder.id}`);
+    this.showToast(`🎉 Order Placed! ID: ${newOrder.id}`);
     this.openOrderInvoicePage(newOrder.id);
   }
 
@@ -819,83 +635,48 @@ class AppEngine {
 
     if (printableBox) {
       printableBox.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:2px solid var(--primary);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; border-bottom:2px solid var(--header-bg); padding-bottom:1rem;">
           <div>
-            <h1 style="font-size:1.8rem; color:var(--primary-deep); margin:0;">BIGBASKET ORGANICS</h1>
-            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.25rem;">
-              A TATA Enterprise • Online Supermarket & Organic Groceries<br>
-              Support: care@bigbasket.com | +91 9876543210
-            </div>
+            <h1 style="font-size:1.5rem; color:var(--header-bg); margin:0;">bigbasket ORGANICS</h1>
+            <div style="font-size:0.8rem; color:var(--text-muted);">A TATA Enterprise • Online Supermarket</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:1.3rem; font-weight:800; color:var(--primary-deep);">TAX INVOICE</div>
-            <div style="font-size:0.85rem; font-weight:700; margin-top:0.25rem;">Invoice #: INV-${order.id}</div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">Date: ${order.date || 'Today'}</div>
+            <div style="font-size:1.15rem; font-weight:800; color:var(--header-bg);">TAX INVOICE</div>
+            <div style="font-size:0.8rem; font-weight:700;">Invoice #: INV-${order.id}</div>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:2rem; background:var(--bg-warm); padding:1.25rem; border-radius:var(--radius-md);">
-          <div>
-            <div style="font-size:0.75rem; font-weight:800; color:var(--primary); text-transform:uppercase;">Customer Details:</div>
-            <strong style="font-size:1rem; color:var(--primary-deep);">${order.customer_name}</strong><br>
-            <span style="font-size:0.85rem; font-weight:700;">📞 Mobile: +91 ${order.customer_mobile}</span>
-          </div>
-
-          <div>
-            <div style="font-size:0.75rem; font-weight:800; color:var(--primary); text-transform:uppercase;">Delivery Address:</div>
-            <div style="font-size:0.85rem; line-height:1.4;">
-              ${addr.house_no ? `${addr.house_no}, ${addr.street}<br>${addr.city}, ${addr.state} - <strong>${addr.pincode}</strong>` : 'Lucknow, Uttar Pradesh - 226010'}
-            </div>
-          </div>
+        <div style="margin-bottom:1.25rem; background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md);">
+          <strong>Customer: ${order.customer_name}</strong> (📞 +91 ${order.customer_mobile})<br>
+          <span style="font-size:0.82rem;">Delivery: ${addr.house_no}, ${addr.street}, ${addr.city} - ${addr.pincode}</span>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+        <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem; font-size:0.85rem;">
           <thead>
-            <tr style="background:var(--primary-deep); color:white;">
-              <th style="padding:0.75rem; text-align:left; font-size:0.8rem;">Item Details</th>
-              <th style="padding:0.75rem; text-align:center; font-size:0.8rem;">Qty</th>
-              <th style="padding:0.75rem; text-align:right; font-size:0.8rem;">Price</th>
-              <th style="padding:0.75rem; text-align:right; font-size:0.8rem;">Total</th>
+            <tr style="background:var(--header-bg); color:white;">
+              <th style="padding:0.5rem; text-align:left;">Item</th>
+              <th style="padding:0.5rem; text-align:center;">Qty</th>
+              <th style="padding:0.5rem; text-align:right;">Total</th>
             </tr>
           </thead>
           <tbody>
             ${(items || []).map(item => `
               <tr style="border-bottom:1px solid var(--border-light);">
-                <td style="padding:0.75rem; display:flex; align-items:center; gap:0.65rem;">
-                  <img src="${item.image}" style="width:36px; height:36px; border-radius:4px; object-fit:cover;">
-                  <strong style="font-size:0.85rem; color:var(--primary-deep);">${item.name}</strong>
-                </td>
-                <td style="padding:0.75rem; text-align:center; font-weight:700;">${item.quantity}</td>
-                <td style="padding:0.75rem; text-align:right;">₹${item.price}</td>
-                <td style="padding:0.75rem; text-align:right; font-weight:800; color:var(--primary-deep);">₹${item.price * item.quantity}</td>
+                <td style="padding:0.5rem;"><strong>${item.name}</strong></td>
+                <td style="padding:0.5rem; text-align:center;">${item.quantity}</td>
+                <td style="padding:0.5rem; text-align:right; font-weight:800;">₹${item.price * item.quantity}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
 
-        <div style="display:flex; justify-content:flex-end;">
-          <div style="width:260px; background:var(--bg-warm); padding:1rem; border-radius:var(--radius-sm);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.85rem;">
-              <span>Subtotal</span>
-              <strong>₹${order.total_amount}</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.85rem;">
-              <span>Delivery Fee</span>
-              <strong style="color:var(--primary);">FREE</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; padding-top:0.65rem; border-top:2px solid var(--border-light); font-size:1.15rem; font-weight:800; color:var(--primary-deep);">
-              <span>Grand Total</span>
-              <span>₹${order.total_amount}</span>
-            </div>
-          </div>
+        <div style="text-align:right; font-size:1.1rem; font-weight:800; color:var(--header-bg);">
+          Grand Total: ₹${order.total_amount}
         </div>
       `;
     }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // --- DEDICATED COMBOS & RECIPES PAGE ---
   openComboPage() {
     const homeContent = document.getElementById('homePageContent');
     const comboPageView = document.getElementById('dedicatedCombosPageView');
@@ -908,7 +689,6 @@ class AppEngine {
     if (comboPageView) comboPageView.style.display = 'block';
 
     this.renderDedicatedCombos();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   renderDedicatedCombos() {
@@ -916,22 +696,18 @@ class AppEngine {
     if (!grid) return;
 
     grid.innerHTML = this.recipes.map(r => `
-      <div class="product-card">
-        <span class="discount-badge" style="background:var(--accent-gold); color:var(--primary-dark); font-weight:800;">SAVE ₹170</span>
-        <div class="card-img-wrap">
+      <div class="bb-product-card">
+        <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">SAVE ₹170</span>
+        <div class="bb-card-img-wrap">
           <img src="${r.image}">
         </div>
-        <h3 class="card-title">${r.title}</h3>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.85rem;">${r.description}</p>
-        
-        <div class="card-price-row">
-          <span class="current-price">₹${r.comboPrice}</span>
-          <span class="mrp-price">₹669</span>
+        <h3 class="bb-card-title">${r.title}</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
+        <div class="bb-price-row">
+          <span class="bb-sale-price">₹${r.comboPrice}</span>
+          <span class="bb-mrp-price">₹669</span>
         </div>
-
-        <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">
-          <i class="fa-solid fa-cart-plus"></i> Add Combo to Basket
-        </button>
+        <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
       </div>
     `).join('');
   }
@@ -939,19 +715,9 @@ class AppEngine {
   addComboToCart(recipeId) {
     const r = this.recipes.find(rec => rec.id === recipeId);
     if (!r) return;
-
-    this.cart.push({
-      id: r.id,
-      name: r.title,
-      price: r.comboPrice,
-      originalPrice: 669,
-      image: r.image,
-      quantity: 1
-    });
-
+    this.cart.push({ id: r.id, name: r.title, price: r.comboPrice, originalPrice: 669, image: r.image, quantity: 1 });
     this.saveCart();
-    this.showToast(`Added "${r.title}" combo bundle to your basket!`);
-    this.openCartDrawer();
+    this.showToast(`Added "${r.title}" to Basket!`);
   }
 
   showHomePage() {
@@ -964,40 +730,18 @@ class AppEngine {
     if (comboPageView) comboPageView.style.display = 'none';
     if (profilePageView) profilePageView.style.display = 'none';
     if (invoicePageView) invoicePageView.style.display = 'none';
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // --- TRACEABILITY ---
-  verifyBatchFromInput() {
-    const input = document.getElementById('traceBatchInput');
-    const code = input ? input.value.trim() : '';
-    this.verifyBatchCode(code);
+  openCartDrawer() {
+    const drawer = document.getElementById('cartDrawerBackdrop');
+    if (drawer) drawer.classList.add('open');
   }
 
-  verifyBatchCode(code) {
-    const resultCard = document.getElementById('traceResultCard');
-    const info = (this.batchDatabase && code) ? this.batchDatabase[code.toUpperCase().trim()] : null;
-
-    if (!info) {
-      this.showToast(`Batch "${code}" not found in master records. Try HS-LKO-2026`, 'error');
-      return;
-    }
-
-    if (resultCard) {
-      resultCard.innerHTML = `
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-          <div><span style="font-size:0.75rem; font-weight:800; color:var(--primary);">Partner Farm:</span><br><strong>${info.farmer}</strong></div>
-          <div><span style="font-size:0.75rem; font-weight:800; color:var(--primary);">Harvest Date:</span><br><strong>${info.harvestDate}</strong></div>
-          <div><span style="font-size:0.75rem; font-weight:800; color:var(--primary);">Location:</span><br><strong>${info.location}</strong></div>
-          <div><span style="font-size:0.75rem; font-weight:800; color:var(--primary);">Lab Result:</span><br><strong style="color:var(--primary);">${info.labResult}</strong></div>
-        </div>
-      `;
-      resultCard.style.display = 'block';
-    }
+  closeCartDrawer() {
+    const drawer = document.getElementById('cartDrawerBackdrop');
+    if (drawer) drawer.classList.remove('open');
   }
 
-  // --- ADMIN PANEL ---
   toggleAdminMode() {
     const storefront = document.getElementById('storefrontWrapper');
     const adminPanel = document.getElementById('adminWrapper');
@@ -1024,76 +768,45 @@ class AppEngine {
     if (prodTable) {
       prodTable.innerHTML = this.products.map(p => `
         <tr style="border-bottom:1px solid var(--border-subtle);">
-          <td style="padding:0.5rem;"><img src="${p.image}" style="width:36px; height:36px; object-fit:cover; border-radius:4px;"></td>
-          <td style="padding:0.5rem;"><strong>${p.name}</strong></td>
-          <td style="padding:0.5rem;">${p.category}</td>
-          <td style="padding:0.5rem; font-weight:800; color:var(--primary-deep);">₹${p.price}</td>
-          <td style="padding:0.5rem;"><span style="color:var(--primary); font-weight:700;">In Stock</span></td>
-          <td style="padding:0.5rem;"><button onclick="app.showToast('Edit product options available in full dashboard')" style="color:var(--primary-deep); font-weight:700;">Edit</button></td>
+          <td style="padding:0.4rem;"><img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px;"></td>
+          <td style="padding:0.4rem;"><strong>${p.name}</strong></td>
+          <td style="padding:0.4rem; font-weight:800; color:var(--header-bg);">₹${p.price}</td>
+          <td style="padding:0.4rem;"><span style="color:var(--header-bg); font-weight:700;">In Stock</span></td>
         </tr>
       `).join('');
     }
   }
 
-  // --- SUPABASE CLOUD FETCHERS ---
-  async fetchProductsFromSupabase() {
-    if (!this.supabase) return;
-    try {
-      const { data, error } = await this.supabase.from('products').select('*');
-      if (error) return;
-      if (data && data.length > 0) {
-        this.products = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          category: item.category,
-          price: item.price,
-          originalPrice: item.original_price || item.price,
-          rating: item.rating || 5.0,
-          reviews: item.reviews || 0,
-          image: item.image,
-          badge: item.badge || '100% Organic',
-          origin: item.origin || 'Lucknow Farm',
-          batchNo: item.batch_no || 'HS-LKO-2026',
-          inStock: item.in_stock !== false,
-          desc: item.description || ''
-        }));
-        this.renderProducts();
-      }
-    } catch(e) {}
+  verifyBatchFromInput() {
+    const input = document.getElementById('traceBatchInput');
+    const code = input ? input.value.trim() : '';
+    const resultCard = document.getElementById('traceResultCard');
+    const info = (this.batchDatabase && code) ? this.batchDatabase[code.toUpperCase()] : null;
+
+    if (!info) {
+      this.showToast(`Batch "${code}" not found. Try HS-LKO-2026`, 'error');
+      return;
+    }
+
+    if (resultCard) {
+      resultCard.innerHTML = `
+        <div style="font-size:0.85rem;">
+          <strong>Farm:</strong> ${info.farmer}<br>
+          <strong>Harvest Date:</strong> ${info.harvestDate}<br>
+          <strong>Lab Result:</strong> <span style="color:var(--header-bg); font-weight:800;">${info.labResult}</span>
+        </div>
+      `;
+      resultCard.style.display = 'block';
+    }
   }
 
-  async fetchUserProfilesFromSupabase() {
-    if (!this.supabase) return;
-    try {
-      const { data } = await this.supabase.from('customer_profiles').select('*');
-      if (data && data.length > 0) this.userProfiles = data;
-    } catch(e) {}
-  }
-
-  async fetchUserAddressesFromSupabase() {
-    if (!this.supabase) return;
-    try {
-      const { data } = await this.supabase.from('customer_addresses').select('*');
-      if (data && data.length > 0) this.userAddresses = data;
-    } catch(e) {}
-  }
-
-  async fetchOrdersFromSupabase() {
-    if (!this.supabase) return;
-    try {
-      const { data } = await this.supabase.from('orders').select('*');
-      if (data && data.length > 0) this.orders = data;
-    } catch(e) {}
-  }
-
-  // --- TOAST NOTIFICATIONS ---
   showToast(msg, type = 'success') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--primary-mint);"></i> <span>${msg}</span>`;
+    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--primary);"></i> <span>${msg}</span>`;
 
     container.appendChild(toast);
     setTimeout(() => {
@@ -1103,7 +816,6 @@ class AppEngine {
   }
 }
 
-// Instantiate App
 let app;
 document.addEventListener('DOMContentLoaded', () => {
   app = new AppEngine();
