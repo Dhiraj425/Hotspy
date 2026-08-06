@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=12.0">
+  <link rel="stylesheet" href="styles.css?v=13.0">
 </head>
 <body>
 
@@ -77,33 +77,7 @@
     </div>
   </header>
 
-  <!-- DESKTOP / LAPTOP NAVIGATION BAR -->
-  <nav class="desktop-nav-bar">
-    <div class="container desktop-nav-inner">
-      <div style="display:flex; align-items:center; gap:1.5rem;">
-        <button class="bb-mega-btn" onclick="app.openCategoryPage('All')">
-          <i class="fa-solid fa-bars"></i> All Categories <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>
-        </button>
-
-        <ul class="desktop-nav-links">
-          <li><a href="#" onclick="app.showHomePage();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home</a></li>
-          <li><a href="#" onclick="app.openCategoryProductsView('Spices');"><i class="fa-solid fa-pepper-hot"></i> Pure Spices</a></li>
-          <li><a href="#" onclick="app.openCategoryProductsView('Teas');"><i class="fa-solid fa-mug-hot"></i> Whole Leaf Teas</a></li>
-          <li><a href="#" onclick="app.openCategoryProductsView('Oils & Grains');"><i class="fa-solid fa-bottle-droplet"></i> Staples & Oils</a></li>
-          <li><a href="#" onclick="app.openComboPage();" style="color:var(--header-bg); font-weight:800;"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
-          <li><a href="#" onclick="app.openTraceabilityPage();"><i class="fa-solid fa-seedling"></i> Farm Origin</a></li>
-        </ul>
-      </div>
-
-      <div style="display:flex; align-items:center; gap:1rem;">
-        <button onclick="app.openCartDrawer()" style="display:flex; align-items:center; gap:0.5rem; background:var(--primary-light); color:var(--header-bg); border:1px solid var(--primary-mint); padding:0.4rem 0.85rem; border-radius:var(--radius-sm); font-weight:800; font-size:0.82rem;">
-          <i class="fa-solid fa-basket-shopping" style="color:var(--header-bg);"></i> Basket (<span id="desktopCartCount">0</span>)
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Circular Category Icons Strip (Homepage: Max 5 Categories + 6th "View All Categories" Card) -->
+  <!-- Circular Category Icons Strip (5 Categories + 6th "View All Categories" Card) -->
   <div class="bb-category-circles-strip" id="homeCategoryCirclesStrip">
     <div class="bb-category-circle-card active" onclick="app.showHomePage()">
       <div class="bb-circle-icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
@@ -503,6 +477,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=12.0"></script>
+  <script src="app.js?v=13.0"></script>
 </body>
 </html>
