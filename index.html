@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=21.0">
+  <link rel="stylesheet" href="styles.css?v=22.0">
 </head>
 <body>
 
@@ -404,14 +404,19 @@
     <!-- STATE B: AUTHENTICATED ADMIN DASHBOARD WITH EXCLUSIVE SIDEBAR -->
     <div id="adminDashboardContainer" class="admin-layout-wrapper" style="display:none;">
       
-      <!-- EXCLUSIVE ADMIN SIDEBAR -->
+      <!-- EXCLUSIVE ADMIN SIDEBAR WITH HOMEPAGE CUSTOMIZE OPTION -->
       <aside class="admin-sidebar">
         <div style="padding:0.5rem 0.85rem; font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">
           STORE MANAGEMENT
         </div>
 
-        <div class="admin-sidebar-link active" id="adminSidebarOrders" onclick="app.switchAdminTab('orders')">
-          <i class="fa-solid fa-truck-fast" style="color:var(--primary);"></i>
+        <div class="admin-sidebar-link active" id="adminSidebarHomepage" onclick="app.switchAdminTab('homepage')">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color:var(--primary);"></i>
+          <span>Homepage Customize 🖐️</span>
+        </div>
+
+        <div class="admin-sidebar-link" id="adminSidebarOrders" onclick="app.switchAdminTab('orders')">
+          <i class="fa-solid fa-truck-fast"></i>
           <span>1. Manage Orders</span>
         </div>
 
@@ -446,8 +451,64 @@
       <!-- MAIN ADMIN CONTENT AREA -->
       <main class="admin-main-area">
         
+        <!-- NEW ADMIN SECTION 0: HOMEPAGE CUSTOMIZE (DRAG & DROP REORDER + ASSIGN PRODUCT TO CATEGORY/FEATURED) -->
+        <div id="adminSectionHomepage" style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+            <div>
+              <span style="font-size:0.75rem; font-weight:800; color:var(--primary); text-transform:uppercase;">DRAG & DROP VISUAL EDITOR</span>
+              <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">🖐️ Homepage Layout & Product Reordering</h2>
+            </div>
+            <button class="btn-primary" onclick="app.saveHomepageDragSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Layout Changes</button>
+          </div>
+
+          <!-- Feature 1: Drag & Drop Products into Category Dropzones -->
+          <div style="margin-bottom:1.5rem;">
+            <h3 style="font-size:0.98rem; font-weight:800; color:var(--header-bg); margin-bottom:0.65rem;">1. Drag Product & Drop into Category or Featured Slot</h3>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
+              <!-- Dropzone: Featured Homepage Slot -->
+              <div class="drag-drop-zone" id="dropzoneFeatured" ondragover="app.handleDragOver(event)" ondragleave="app.handleDragLeave(event)" ondrop="app.handleDropAssignFeatured(event)">
+                <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.35rem;">
+                  ⭐ DROP HERE: Homepage Featured
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Drag any product card here to show it on Homepage!</div>
+              </div>
+
+              <!-- Dropzone: Spices -->
+              <div class="drag-drop-zone" id="dropzoneSpices" ondragover="app.handleDragOver(event)" ondragleave="app.handleDragLeave(event)" ondrop="app.handleDropAssignCategory(event, 'Spices')">
+                <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.35rem;">
+                  🌶️ DROP HERE: Pure Spices Category
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Reassign product category to Pure Spices</div>
+              </div>
+
+              <!-- Dropzone: Teas -->
+              <div class="drag-drop-zone" id="dropzoneTeas" ondragover="app.handleDragOver(event)" ondragleave="app.handleDragLeave(event)" ondrop="app.handleDropAssignCategory(event, 'Teas')">
+                <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.35rem;">
+                  🍵 DROP HERE: Himalayan Teas Category
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Reassign product category to Himalayan Teas</div>
+              </div>
+
+              <!-- Dropzone: Oils & Grains -->
+              <div class="drag-drop-zone" id="dropzoneOils" ondragover="app.handleDragOver(event)" ondragleave="app.handleDragLeave(event)" ondrop="app.handleDropAssignCategory(event, 'Oils & Grains')">
+                <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.35rem;">
+                  💧 DROP HERE: Cold-Pressed Oils Category
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted);">Reassign product category to Cold-Pressed Oils</div>
+              </div>
+            </div>
+
+            <!-- Draggable Products List -->
+            <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.5rem;">
+              Available Draggable Products (Click & Drag any card above):
+            </div>
+            <div id="draggableProductsList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:0.75rem;"></div>
+          </div>
+        </div>
+
         <!-- Admin Section 1: Orders -->
-        <div id="adminSectionOrders" style="background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto; box-shadow:var(--shadow-sm);">
+        <div id="adminSectionOrders" style="display:none; background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto; box-shadow:var(--shadow-sm);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
             <h3 style="font-size:1.1rem; color:var(--header-bg); font-weight:800;">📦 Customer Orders (5-Stage Live Progress Control)</h3>
           </div>
@@ -710,6 +771,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=21.0"></script>
+  <script src="app.js?v=22.0"></script>
 </body>
 </html>
