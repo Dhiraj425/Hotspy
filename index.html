@@ -3,22 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HOTSPY ORGANICS - From Growers. To Your Home. Naturally.</title>
-  <meta name="description" content="Hotspy Organics brings you 100% certified organic spices, Himalayan whole leaf teas, stone-ground flours and healthy snacks direct from Indian farming cooperatives.">
+  <title>BIGBASKET - Online Supermarket & Organic Grocery Shopping</title>
+  <meta name="description" content="Shop 100% certified organic spices, teas, fresh produce and daily supermarket staples with express home delivery.">
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=3.0">
+  <link rel="stylesheet" href="styles.css?v=4.0">
 </head>
 <body>
 
-  <!-- ==========================================================================
-       ANNOUNCEMENT BAR
-       ========================================================================== -->
+  <!-- Announcement Bar -->
   <div class="announcement-bar">
     <div class="announcement-text">
-      <i class="fa-solid fa-leaf" style="color:var(--primary-mint);"></i>
-      <span>🌿 100% Organic Certified • Direct From Farmers • <span class="highlight">FREE Shipping on orders over ₹999</span></span>
+      <i class="fa-solid fa-bolt" style="color:var(--primary-mint);"></i>
+      <span>⚡ <strong>bbnow</strong> Express 15-Min Delivery • Direct Farm Harvest • <span class="highlight">FREE Delivery over ₹999</span></span>
     </div>
     <div class="nav-tools-right">
       <select id="currencySelect" class="currency-select" aria-label="Select Currency">
@@ -29,32 +27,41 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       HEADER & NAVIGATION
-       ========================================================================== -->
+  <!-- Storefront Main Wrapper -->
   <div id="storefrontWrapper">
+    
+    <!-- Main Header -->
     <header class="main-header">
       <div class="container header-inner">
-        <!-- Brand Logo -->
-        <a href="#" class="brand-logo">
+        <!-- Logo -->
+        <a href="#" class="brand-logo" onclick="app.showHomePage(); return false;">
           <div class="logo-icon">
-            <i class="fa-solid fa-seedling"></i>
+            <i class="fa-solid fa-basket-shopping"></i>
           </div>
           <div class="logo-text">
-            <span class="brand-name">HOTSPY <span style="color:var(--primary);">ORGANICS</span></span>
-            <span class="brand-tagline">From Growers. To Your Home. Naturally.</span>
+            <span class="brand-name">bigbasket <span style="color:var(--primary); font-weight:900;">ORGANICS</span></span>
+            <span class="brand-tagline">A TATA Enterprise • 100% Pure Supermarket</span>
           </div>
         </a>
 
-        <!-- Main Nav -->
-        <ul class="nav-menu" id="mobileNavMenu">
-          <li><a href="#" class="nav-link active" onclick="app.showHomePage(); app.closeMobileNav();">Home</a></li>
-          <li><a href="#traceability" class="nav-link" onclick="app.showHomePage(); app.closeMobileNav();">Farm Traceability</a></li>
-          <li><a href="#store" class="nav-link" onclick="app.showHomePage(); app.closeMobileNav();">Shop Spices & Teas</a></li>
-          <li id="navComboPageItem"><a href="#comboPage" class="nav-link" onclick="app.openComboPage(); app.closeMobileNav();"><i class="fa-solid fa-fire" style="color:var(--accent-gold);"></i> Recipe Pairings</a></li>
-        </ul>
+        <!-- Location Selector Pill -->
+        <div class="location-selector-pill" onclick="app.showToast('Select Delivery Location: Lucknow Belt - 226010')">
+          <i class="fa-solid fa-location-dot" style="color:var(--primary);"></i>
+          <span>Delivering to <strong>Lucknow 226010</strong></span>
+          <i class="fa-solid fa-chevron-down" style="font-size:0.75rem; color:var(--text-muted);"></i>
+        </div>
 
-        <!-- Actions -->
+        <!-- Search Bar -->
+        <div class="header-search-container">
+          <div class="search-input-wrap">
+            <input type="text" id="globalSearchInput" class="search-input" placeholder="Search 15,000+ products (e.g. Turmeric, Green Tea, Cardamom)..." onkeyup="app.handleSearchInput(event)">
+            <button class="search-btn" onclick="app.executeSearch()">
+              <i class="fa-solid fa-magnifying-glass"></i> Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
         <div class="header-actions">
           <button class="icon-btn" onclick="app.toggleWishlist('prod_1')" title="Wishlist" aria-label="Wishlist">
             <i class="fa-regular fa-heart"></i>
@@ -66,1275 +73,364 @@
             <span class="badge-count" id="cartBadge">0</span>
           </button>
 
-          <button class="icon-btn" id="userAuthBtn" title="Account" aria-label="Account">
+          <button class="icon-btn" id="userAuthBtn" title="Account & Store Menu" aria-label="Account">
             <i class="fa-regular fa-user"></i>
           </button>
 
-          <button class="mode-toggle-btn" id="adminModeBtn" onclick="app.toggleAdminMode()">
-            <i class="fa-solid fa-sliders"></i> Admin Panel
-          </button>
-
-          <!-- Mobile Hamburger Toggle -->
-          <button class="mobile-hamburger-btn" onclick="app.toggleMobileNav()" aria-label="Toggle Mobile Menu">
-            <i class="fa-solid fa-bars" id="hamburgerIcon"></i>
+          <button class="btn-primary" id="adminModeBtn" onclick="app.toggleAdminMode()" style="padding:0.45rem 0.85rem; font-size:0.78rem;">
+            <i class="fa-solid fa-sliders"></i> Admin
           </button>
         </div>
       </div>
     </header>
 
-    <!-- ==========================================================================
-         HERO SECTION
-         ========================================================================== -->
-    <section id="hero" class="hero-section">
-      <div class="container hero-grid">
-        <div class="hero-content">
-          <div class="hero-pill">
-            <i class="fa-solid fa-certificate" style="color:var(--accent-gold);"></i>
-            <span>NPOP & USDA Certified Organic</span>
-          </div>
-          <h1 class="hero-title">
-            Purest Farm Spices & Whole Leaf Teas, <span class="highlight-text">Direct To Your Home.</span>
-          </h1>
-          <p class="hero-subtitle">
-            Cultivated naturally by partner farming co-ops in Lucknow and Kerala. Zero chemical pesticides, zero artificial additives—just pure, unadulterated goodness.
-          </p>
-          <div class="hero-cta-group">
-            <a href="#store" class="btn-primary">
-              <i class="fa-solid fa-basket-shopping"></i> Explore Organic Catalog
-            </a>
-            <a href="#traceability" class="btn-secondary">
-              <i class="fa-solid fa-location-dot"></i> Track Batch Origin
-            </a>
-          </div>
-          <div class="hero-stats">
-            <div class="stat-item">
-              <span class="stat-number">100%</span>
-              <span class="stat-label">Pesticide Residue Free</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number">15,000+</span>
-              <span class="stat-label">Happy Indian Homes</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number">50+</span>
-              <span class="stat-label">Partner Farmers</span>
-            </div>
-          </div>
-        </div>
+    <!-- Mega Navigation Category Sub-Bar -->
+    <div class="mega-nav-bar">
+      <div class="container mega-nav-inner">
+        <button class="shop-category-btn" onclick="app.toggleCategoryMenu()">
+          <i class="fa-solid fa-bars"></i> Shop By Category <i class="fa-solid fa-chevron-down" style="font-size:0.75rem;"></i>
+        </button>
 
-        <div class="hero-media-wrapper">
-          <div class="hero-image-card">
-            <img src="assets/hero.jpg" alt="Hotspy Organics Spices and Teas">
-          </div>
-          <div class="floating-badge floating-badge-1">
-            <div class="badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <div>
-              <div class="badge-title">0.00% Pesticides</div>
-              <div class="badge-sub">Lab Certified Pure</div>
-            </div>
-          </div>
-          <div class="floating-badge floating-badge-2">
-            <div class="badge-icon" style="color:var(--accent-gold); background:var(--accent-gold-light);"><i class="fa-solid fa-award"></i></div>
-            <div>
-              <div class="badge-title">Fair Trade Guarantee</div>
-              <div class="badge-sub">Direct Farmer Pay</div>
-            </div>
-          </div>
-        </div>
+        <ul class="nav-links-row">
+          <li><a href="#" class="active" onclick="app.showHomePage();">Home Store</a></li>
+          <li><a href="#store" onclick="app.filterCategory('Spices');">Organic Spices</a></li>
+          <li><a href="#store" onclick="app.filterCategory('Teas');">Whole Leaf Teas</a></li>
+          <li><a href="#traceability" onclick="app.showHomePage();">Farm Traceability</a></li>
+          <li><a href="#comboPage" onclick="app.openComboPage();" style="color:var(--primary-deep); font-weight:800;"><i class="fa-solid fa-fire" style="color:var(--accent-gold);"></i> Recipe Pairings & Combos</a></li>
+        </ul>
       </div>
-    </section>
+    </div>
 
-    <!-- ==========================================================================
-         FARM TRACEABILITY WIDGET (BATCH LOOKUP)
-         ========================================================================== -->
-    <section id="traceability" class="traceability-section">
-      <div class="container">
-        <div class="trace-card-wrapper">
-          <div class="trace-header">
-            <h2><i class="fa-solid fa-qrcode"></i> Farm Batch Purity Lookup</h2>
-            <p>Transparency is our promise. Enter the 8-digit batch code printed on your Hotspy product package to verify farm location, harvest date, and lab testing certificate.</p>
-          </div>
-
-          <div class="trace-search-box">
-            <input type="text" id="traceBatchInput" class="trace-input" placeholder="Enter Batch Code (e.g. HS-LKO-2026)..." value="HS-LKO-2026">
-            <button class="btn-gold" onclick="app.verifyBatchCode(document.getElementById('traceBatchInput').value)">
-              <i class="fa-solid fa-magnifying-glass"></i> Verify Purity
-            </button>
-          </div>
-
-          <div class="trace-sample-chips">
-            <span>Try sample batches:</span>
-            <span class="sample-chip" onclick="app.verifyBatchCode('HS-LKO-2026')">HS-LKO-2026 (Turmeric)</span>
-            <span class="sample-chip" onclick="app.verifyBatchCode('HS-HIM-1044')">HS-HIM-1044 (Green Tea)</span>
-            <span class="sample-chip" onclick="app.verifyBatchCode('HS-KER-9901')">HS-KER-9901 (Black Pepper)</span>
-          </div>
-
-          <!-- Trace Result Display Card -->
-          <div id="traceResultCard" class="trace-result-card active">
-            <div class="trace-result-grid">
-              <div class="trace-info-box">
-                <span class="trace-info-label"><i class="fa-solid fa-tractor"></i> Partner Farm</span>
-                <span class="trace-info-val">Rameshwar Farmer Cooperative</span>
-              </div>
-              <div class="trace-info-box">
-                <span class="trace-info-label"><i class="fa-solid fa-location-dot"></i> Region</span>
-                <span class="trace-info-val">Lucknow Agri Belt, UP</span>
-              </div>
-              <div class="trace-info-box">
-                <span class="trace-info-label"><i class="fa-solid fa-calendar-check"></i> Harvest Date</span>
-                <span class="trace-info-val">June 18, 2026</span>
-              </div>
-              <div class="trace-info-box">
-                <span class="trace-info-label"><i class="fa-solid fa-flask"></i> Purity Status</span>
-                <span class="trace-info-val" style="color:var(--primary);">100% Pure - Pesticide 0.00%</span>
-              </div>
-            </div>
-            <div class="trace-timeline">
-              <div class="timeline-step">
-                <div class="timeline-dot">1</div> Sown & Grown Naturally
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">2</div> Cold-Processed & Milled
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">3</div> Lab Tested Purity 0.00%
-              </div>
-              <div class="timeline-step">
-                <div class="timeline-dot">4</div> Delivered to Your Home
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==========================================================================
-    <!-- HOMEPAGE CONTENT WRAPPER -->
-    <div id="homePageContent">
-      <!-- Hero Section -->
-      <section id="hero" class="hero-section">
+    <!-- Main Page Content Area -->
+    <main id="homePageContent">
+      
+      <!-- Hero Carousel Banner -->
+      <section class="hero-section">
         <div class="container">
-          <div class="hero-grid">
+          <div class="hero-slider-card">
             <div class="hero-content">
-              <div class="hero-pill">
-                <i class="fa-solid fa-certificate" style="color:var(--primary);"></i>
-                <span>100% Certified Organic • Direct Lucknow Farms</span>
-              </div>
-              <h1 class="hero-title">
-                From Growers. <br>
-                To Your Home. <span class="highlight-text">Naturally.</span>
-              </h1>
-              <p class="hero-subtitle">
-                Experience authentic Indian spices, cold-pressed flours, and high-altitude teas. Pure, unadulterated, and lab-tested for 0.00% pesticide residues.
-              </p>
-              
-              <div class="hero-cta-group">
-                <a href="#store" class="btn-primary">
-                  <i class="fa-solid fa-basket-shopping"></i> Shop Organic Range
-                </a>
-                <a href="#traceability" class="btn-secondary">
-                  <i class="fa-solid fa-qrcode"></i> Trace Farm Batch
-                </a>
-              </div>
-
-              <div class="hero-stats">
-                <div class="stat-item">
-                  <span class="stat-number">15,000+</span>
-                  <span class="stat-label">Happy Indian Homes</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-number">0.00%</span>
-                  <span class="stat-label">Pesticide Residue</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-number">100%</span>
-                  <span class="stat-label">Direct Farm Pay</span>
-                </div>
+              <span class="hero-badge-pill"><i class="fa-solid fa-shield-halved"></i> 100% NPOP & USDA Certified Organic</span>
+              <h1>Purest Farm Spices & Whole Leaf Teas, Direct To Your Door</h1>
+              <p>Sourced naturally from partner farming co-ops in Lucknow and Kerala. Zero chemical pesticides, zero artificial additives.</p>
+              <div style="display:flex; gap:1rem;">
+                <button class="btn-primary" onclick="window.location.href='#store';">
+                  <i class="fa-solid fa-basket-shopping"></i> Explore Supermarket Catalog
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='#traceability';" style="background:rgba(255,255,255,0.2); color:white; border-color:white;">
+                  <i class="fa-solid fa-tractor"></i> Trace Farm Origin
+                </button>
               </div>
             </div>
-
-            <div class="hero-media-wrapper">
-              <div class="hero-image-card">
-                <img src="assets/hero-organic.jpg" alt="Hotspy Organic Spices & Farm Fresh Range" id="heroMainImage">
-              </div>
-
-              <!-- Floating Trust Cards -->
-              <div class="floating-badge floating-badge-1">
-                <div class="badge-icon"><i class="fa-solid fa-leaf"></i></div>
-                <div>
-                  <div class="badge-title">7.8% Curcumin</div>
-                  <div class="badge-sub">High Bioavailability Lakadong</div>
-                </div>
-              </div>
-
-              <div class="floating-badge floating-badge-2">
-                <div class="badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <div>
-                  <div class="badge-title">Lab Certified Pure</div>
-                  <div class="badge-sub">Zero Artificial Additives</div>
-                </div>
-              </div>
+            <div class="hero-image-wrap">
+              <img src="assets/hero.jpg" alt="BigBasket Organic Harvest">
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ==========================================================================
-           FARM TRACEABILITY WIDGET (BATCH PURITY LOOKUP)
-           ========================================================================== -->
-      <section id="traceability" class="traceability-section">
-        <div class="container">
-          <div class="trace-card-wrapper">
-            <div class="trace-header">
-              <h2><i class="fa-solid fa-microscope"></i> Verify Your Batch Purity</h2>
-              <p>Transparency from seed to doorstep. Enter the batch number printed on your pack to view partner farm details and lab test certificates.</p>
-            </div>
-
-            <div class="trace-search-box">
-              <input type="text" id="traceBatchInput" class="trace-input" placeholder="Enter Batch Code (e.g. HS-LKO-2026)">
-              <button class="btn-gold" style="border-radius:var(--radius-full); padding:0.7rem 1.5rem;" onclick="app.verifyBatchCode(document.getElementById('traceBatchInput').value)">
-                <i class="fa-solid fa-magnifying-glass"></i> Check Purity
-              </button>
-            </div>
-
-            <div class="trace-sample-chips">
-              <span>Try sample batches:</span>
-              <span class="sample-chip" onclick="app.verifyBatchCode('HS-LKO-2026')">HS-LKO-2026</span>
-              <span class="sample-chip" onclick="app.verifyBatchCode('HS-HIM-1044')">HS-HIM-1044</span>
-              <span class="sample-chip" onclick="app.verifyBatchCode('HS-KER-9901')">HS-KER-9901</span>
-            </div>
-
-            <!-- Traceability Result Display Card -->
-            <div id="traceResultCard" class="trace-result-card"></div>
+      <!-- Quick Categories Strip -->
+      <section class="container">
+        <div class="category-quick-strip">
+          <div class="category-quick-card active" onclick="app.filterCategory('All')">
+            <i class="fa-solid fa-border-all"></i>
+            <span>All Staples</span>
+          </div>
+          <div class="category-quick-card" onclick="app.filterCategory('Spices')">
+            <i class="fa-solid fa-pepper-hot"></i>
+            <span>Pure Spices</span>
+          </div>
+          <div class="category-quick-card" onclick="app.filterCategory('Teas')">
+            <i class="fa-solid fa-mug-hot"></i>
+            <span>Himalayan Teas</span>
+          </div>
+          <div class="category-quick-card" onclick="app.filterCategory('Oils & Grains')">
+            <i class="fa-solid fa-bottle-droplet"></i>
+            <span>Cold-Pressed Oils</span>
+          </div>
+          <div class="category-quick-card" onclick="app.filterCategory('Fresh Harvest')">
+            <i class="fa-solid fa-seedling"></i>
+            <span>Fresh Harvest</span>
+          </div>
+          <div class="category-quick-card" onclick="app.filterCategory('Snacks')">
+            <i class="fa-solid fa-cookie"></i>
+            <span>Organic Snacks</span>
           </div>
         </div>
       </section>
 
-      <!-- ==========================================================================
-           E-COMMERCE STORE & PRODUCT CATALOG
-           ========================================================================== -->
-      <section id="store" class="store-section">
-        <div class="container">
-          <div class="section-title-wrap">
-            <span class="section-subtitle">OUR ORGANIC CATALOG</span>
-            <h2 class="section-heading">Farm Fresh Organic Pantry</h2>
-            <p style="color:var(--text-muted);">Handpicked, traditional stone-ground, and sun-dried organic kitchen staples.</p>
-          </div>
-
-          <!-- Controls Bar: Category Filter Chips, Search, Sort -->
-          <div class="catalog-controls">
-            <div class="category-chips">
-              <button class="chip-btn active" data-category="All">All Items</button>
-              <button class="chip-btn" data-category="Spices">Spices</button>
-              <button class="chip-btn" data-category="Tea">Tea</button>
-              <button class="chip-btn" data-category="Flours">Flours</button>
-            </div>
-
-            <div class="search-sort-box">
-              <div class="search-input-wrap">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="storeSearchInput" class="store-search-input" placeholder="Search turmeric, tea...">
-              </div>
-
-              <select id="storeSortSelect" class="sort-select">
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Product Grid -->
-          <div id="productGrid" class="product-grid">
-            <!-- Dynamically Rendered by app.js -->
+      <!-- Store Catalog Section -->
+      <section id="store" class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">BigBasket Supermarket Fresh Catalog</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Handpicked 100% pesticide residue-free groceries with instant price savings</p>
           </div>
         </div>
-      </section>
 
-      <!-- ==========================================================================
-           RECIPE & SPICE PAIRING SECTION (HOMEPAGE)
-           ========================================================================== -->
-      <section id="recipes" class="recipe-section">
-        <div class="container">
-          <div class="section-title-wrap">
-            <span class="section-subtitle">AYURVEDIC KITCHEN & RECIPES</span>
-            <h2 class="section-heading">Organic Recipe Pairings & Combo Bundles</h2>
-            <p style="color:var(--text-muted);">Cook delicious health-focused meals with 1-click organic spice bundle additions & exclusive bundle discounts.</p>
-          </div>
-
-          <div id="recipeHomepageGrid" class="recipe-grid">
-            <!-- Rendered dynamically by app.js -->
-          </div>
-
-          <!-- Clickable Homepage Banner Redirection to Dedicated Combos Page -->
-          <div style="margin-top:2.5rem; background:linear-gradient(135deg, var(--primary-deep), var(--primary-dark)); border-radius:var(--radius-lg); padding:2rem; color:white; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.25rem; box-shadow:var(--shadow-xl);">
-            <div>
-              <span class="badge-tag badge-gold" style="margin-bottom:0.4rem;"><i class="fa-solid fa-star"></i> Dedicated Combo Store</span>
-              <h3 style="color:white; font-size:1.5rem; margin-bottom:0.25rem;">Looking for Exclusive Combo Packages?</h3>
-              <p style="color:var(--primary-mint); font-size:0.9rem;">Browse our dedicated page featuring multi-product combo bundles at up to 60% OFF!</p>
-            </div>
-            <button class="btn-gold" style="padding:0.85rem 1.8rem; font-size:0.95rem;" onclick="app.openComboPage()">
-              Explore Dedicated Combos Page <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- ==========================================================================
-         STANDALONE DEDICATED RECIPE & COMBO BUNDLES PAGE VIEW
-         ========================================================================== -->
-    <div id="dedicatedCombosPageView" style="display:none; background: linear-gradient(to bottom, #FAF8F5, #F3F0EB); min-height:80vh; padding: 2.5rem 0 4rem;">
-      <div class="container">
-        <!-- Breadcrumb & Back Navigation -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid var(--border-light);">
-          <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">
-            <a href="#" onclick="app.showHomePage(); return false;" style="color:var(--primary); font-weight:700;"><i class="fa-solid fa-house"></i> Home</a> 
-            <span style="margin:0 0.35rem;">/</span> 
-            <strong style="color:var(--primary-deep);">Recipe Pairings</strong>
-          </div>
-
-          <button class="btn-secondary" style="padding:0.55rem 1.25rem; font-size:0.85rem;" onclick="app.showHomePage()">
-            <i class="fa-solid fa-arrow-left"></i> Back to Main Store
-          </button>
-        </div>
-
-        <div class="section-title-wrap">
-          <span class="section-subtitle">⭐ DEDICATED RECIPE CATALOG</span>
-          <h2 class="section-heading">Organic Recipe Pairings & Combo Bundles</h2>
-          <p style="color:var(--text-muted);">Handcrafted organic bundles paired by Ayurvedic experts. Enjoy up to 60% bundle savings with 100% farm purity.</p>
-        </div>
-
-        <!-- Grid of Dedicated Combo Cards -->
-        <div id="dedicatedCombosGrid" class="product-grid">
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid">
           <!-- Rendered dynamically by app.js -->
         </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- ==========================================================================
-         STANDALONE CUSTOMER PROFILE PAGE VIEW (ADDRESSES, ORDERS, PASSWORD)
-         ========================================================================== -->
-    <div id="customerProfilePageView" style="display:none; background: linear-gradient(to bottom, #FAF8F5, #F3F0EB); min-height:80vh; padding: 2.5rem 0 4rem;">
-      <div class="container">
-        <!-- Breadcrumb & Back Navigation -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid var(--border-light);">
-          <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">
-            <a href="#" onclick="app.showHomePage(); return false;" style="color:var(--primary); font-weight:700;"><i class="fa-solid fa-house"></i> Home</a> 
-            <span style="margin:0 0.35rem;">/</span> 
-            <strong style="color:var(--primary-deep);">My Account Profile</strong>
-          </div>
-
-          <div style="display:flex; gap:0.5rem;">
-            <button class="btn-secondary" style="padding:0.55rem 1.25rem; font-size:0.85rem;" onclick="app.showHomePage()">
-              <i class="fa-solid fa-arrow-left"></i> Back to Main Store
-            </button>
-            <button class="btn-secondary" style="padding:0.55rem 1.25rem; font-size:0.85rem; color:#EF4444;" onclick="app.logoutUser()">
-              <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </button>
-          </div>
-        </div>
-
-        <!-- Header Customer Profile Card -->
-        <div class="admin-card" style="margin-bottom:2rem; background:linear-gradient(135deg, white, #FDFBF7); border:1px solid var(--primary-mint); box-shadow:var(--shadow-md);">
-          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.25rem;">
-            <div style="display:flex; align-items:center; gap:1.25rem;">
-              <img id="profileAvatarImg" src="assets/turmeric.jpg" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-mint); box-shadow:var(--shadow-sm);" alt="Customer Avatar">
-              <div>
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                  <h2 id="profileNameDisplay" style="font-size:1.45rem; color:var(--primary-deep); margin:0;">Aarav Sharma</h2>
-                  <span class="badge-tag badge-gold" style="font-size:0.7rem;"><i class="fa-solid fa-shield-halved"></i> Organic Club Member</span>
-                </div>
-                <div style="font-size:0.95rem; font-weight:700; color:var(--primary-dark); margin-top:0.2rem;" id="profileMobileDisplay">
-                  <i class="fa-solid fa-phone" style="font-size:0.8rem; color:var(--primary);"></i> +91 9876543210
-                </div>
-              </div>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
-              <div style="text-align:center; padding:0.6rem 1rem; background:var(--bg-warm); border-radius:var(--radius-sm); border:1px solid var(--border-light);">
-                <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Total Orders</div>
-                <strong id="profileOrdersCount" style="font-size:1.2rem; color:var(--primary-deep);">0</strong>
-              </div>
-              <div style="text-align:center; padding:0.6rem 1rem; background:var(--bg-warm); border-radius:var(--radius-sm); border:1px solid var(--border-light);">
-                <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Wishlist Items</div>
-                <strong id="profileWishlistCount" style="font-size:1.2rem; color:var(--primary-deep);">0</strong>
-              </div>
-              <button class="btn-secondary" style="padding:0.65rem 1.1rem; font-size:0.85rem;" onclick="app.openChangePasswordModal()">
-                <i class="fa-solid fa-key" style="color:var(--accent-gold);"></i> Change Password
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Profile Tabs Header -->
-        <div class="category-chips" style="margin-bottom:1.5rem;">
-          <button class="chip-btn active" id="profileTabAddrBtn" onclick="app.switchProfileTab('addresses')">
-            <i class="fa-solid fa-location-dot"></i> Delivery Addresses
-          </button>
-          <button class="chip-btn" id="profileTabOrdersBtn" onclick="app.switchProfileTab('orders')">
-            <i class="fa-solid fa-box-archive"></i> My Orders & Invoices
-          </button>
-        </div>
-
-        <!-- Tab 1: Delivery Addresses Section -->
-        <div id="profileSectionAddresses">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
-            <h3 style="font-size:1.2rem; color:var(--primary-deep);"><i class="fa-solid fa-address-book"></i> Saved Delivery Addresses</h3>
-            <button class="btn-gold" style="padding:0.5rem 1.1rem; font-size:0.85rem;" onclick="app.openAddAddressModal()">
-              <i class="fa-solid fa-plus"></i> Add New Delivery Address
-            </button>
-          </div>
-
-          <div id="profileAddressesGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap:1.25rem;">
-            <!-- Dynamically rendered by app.js -->
-          </div>
-        </div>
-
-        <!-- Tab 2: My Orders Section -->
-        <div id="profileSectionOrders" style="display:none;">
-          <div style="margin-bottom:1.25rem;">
-            <h3 style="font-size:1.2rem; color:var(--primary-deep);"><i class="fa-solid fa-bag-shopping"></i> My Order History</h3>
-            <p style="color:var(--text-muted); font-size:0.85rem;">Click any order to view full invoice breakdown, payment status, and tracking.</p>
-          </div>
-
-          <div id="profileOrdersGrid" style="display:flex; flex-direction:column; gap:1.25rem;">
-            <!-- Dynamically rendered by app.js -->
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==========================================================================
-         DEDICATED DEDICATED ORDER INVOICE PAGE VIEW (PRINTABLE)
-         ========================================================================== -->
-    <div id="orderInvoicePageView" style="display:none; background:#F4F6F8; min-height:80vh; padding: 2.5rem 0 4rem;">
-      <div class="container" style="max-width:820px;">
-        <!-- Breadcrumb & Back Navigation -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;" class="no-print">
-          <button class="btn-secondary" style="padding:0.55rem 1.25rem; font-size:0.85rem;" onclick="app.openCustomerProfilePage('orders')">
-            <i class="fa-solid fa-arrow-left"></i> Back to My Orders
-          </button>
-
-          <button class="btn-gold" style="padding:0.55rem 1.4rem; font-size:0.85rem;" onclick="window.print()">
-            <i class="fa-solid fa-print"></i> Print Official Invoice
-          </button>
-        </div>
-
-        <!-- Printable Invoice Container -->
-        <div id="printableOrderInvoice" class="admin-card" style="background:white; padding:2.5rem; border-radius:var(--radius-md); box-shadow:var(--shadow-lg); border:1px solid var(--border-light);">
-          <!-- Rendered dynamically by app.js -->
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer style="background:var(--primary-deep); color:white; padding:3.5rem 0 2rem; border-top:1px solid rgba(255,255,255,0.1);">
-      <div class="container" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:2rem;">
-        <div>
-          <h3 style="color:white; margin-bottom:1rem; font-size:1.3rem;">HOTSPY ORGANICS</h3>
-          <p style="color:var(--primary-mint); font-size:0.85rem; margin-bottom:0.75rem;">Hotspy Global (OPC) Private Limited<br>Lucknow, Uttar Pradesh, India</p>
-          <p style="color:rgba(255,255,255,0.7); font-size:0.78rem;">Tagline: "From Growers. To Your Home. Naturally."</p>
-        </div>
-        <div>
-          <h4 style="color:white; margin-bottom:0.75rem; font-size:1rem;">Organic Range</h4>
-          <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; line-height:1.7;">Lakadong Turmeric • Himalayan Green Tea • Tellicherry Black Pepper • Stone-Ground Atta • Desi Besan</p>
-        </div>
-        <div>
-          <h4 style="color:white; margin-bottom:0.75rem; font-size:1rem;">Purity Certifications</h4>
-          <p style="color:rgba(255,255,255,0.7); font-size:0.82rem; line-height:1.7;">NPOP India • USDA Organic • Jaivik Bharat • 100% Pesticide Residue Free Lab Verified</p>
-        </div>
-      </div>
-      <div style="text-align:center; margin-top:2.5rem; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.1); font-size:0.78rem; color:rgba(255,255,255,0.6);">
-        &copy; 2026 Hotspy Global (OPC) Private Limited. All Rights Reserved.
-      </div>
-    </footer>
-  </div>
-
-  <!-- ==========================================================================
-       FULL RICH COMBO DETAIL MODAL (WITH TABS, 4 BADGES, MARQUEE, 2-COLUMN PRODUCTS)
-       ========================================================================== -->
-  <div id="comboDetailModal" class="modal-backdrop" onclick="if(event.target === this) app.closeComboDetailModal()">
-    <div class="auth-modal-card product-detail-card" style="max-width:860px;">
-      <button class="modal-close-btn" onclick="app.closeComboDetailModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <!-- Full Width Sliding Marquee Announcement Header -->
-      <div class="detail-marquee-wrapper" id="comboDetailMarqueeContainer">
-        <div class="detail-marquee-content" id="comboDetailMarqueeContent">
-          🌿 100% Certified Organic • Direct Farm Harvest • Free Shipping Over ₹999 • Lab Tested Pesticide 0.00%
-        </div>
-      </div>
-
-      <div class="detail-modal-grid">
-        <div class="detail-modal-media">
-          <img id="comboDetailImage" src="assets/turmeric.jpg" alt="Combo Image">
-          <div style="position:absolute; top:1rem; left:1rem; display:flex; flex-direction:column; gap:0.4rem;">
-            <span class="badge-tag badge-gold" id="comboDetailTag">Immunity Boost</span>
-            <span class="badge-tag" id="comboDetailDiscountBadge" style="background:#FEF3C7; color:#B45309; font-weight:800;">Save 50% OFF</span>
-          </div>
-        </div>
-
-        <div class="detail-modal-info">
-          <div style="font-size:0.75rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:0.05em;" id="comboDetailCategory">Organic Combo Package</div>
-          <h2 id="comboDetailTitle" style="font-size:1.6rem; color:var(--primary-deep); margin:0.25rem 0 0.5rem;">Immunity Golden Turmeric Milk</h2>
-          
-          <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.85rem;">
-            <span id="comboDetailOriginalPrice" style="font-size:0.95rem; text-decoration:line-through; color:var(--text-light);">₹748</span>
-            <span id="comboDetailPrice" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--primary-dark);">₹399</span>
-          </div>
-
-          <!-- 4-Column Horizontal Trust Badges -->
-          <div class="trust-signals-grid-4" id="comboDetailTrustGrid">
-            <!-- Rendered by app.js -->
-          </div>
-
-          <!-- Rich Combo Description -->
-          <div id="comboDetailDescriptionBox" class="product-description-text">
-            <!-- Rendered by app.js -->
-          </div>
-
-          <!-- 2-Column Included Products Grid -->
-          <div style="margin: 0.85rem 0; background:var(--bg-warm); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
-            <div style="font-size:0.78rem; font-weight:700; color:var(--primary-deep); text-transform:uppercase; margin-bottom:0.65rem;">
-              <i class="fa-solid fa-boxes-packing" style="color:var(--primary);"></i> Included Products in this Combo (2-Column Grid):
-            </div>
-            <div id="comboDetailProductsGrid" class="combo-products-grid">
-              <!-- Rendered by app.js -->
-            </div>
-          </div>
-
-          <!-- Dynamic Specification Custom Tabs -->
-          <div class="custom-tabs-container">
-            <div class="custom-tabs-header" id="comboDetailTabsHeader">
-              <!-- Rendered by app.js -->
-            </div>
-            <div class="custom-tab-body" id="comboDetailTabsBody">
-              <!-- Rendered by app.js -->
-            </div>
-          </div>
-
-          <div style="margin-top:auto; padding-top:1rem;">
-            <button id="comboDetailAddToCartBtn" class="btn-gold" style="width:100%; border-radius:var(--radius-full); padding:0.9rem; font-size:1rem;">
-              <i class="fa-solid fa-cart-plus"></i> Add Entire Combo Package To Cart
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       ADMIN PANEL SUITE (CONTROL CENTER)
-       ========================================================================== -->
-  <div id="adminWrapper" class="admin-wrapper">
-    <aside class="admin-sidebar" id="adminSidebar">
-      <div class="admin-brand">
-        <i class="fa-solid fa-leaf" style="font-size:1.4rem; color:var(--primary-mint);"></i>
-        <div class="admin-brand-text">
-          <strong style="font-size:1.05rem; font-family:var(--font-heading);">HOTSPY ADMIN</strong>
-          <div style="font-size:0.68rem; color:var(--primary-mint);">Global Management Suite</div>
-        </div>
-      </div>
-      <ul class="admin-menu">
-        <li><a href="#" class="admin-menu-link active" data-tab="dashboard" onclick="app.switchAdminTab('dashboard', event)"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="products" onclick="app.switchAdminTab('products', event)"><i class="fa-solid fa-boxes-stacked"></i> <span>Product Manager</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="recipes" onclick="app.switchAdminTab('recipes', event)"><i class="fa-solid fa-utensils"></i> <span>Recipe Pairings & Combos</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="traceability" onclick="app.switchAdminTab('traceability', event)"><i class="fa-solid fa-tractor"></i> <span>Farm Traceability</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="users" onclick="app.switchAdminTab('users', event)"><i class="fa-solid fa-users"></i> <span>Customers & Users</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="orders" onclick="app.switchAdminTab('orders', event)"><i class="fa-solid fa-dolly"></i> <span>Customer Orders</span></a></li>
-        <li><a href="#" class="admin-menu-link" data-tab="supabase" onclick="app.promptSupabaseConfig()"><i class="fa-solid fa-database"></i> <span>Supabase Sync</span></a></li>
-      </ul>
-    </aside>
-
-    <main class="admin-main-content">
-      <div class="admin-top-bar">
-        <div>
-          <h1 class="admin-title" id="adminPageTitle">Executive Control Center</h1>
-          <p style="color:var(--text-muted); font-size:0.82rem;" id="adminPageSub">Real-time sales analytics and live catalog management engine.</p>
-        </div>
-        <div style="display:flex; gap:0.75rem; align-items:center;">
-          <button class="btn-gold" onclick="app.openAddProductModal()">
-            <i class="fa-solid fa-plus"></i> Add New Product
-          </button>
-          <button class="btn-secondary" onclick="app.toggleAdminMode()">
-            <i class="fa-solid fa-store"></i> Return to Store
-          </button>
-        </div>
-      </div>
-
-      <!-- Section: Executive Metrics & Analytics -->
-      <div id="adminSectionDashboard">
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div>
-              <div class="metric-lbl">Total Sales Revenue</div>
-              <div class="metric-val" id="adminRevenueVal">₹1,48,900</div>
-            </div>
-            <div class="metric-icon-box"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-          </div>
-          <div class="metric-card">
-            <div>
-              <div class="metric-lbl">Catalog Products</div>
-              <div class="metric-val" id="adminTotalProducts">4</div>
-            </div>
-            <div class="metric-icon-box" style="background:#E0F2FE; color:#0369A1;"><i class="fa-solid fa-box"></i></div>
-          </div>
-          <div class="metric-card">
-            <div>
-              <div class="metric-lbl">Customer Orders</div>
-              <div class="metric-val" id="adminTotalOrders">2</div>
-            </div>
-            <div class="metric-icon-box" style="background:#FEF3C7; color:#B45309;"><i class="fa-solid fa-truck-fast"></i></div>
-          </div>
-          <div class="metric-card">
-            <div>
-              <div class="metric-lbl">Supabase Cloud Sync</div>
-              <div class="metric-val" id="supabaseStatusBadge" style="font-size:1rem; color:var(--primary);">Connected ✅</div>
-            </div>
-            <div class="metric-icon-box" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-database"></i></div>
-          </div>
-        </div>
-
-        <!-- Sales Chart -->
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);">Monthly Revenue Trend</h3>
-            <span style="font-size:0.78rem; color:var(--primary); font-weight:700;">+28.4% Growth MoM</span>
-          </div>
-          <canvas id="salesChart" width="800" height="220" style="width:100%; height:220px;"></canvas>
-        </div>
-      </div>
-
-      <!-- Section: Product Manager -->
-      <div id="adminSectionProducts">
-
-        <!-- Global Product Announcement & Interactive 4 Trust Badges Customizer -->
-        <div class="admin-card" style="border: 2px solid var(--primary-mint); background: #F4FDF8;">
-          <div class="admin-card-header" style="margin-bottom:0.75rem;">
-            <h3 style="font-size:1.1rem; color:var(--primary-deep);">
-              <i class="fa-solid fa-bullhorn" style="color:var(--primary);"></i> Global Announcement & 4 Trust Badges Customizer (With Visual Icon Selector)
-            </h3>
-            <button class="btn-primary" style="padding:0.35rem 0.8rem; font-size:0.78rem;" onclick="app.saveGlobalBadgesAndAnnouncement()">
-              <i class="fa-solid fa-floppy-disk"></i> Update Global Settings
-            </button>
-          </div>
-          
-          <div style="margin-bottom:1rem;">
-            <label class="form-label">Sliding Marquee Announcement Text (Shows Top of All Product Modals)</label>
-            <input type="text" id="adminMarqueeInput" class="form-control" placeholder="e.g. 🌿 100% Certified Organic • Direct Farm Harvest • Free Shipping Over ₹999 • Lab Tested Pesticide 0.00%">
-          </div>
-
-          <label class="form-label">4 Horizontal Trust Badges (Visual Icon Selector + Live Preview)</label>
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem;">
+      <!-- Farm Traceability Section -->
+      <section id="traceability" class="container" style="margin-bottom:3rem;">
+        <div style="background:var(--primary-deep); color:white; padding:2.5rem; border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);">
+          <div style="max-width:680px; margin:0 auto; text-align:center;">
+            <span class="hero-badge-pill"><i class="fa-solid fa-tractor"></i> Real-time Batch Traceability</span>
+            <h2 style="font-size:2rem; font-weight:800; margin-bottom:0.75rem;">Trace Your Package Direct to the Farmer</h2>
+            <p style="font-size:0.9rem; opacity:0.9; margin-bottom:1.5rem;">Enter your package batch code (found on your packet e.g. HS-LKO-2026) to view partner farmer details, harvest date, and lab purity reports.</p>
             
-            <!-- Badge 1 Editor -->
-            <div class="spec-box" style="background:white; padding:0.65rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-                <span class="spec-label">Badge 1</span>
-                <span id="badgePreview1" style="font-size:1.1rem; color:var(--primary-dark);"><i class="fa-solid fa-truck"></i></span>
-              </div>
-              <select id="badgeIconSelect1" class="form-control" style="padding:0.3rem; margin-bottom:0.35rem; font-size:0.78rem;" onchange="app.updateBadgeIconPreview(1)">
-                <option value="fa-truck">🚚 Delivery / Shipping (fa-truck)</option>
-                <option value="fa-rotate-left">🔄 Purity Guarantee / Return (fa-rotate-left)</option>
-                <option value="fa-tree">🌲 Eco Tree Planting (fa-tree)</option>
-                <option value="fa-shield-halved">🛡️ 0.00% Pesticides (fa-shield-halved)</option>
-                <option value="fa-leaf">🌿 100% Organic Leaf (fa-leaf)</option>
-                <option value="fa-seedling">🌱 Organic Seedling (fa-seedling)</option>
-                <option value="fa-flask">🔬 Lab Tested Pure (fa-flask)</option>
-                <option value="fa-award">🏆 Fair Trade Award (fa-award)</option>
-                <option value="fa-star">⭐ Top Rated (fa-star)</option>
-                <option value="fa-tractor">🇮🇳 Direct Farmer Pay (fa-tractor)</option>
-                <option value="custom">✍️ Type Custom Icon Class...</option>
-              </select>
-              <input type="text" id="badgeIcon1" class="form-control" style="padding:0.3rem 0.5rem; margin-bottom:0.35rem; font-size:0.75rem; display:none;" placeholder="Custom Icon Class (e.g. fa-gift)" oninput="app.updateBadgeIconPreview(1)">
-              <input type="text" id="badgeTitle1" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem; margin-bottom:0.25rem;" placeholder="Free Shipping">
-              <input type="text" id="badgeSub1" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem;" placeholder="₹999+ Orders">
+            <div style="display:flex; gap:0.5rem; max-width:480px; margin:0 auto 1.5rem;">
+              <input type="text" id="traceBatchInput" class="form-control" style="border-radius:var(--radius-sm); font-weight:700; text-transform:uppercase;" placeholder="Enter Batch Code (e.g. HS-LKO-2026)">
+              <button class="btn-primary" onclick="app.verifyBatchFromInput()" style="background:var(--primary); color:white; flex-shrink:0;">
+                Verify Batch
+              </button>
             </div>
 
-            <!-- Badge 2 Editor -->
-            <div class="spec-box" style="background:white; padding:0.65rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-                <span class="spec-label">Badge 2</span>
-                <span id="badgePreview2" style="font-size:1.1rem; color:var(--primary-dark);"><i class="fa-solid fa-rotate-left"></i></span>
-              </div>
-              <select id="badgeIconSelect2" class="form-control" style="padding:0.3rem; margin-bottom:0.35rem; font-size:0.78rem;" onchange="app.updateBadgeIconPreview(2)">
-                <option value="fa-truck">🚚 Delivery / Shipping (fa-truck)</option>
-                <option value="fa-rotate-left" selected>🔄 Purity Guarantee / Return (fa-rotate-left)</option>
-                <option value="fa-tree">🌲 Eco Tree Planting (fa-tree)</option>
-                <option value="fa-shield-halved">🛡️ 0.00% Pesticides (fa-shield-halved)</option>
-                <option value="fa-leaf">🌿 100% Organic Leaf (fa-leaf)</option>
-                <option value="fa-seedling">🌱 Organic Seedling (fa-seedling)</option>
-                <option value="fa-flask">🔬 Lab Tested Pure (fa-flask)</option>
-                <option value="fa-award">🏆 Fair Trade Award (fa-award)</option>
-                <option value="fa-star">⭐ Top Rated (fa-star)</option>
-                <option value="fa-tractor">🇮🇳 Direct Farmer Pay (fa-tractor)</option>
-                <option value="custom">✍️ Type Custom Icon Class...</option>
-              </select>
-              <input type="text" id="badgeIcon2" class="form-control" style="padding:0.3rem 0.5rem; margin-bottom:0.35rem; font-size:0.75rem; display:none;" placeholder="Custom Icon Class" oninput="app.updateBadgeIconPreview(2)">
-              <input type="text" id="badgeTitle2" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem; margin-bottom:0.25rem;" placeholder="100% Purity">
-              <input type="text" id="badgeSub2" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem;" placeholder="Guarantee">
-            </div>
-
-            <!-- Badge 3 Editor -->
-            <div class="spec-box" style="background:white; padding:0.65rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-                <span class="spec-label">Badge 3</span>
-                <span id="badgePreview3" style="font-size:1.1rem; color:var(--primary-dark);"><i class="fa-solid fa-tree"></i></span>
-              </div>
-              <select id="badgeIconSelect3" class="form-control" style="padding:0.3rem; margin-bottom:0.35rem; font-size:0.78rem;" onchange="app.updateBadgeIconPreview(3)">
-                <option value="fa-truck">🚚 Delivery / Shipping (fa-truck)</option>
-                <option value="fa-rotate-left">🔄 Purity Guarantee / Return (fa-rotate-left)</option>
-                <option value="fa-tree" selected>🌲 Eco Tree Planting (fa-tree)</option>
-                <option value="fa-shield-halved">🛡️ 0.00% Pesticides (fa-shield-halved)</option>
-                <option value="fa-leaf">🌿 100% Organic Leaf (fa-leaf)</option>
-                <option value="fa-seedling">🌱 Organic Seedling (fa-seedling)</option>
-                <option value="fa-flask">🔬 Lab Tested Pure (fa-flask)</option>
-                <option value="fa-award">🏆 Fair Trade Award (fa-award)</option>
-                <option value="fa-star">⭐ Top Rated (fa-star)</option>
-                <option value="fa-tractor">🇮🇳 Direct Farmer Pay (fa-tractor)</option>
-                <option value="custom">✍️ Type Custom Icon Class...</option>
-              </select>
-              <input type="text" id="badgeIcon3" class="form-control" style="padding:0.3rem 0.5rem; margin-bottom:0.35rem; font-size:0.75rem; display:none;" placeholder="Custom Icon Class" oninput="app.updateBadgeIconPreview(3)">
-              <input type="text" id="badgeTitle3" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem; margin-bottom:0.25rem;" placeholder="Plants 1 Tree">
-              <input type="text" id="badgeSub3" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem;" placeholder="Lucknow Co-op">
-            </div>
-
-            <!-- Badge 4 Editor -->
-            <div class="spec-box" style="background:white; padding:0.65rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
-                <span class="spec-label">Badge 4</span>
-                <span id="badgePreview4" style="font-size:1.1rem; color:var(--primary-dark);"><i class="fa-solid fa-shield-halved"></i></span>
-              </div>
-              <select id="badgeIconSelect4" class="form-control" style="padding:0.3rem; margin-bottom:0.35rem; font-size:0.78rem;" onchange="app.updateBadgeIconPreview(4)">
-                <option value="fa-truck">🚚 Delivery / Shipping (fa-truck)</option>
-                <option value="fa-rotate-left">🔄 Purity Guarantee / Return (fa-rotate-left)</option>
-                <option value="fa-tree">🌲 Eco Tree Planting (fa-tree)</option>
-                <option value="fa-shield-halved" selected>🛡️ 0.00% Pesticides (fa-shield-halved)</option>
-                <option value="fa-leaf">🌿 100% Organic Leaf (fa-leaf)</option>
-                <option value="fa-seedling">🌱 Organic Seedling (fa-seedling)</option>
-                <option value="fa-flask">🔬 Lab Tested Pure (fa-flask)</option>
-                <option value="fa-award">🏆 Fair Trade Award (fa-award)</option>
-                <option value="fa-star">⭐ Top Rated (fa-star)</option>
-                <option value="fa-tractor">🇮🇳 Direct Farmer Pay (fa-tractor)</option>
-                <option value="custom">✍️ Type Custom Icon Class...</option>
-              </select>
-              <input type="text" id="badgeIcon4" class="form-control" style="padding:0.3rem 0.5rem; margin-bottom:0.35rem; font-size:0.75rem; display:none;" placeholder="Custom Icon Class" oninput="app.updateBadgeIconPreview(4)">
-              <input type="text" id="badgeTitle4" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem; margin-bottom:0.25rem;" placeholder="0.00% Pesticides">
-              <input type="text" id="badgeSub4" class="form-control" style="padding:0.3rem 0.5rem; font-size:0.75rem;" placeholder="Lab Certified">
-            </div>
-
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);"><i class="fa-solid fa-boxes-stacked"></i> Product Catalog Manager</h3>
-            <button class="btn-primary" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="app.openAddProductModal()">
-              <i class="fa-solid fa-plus"></i> Add Item
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Farm Origin / Batch</th>
-                  <th>Stock</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="adminProductsTable">
-                <!-- Rendered by app.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Recipe Pairings & Combo Bundles Manager -->
-      <div id="adminSectionRecipes" style="display:none;">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);"><i class="fa-solid fa-utensils"></i> Recipe Pairings & Combo Bundles Manager</h3>
-            <button class="btn-gold" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="app.openAddRecipeModal()">
-              <i class="fa-solid fa-plus"></i> Create New Recipe Combo
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Recipe / Combo Title</th>
-                  <th>Badge Tag</th>
-                  <th>Selected Products</th>
-                  <th>Original Total</th>
-                  <th>Combo Offer Price</th>
-                  <th>Discount %</th>
-                  <th>Placement</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="adminRecipesTable">
-                <!-- Rendered by app.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Farm Traceability Batch Manager -->
-      <div id="adminSectionTraceability" style="display:none;">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);"><i class="fa-solid fa-microscope"></i> Farm Traceability & Batch Purity Records</h3>
-            <button class="btn-primary" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="app.openAddBatchModal()">
-              <i class="fa-solid fa-plus"></i> Add New Batch Record
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Batch Code</th>
-                  <th>Partner Farm Name</th>
-                  <th>Region / Location</th>
-                  <th>Harvest Date</th>
-                  <th>Purity / Lab Status</th>
-                  <th>Soil Type</th>
-                  <th>Certificate No</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="adminBatchTable">
-                <!-- Rendered by app.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Customers & Users Manager -->
-      <div id="adminSectionUsers" style="display:none;">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);"><i class="fa-solid fa-users"></i> Registered Customers & Users Manager</h3>
-            <span style="font-size:0.78rem; color:var(--text-muted);">Real-time Supabase Profiles</span>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Avatar</th>
-                  <th>Customer Name</th>
-                  <th>Mobile Number</th>
-                  <th>Registered Date</th>
-                  <th>Total Orders</th>
-                  <th>Total Spent</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="adminUsersTable">
-                <!-- Rendered by app.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Customer Orders -->
-      <div id="adminSectionOrders">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 style="font-size:1.15rem; color:var(--primary-deep);"><i class="fa-solid fa-dolly"></i> Customer Orders Management</h3>
-            <span style="font-size:0.78rem; color:var(--text-muted);">Real-time Supabase Pipeline</span>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Live Order Status</th>
-                  <th>Quick Action</th>
-                </tr>
-              </thead>
-              <tbody id="adminOrdersTable">
-                <!-- Rendered by app.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- ==========================================================================
-       PRODUCT DETAIL QUICK VIEW MODAL (CUSTOMER-FRIENDLY WITH DYNAMIC 4 TABS)
-       ========================================================================== -->
-  <div id="productDetailModal" class="modal-backdrop" onclick="if(event.target === this) app.closeProductDetailModal()">
-    <div class="auth-modal-card product-detail-card">
-      <button class="modal-close-btn" onclick="app.closeProductDetailModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <!-- Automatically Sliding Announcement Bar at Top Full Width -->
-      <div class="detail-marquee-wrapper">
-        <div class="detail-marquee-content" id="detailMarqueeText">
-          🌿 100% Certified Organic • Direct Farm Harvest • Free Shipping Over ₹999 • Lab Tested Pesticide 0.00%
-        </div>
-      </div>
-
-      <div class="detail-modal-grid">
-        <div class="detail-modal-media">
-          <img id="detailImg" src="assets/turmeric.jpg" alt="Product Image">
-        </div>
-        <div class="detail-modal-info">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-            <span class="badge-tag badge-organic" id="detailBadge"><i class="fa-solid fa-seedling"></i> 100% Organic</span>
-            <span class="badge-tag badge-gold"><i class="fa-solid fa-shield-halved"></i> 0.00% Pesticides</span>
-          </div>
-
-          <h2 id="detailTitle" style="font-size:1.65rem; color:var(--primary-deep); margin-bottom:0.25rem; line-height:1.2;">Product Name</h2>
-          
-          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.65rem;">
-            <div style="color:var(--accent-gold); font-size:0.9rem;" id="detailRating">
-              <i class="fa-solid fa-star"></i> 4.9
-            </div>
-            <span style="color:var(--text-muted); font-size:0.8rem;" id="detailReviews">(142 verified reviews)</span>
-          </div>
-
-          <div style="display:flex; align-items:baseline; gap:0.75rem; margin-bottom:0.75rem;">
-            <span id="detailPrice" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--primary-dark);">₹349</span>
-            <span id="detailOriginalPrice" style="font-size:0.95rem; text-decoration:line-through; color:var(--text-light);">₹420</span>
-            <span class="badge-tag" style="background:#FEF3C7; color:#B45309; font-size:0.72rem;">Save 17% OFF</span>
-          </div>
-
-          <!-- Product Description preserving line-breaks and clean HTML formatting -->
-          <div id="detailDesc" class="product-description-text">
-            Product description details here.
-          </div>
-
-          <!-- 4-Column Custom Horizontal Trust Badges Grid -->
-          <div id="detailTrustGrid" class="trust-signals-grid-4">
-            <!-- Rendered by app.js (Max 4 Horizontal View) -->
-          </div>
-
-          <!-- Custom Specifications Dynamic Tabs Engine (Up to 4 Tabs Max) -->
-          <div class="custom-tabs-container">
-            <div class="custom-tabs-header" id="detailCustomTabsHeader">
+            <div id="traceResultCard" style="display:none; background:white; color:var(--text-main); padding:1.5rem; border-radius:var(--radius-md); text-align:left;">
               <!-- Rendered dynamically by app.js -->
             </div>
-            <div class="custom-tab-body product-description-text" id="customTabBodyContent">
-              <!-- Content rendered dynamically by app.js -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Dedicated Recipe Pairings Page View -->
+    <div id="dedicatedCombosPageView" class="container" style="display:none; padding:2rem 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border-light);">
+        <div>
+          <span style="font-size:0.8rem; font-weight:700; color:var(--primary); text-transform:uppercase;">Home / Recipe Pairings</span>
+          <h1 style="font-size:2rem; font-weight:800; color:var(--primary-deep); margin-top:0.25rem;">🔥 Chef Curated Recipe Pairing Bundles</h1>
+        </div>
+        <button class="btn-secondary" onclick="app.showHomePage();">
+          <i class="fa-solid fa-arrow-left"></i> Back to Supermarket
+        </button>
+      </div>
+
+      <div class="product-grid" id="dedicatedCombosGrid">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+
+    <!-- Customer Profile Dashboard Page View -->
+    <div id="customerProfilePageView" class="container" style="display:none; padding:2rem 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h1 style="font-size:1.8rem; font-weight:800; color:var(--primary-deep);">My Customer Profile & Account</h1>
+        <button class="btn-secondary" onclick="app.showHomePage();">
+          <i class="fa-solid fa-arrow-left"></i> Back to Store
+        </button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 280px 1fr; gap:1.5rem;">
+        <!-- Profile Card Sidebar -->
+        <div style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); height:fit-content; text-align:center;">
+          <img id="profileAvatarImg" src="assets/turmeric.jpg" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--primary); margin:0 auto 0.75rem;">
+          <h3 id="profileNameDisplay" style="font-size:1.15rem; font-weight:800; color:var(--primary-deep);">Aarav Sharma</h3>
+          <p id="profileMobileDisplay" style="font-size:0.85rem; font-weight:700; color:var(--primary); margin-bottom:1rem;">📞 +91 9876543210</p>
+          
+          <button class="btn-secondary" onclick="app.openChangePasswordModal()" style="width:100%; font-size:0.8rem; margin-bottom:1rem;">
+            <i class="fa-solid fa-key"></i> Change Password
+          </button>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; padding-top:1rem; border-top:1px solid var(--border-light); font-size:0.8rem;">
+            <div>
+              <strong id="profileOrdersCount" style="font-size:1.2rem; display:block; color:var(--primary-deep);">0</strong>
+              <span>Total Orders</span>
+            </div>
+            <div>
+              <strong id="profileWishlistCount" style="font-size:1.2rem; display:block; color:var(--primary-deep);">0</strong>
+              <span>Wishlist</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Tabs Area -->
+        <div style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+          <div style="display:flex; gap:1rem; border-bottom:1px solid var(--border-light); margin-bottom:1.5rem;">
+            <button id="profileTabAddrBtn" class="btn-secondary active" onclick="app.switchProfileTab('addresses')" style="border:none; border-bottom:3px solid var(--primary); border-radius:0;">
+              <i class="fa-solid fa-location-dot"></i> Delivery Addresses
+            </button>
+            <button id="profileTabOrdersBtn" class="btn-secondary" onclick="app.switchProfileTab('orders')" style="border:none; border-radius:0;">
+              <i class="fa-solid fa-bag-shopping"></i> My Orders History
+            </button>
+          </div>
+
+          <!-- Section: Delivery Addresses -->
+          <div id="profileSectionAddresses">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <h3 style="font-size:1.1rem; color:var(--primary-deep);">Saved Delivery Addresses</h3>
+              <button class="btn-primary" onclick="app.openAddAddressModal()" style="padding:0.4rem 0.85rem; font-size:0.8rem;">
+                + Add New Delivery Address
+              </button>
+            </div>
+
+            <div id="profileAddressesGrid" style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+              <!-- Rendered dynamically by app.js -->
             </div>
           </div>
 
-          <div style="display:flex; gap:0.85rem; align-items:center; margin-top:auto;">
-            <div class="qty-control" style="height:44px; padding:0 0.5rem;">
-              <button class="qty-btn" onclick="app.detailQtyChange(-1)" style="width:30px; font-size:1.05rem;">-</button>
-              <span class="qty-val" id="detailQtyVal" style="font-size:1rem; padding:0 0.7rem;">1</span>
-              <button class="qty-btn" onclick="app.detailQtyChange(1)" style="width:30px; font-size:1.05rem;">+</button>
+          <!-- Section: Orders History -->
+          <div id="profileSectionOrders" style="display:none;">
+            <div id="profileOrdersGrid" style="display:flex; flex-direction:column; gap:1rem;">
+              <!-- Rendered dynamically by app.js -->
             </div>
-            <button class="btn-primary" id="detailAddCartBtn" style="flex:1; height:44px; border-radius:var(--radius-full);">
-              <i class="fa-solid fa-basket-shopping"></i> Add To Organic Basket
-            </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Dedicated Order Tax Invoice Page View -->
+    <div id="orderInvoicePageView" class="container" style="display:none; padding:2rem 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;" class="no-print">
+        <button class="btn-secondary" onclick="app.openCustomerProfilePage('orders');">
+          <i class="fa-solid fa-arrow-left"></i> Back to Orders History
+        </button>
+        <button class="btn-primary" onclick="window.print();">
+          <i class="fa-solid fa-print"></i> Print Official Tax Invoice
+        </button>
+      </div>
+
+      <div id="printableOrderInvoice" style="background:white; padding:2.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); max-width:840px; margin:0 auto; box-shadow:var(--shadow-lg);">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+
   </div>
 
-  <!-- ==========================================================================
-       ADD / EDIT PRODUCT MODAL
-       ========================================================================== -->
-  <div id="productModal" class="modal-backdrop" onclick="if(event.target === this) app.closeProductModal()">
-    <div class="auth-modal-card" style="max-width:620px;">
-      <button class="modal-close-btn" onclick="app.closeProductModal()">
-        <i class="fa-solid fa-xmark"></i>
+  <!-- Admin Panel Control Wrapper -->
+  <div id="adminWrapper" style="display:none; padding:2rem 1.25rem;" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid var(--primary-deep);">
+      <div>
+        <h1 style="font-size:1.8rem; font-weight:800; color:var(--primary-deep);">⚙️ BigBasket Admin Management Suite</h1>
+        <p style="font-size:0.85rem; color:var(--text-muted);">Manage inventory, orders, recipe combos, traceability batches & customers</p>
+      </div>
+      <button class="btn-primary" onclick="app.toggleAdminMode()">
+        <i class="fa-solid fa-store"></i> Return to Storefront
       </button>
-      <div class="auth-modal-header">
-        <h3 id="productModalTitle">Add New Organic Product</h3>
-        <p>Real-time sync across Storefront and Admin Suite</p>
+    </div>
+
+    <!-- Admin Tabs Header -->
+    <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+      <button class="btn-secondary active" onclick="app.switchAdminTab('products')"><i class="fa-solid fa-box"></i> Products Inventory</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('recipes')"><i class="fa-solid fa-fire"></i> Recipe Combos</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('traceability')"><i class="fa-solid fa-tractor"></i> Farm Traceability</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('orders')"><i class="fa-solid fa-receipt"></i> Orders Fulfillment</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('users')"><i class="fa-solid fa-users"></i> Customer Database</button>
+    </div>
+
+    <!-- Admin Section: Products -->
+    <div id="adminSectionProducts" style="background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="font-size:1.1rem; color:var(--primary-deep);">Product Inventory Master</h3>
+        <button class="btn-primary" onclick="app.openAddProductModal()">+ Add New Product</button>
       </div>
-      <div class="auth-body">
-        <form id="productForm" onsubmit="event.preventDefault(); app.saveProductFromForm();">
-          <input type="hidden" id="pmProductId">
-          
-          <div class="form-group">
-            <label class="form-label">Product Title</label>
-            <input type="text" id="pmName" class="form-control" placeholder="e.g. Pure Himalayan Cardamom" required>
-          </div>
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left; border-bottom:1px solid var(--border-light);">
+            <th style="padding:0.6rem;">Img</th>
+            <th style="padding:0.6rem;">Product Name</th>
+            <th style="padding:0.6rem;">Category</th>
+            <th style="padding:0.6rem;">Sale Price</th>
+            <th style="padding:0.6rem;">Stock Status</th>
+            <th style="padding:0.6rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminProductTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
+    </div>
 
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Category</label>
-              <select id="pmCategory" class="form-control" required>
-                <option value="Spices">Spices</option>
-                <option value="Tea">Tea</option>
-                <option value="Flours">Flours</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Grains">Grains</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Selling Price (₹)</label>
-              <input type="number" id="pmPrice" class="form-control" placeholder="399" required>
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Original Price (₹)</label>
-              <input type="number" id="pmOriginalPrice" class="form-control" placeholder="480" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Badge Tag</label>
-              <input type="text" id="pmBadge" class="form-control" placeholder="100% Organic" required>
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Farm Origin</label>
-              <input type="text" id="pmOrigin" class="form-control" placeholder="Lucknow Farm, UP" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Batch Number</label>
-              <input type="text" id="pmBatchNo" class="form-control" placeholder="HS-LKO-2026" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Product-Specific Marquee Announcement (Optional)</label>
-            <input type="text" id="pmCustomMarquee" class="form-control" placeholder="Leave empty for global announcement or type custom text...">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Image Source URL</label>
-            <input type="text" id="pmImage" class="form-control" placeholder="assets/turmeric.jpg or HTTPS image URL" required>
-          </div>
-
-          <div class="form-group">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
-              <label class="form-label" style="margin-bottom:0;">Main Product Description (Visual WYSIWYG)</label>
-              <span style="font-size:0.72rem; color:var(--primary); font-weight:700;">Live Active Toolbar</span>
-            </div>
-
-            <!-- Rich Formatting Toolbar with Focus Protection -->
-            <div class="rich-text-toolbar">
-              <button type="button" class="fmt-btn" id="fmtBtnBold" onmousedown="event.preventDefault(); app.execWysiwyg('bold')" title="Bold"><b>B</b></button>
-              <button type="button" class="fmt-btn" id="fmtBtnItalic" onmousedown="event.preventDefault(); app.execWysiwyg('italic')" title="Italic"><i>I</i></button>
-              <button type="button" class="fmt-btn" id="fmtBtnUnderline" onmousedown="event.preventDefault(); app.execWysiwyg('underline')" title="Underline"><u>U</u></button>
-              <button type="button" class="fmt-btn" id="fmtBtnList" onmousedown="event.preventDefault(); app.execWysiwyg('insertUnorderedList')" title="Bullet List">• List</button>
-              <button type="button" class="fmt-btn" onmousedown="event.preventDefault(); app.execWysiwyg('removeFormat')" title="Clear Style"><i class="fa-solid fa-eraser"></i> Clear</button>
-            </div>
-
-            <!-- Contenteditable Visual Box -->
-            <div id="pmDescEditor" class="wysiwyg-editor" contenteditable="true" data-placeholder="Type product description here..."></div>
-          </div>
-
-          <!-- Dynamic Specification Tabs Customizer (Max 4 Tabs) -->
-          <div class="form-group" style="background:#F9FAFB; padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border-light);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
-              <label class="form-label" style="margin-bottom:0; color:var(--primary-deep);">
-                <i class="fa-solid fa-layer-group"></i> Dynamic Specification Tabs Manager (Max 4 Tabs)
-              </label>
-              <button type="button" class="btn-secondary" style="padding:0.25rem 0.65rem; font-size:0.75rem;" onclick="app.addAdminCustomTab()">
-                <i class="fa-solid fa-plus"></i> Add Tab
-              </button>
-            </div>
-
-            <div id="adminCustomTabsContainer" style="display:flex; flex-direction:column; gap:0.75rem;">
-              <!-- Dynamic Tabs Form Rows Rendered by app.js -->
-            </div>
-          </div>
-
-          <button type="submit" class="btn-primary" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;">
-            <i class="fa-solid fa-floppy-disk"></i> Save & Sync Catalog
-          </button>
-        </form>
+    <!-- Admin Section: Recipe Combos -->
+    <div id="adminSectionRecipes" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="font-size:1.1rem; color:var(--primary-deep);">Recipe Pairing Combo Bundles</h3>
+        <button class="btn-primary" onclick="app.openAddRecipeModal()">+ Create New Combo Bundle</button>
       </div>
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.6rem;">Img</th>
+            <th style="padding:0.6rem;">Title</th>
+            <th style="padding:0.6rem;">Included Products</th>
+            <th style="padding:0.6rem;">Combo Price</th>
+            <th style="padding:0.6rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminRecipesTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Admin Section: Traceability -->
+    <div id="adminSectionTraceability" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="font-size:1.1rem; color:var(--primary-deep);">Farm Traceability Batches</h3>
+        <button class="btn-primary" onclick="app.openAddBatchModal()">+ Add Batch Record</button>
+      </div>
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.6rem;">Batch Code</th>
+            <th style="padding:0.6rem;">Partner Farm</th>
+            <th style="padding:0.6rem;">Location</th>
+            <th style="padding:0.6rem;">Harvest Date</th>
+            <th style="padding:0.6rem;">Lab Status</th>
+            <th style="padding:0.6rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminBatchTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Admin Section: Orders -->
+    <div id="adminSectionOrders" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <h3 style="font-size:1.1rem; color:var(--primary-deep); margin-bottom:1rem;">Customer Orders Fulfillment</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.6rem;">Order ID</th>
+            <th style="padding:0.6rem;">Customer</th>
+            <th style="padding:0.6rem;">Total Amount</th>
+            <th style="padding:0.6rem;">Date</th>
+            <th style="padding:0.6rem;">Fulfillment Status</th>
+            <th style="padding:0.6rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminOrdersTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Admin Section: Users -->
+    <div id="adminSectionUsers" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <h3 style="font-size:1.1rem; color:var(--primary-deep); margin-bottom:1rem;">Registered Customers Database</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead>
+          <tr style="background:var(--bg-warm); text-align:left;">
+            <th style="padding:0.6rem;">Avatar</th>
+            <th style="padding:0.6rem;">Customer Name</th>
+            <th style="padding:0.6rem;">Mobile Number</th>
+            <th style="padding:0.6rem;">Registered Date</th>
+            <th style="padding:0.6rem;">Orders</th>
+            <th style="padding:0.6rem;">Total Spend</th>
+            <th style="padding:0.6rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminUsersTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       ADD / EDIT RECIPE COMBO BUNDLE MODAL (WITH SEARCHABLE MULTI-PRODUCT SELECTOR)
-       ========================================================================== -->
-  <div id="recipeModal" class="modal-backdrop" onclick="if(event.target === this) app.closeRecipeModal()">
-    <div class="auth-modal-card" style="max-width:640px;">
-      <button class="modal-close-btn" onclick="app.closeRecipeModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="auth-modal-header">
-        <h3 id="recipeModalTitle">Create Recipe Pairing & Combo Bundle</h3>
-        <p>Bundle catalog items with live total, offer price & discount calculations</p>
-      </div>
-      <div class="auth-body">
-        <form id="recipeForm" onsubmit="event.preventDefault(); app.saveRecipeFromForm();">
-          <input type="hidden" id="rmRecipeId">
-
-          <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Recipe / Combo Title</label>
-              <input type="text" id="rmTitle" class="form-control" placeholder="e.g. Immunity Golden Turmeric Milk">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Badge Tag</label>
-              <input type="text" id="rmTag" class="form-control" placeholder="Immunity Boost">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Header Image URL</label>
-            <input type="text" id="rmImage" class="form-control" placeholder="assets/turmeric.jpg">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Short Recipe Description</label>
-            <textarea id="rmDesc" class="form-control" rows="2" placeholder="Warm soothing Ayurvedic elixir..." style="height:60px;"></textarea>
-          </div>
-
-          <!-- Product Selector with Live Search Bar & Calculated Sum -->
-          <div class="form-group" style="background:#F0FDF4; padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--primary-mint);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-              <label class="form-label" style="margin-bottom:0; color:var(--primary-deep);">
-                <i class="fa-solid fa-boxes-packing"></i> Select Catalog Products for this Combo
-              </label>
-              <span id="rmOriginalTotalDisplay" style="font-weight:800; color:var(--primary-dark); font-size:0.85rem;">Original Total: ₹0</span>
-            </div>
-
-            <div style="position:relative; margin-bottom:0.5rem;">
-              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:0.8rem;"></i>
-              <input type="text" id="rmProductSearch" class="form-control" style="padding-left:2.2rem; font-size:0.8rem;" placeholder="Search catalog products to include..." oninput="app.filterRecipeProductList(this.value)">
-            </div>
-
-            <!-- Checkbox list of catalog products -->
-            <div id="rmProductCheckboxList" style="max-height:160px; overflow-y:auto; background:white; border:1px solid var(--border-light); border-radius:4px; padding:0.5rem;">
-              <!-- Rendered by app.js -->
-            </div>
-          </div>
-
-          <!-- Live Pricing & Discount Calculator -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; background:#FFFBEB; padding:0.85rem; border-radius:var(--radius-sm); border:1px solid #FDE68A; margin-bottom:1rem;">
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" style="color:var(--accent-earth);">Special Combo Offer Price (₹)</label>
-              <input type="number" id="rmComboPrice" class="form-control" placeholder="699" oninput="app.calculateRecipeDiscountLive()">
-            </div>
-
-            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; background:white; border-radius:var(--radius-sm); padding:0.5rem; border:1px solid #FDE68A;">
-              <span style="font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Calculated Savings</span>
-              <span id="rmDiscountDisplay" style="font-size:1.1rem; font-weight:800; color:var(--accent-earth);">0% OFF</span>
-            </div>
-          </div>
-
-          <!-- Placement Choice: Homepage vs Dedicated Combo Page -->
-          <div class="form-group">
-            <label class="form-label">Display Location</label>
-            <select id="rmDisplayLocation" class="form-control">
-              <option value="homepage">🏠 Show in Homepage Recipe Pairings Grid</option>
-              <option value="dedicated_page">⭐ Show in Dedicated Combo Bundle Page (2-Column Grid)</option>
-            </select>
-          </div>
-
-          <!-- Dynamic Max 4 Custom Tabs Manager for Recipe Combos -->
-          <div class="form-group" style="background:#F4F6F8; padding:0.85rem; border-radius:var(--radius-sm); border:1px solid var(--border-light); margin-bottom:1rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-              <label class="form-label" style="margin-bottom:0; color:var(--primary-deep);">
-                <i class="fa-solid fa-folder-tree"></i> Custom Combo Specification Tabs (Max 4 Tabs)
-              </label>
-              <button type="button" class="btn-secondary" style="padding:0.25rem 0.65rem; font-size:0.75rem;" onclick="app.addAdminRecipeCustomTab()">
-                <i class="fa-solid fa-plus"></i> Add Custom Tab
-              </button>
-            </div>
-
-            <div id="adminRecipeCustomTabsContainer" style="display:flex; flex-direction:column; gap:0.75rem;">
-              <!-- Dynamic Tabs Form Rows Rendered by app.js -->
-            </div>
-          </div>
-
-          <button type="button" class="btn-gold" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;" onclick="app.saveRecipeFromForm()">
-            <i class="fa-solid fa-floppy-disk"></i> Save & Sync Recipe Combo
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       ADD / EDIT FARM TRACEABILITY BATCH MODAL
-       ========================================================================== -->
-  <div id="batchModal" class="modal-backdrop" onclick="if(event.target === this) app.closeBatchModal()">
-    <div class="auth-modal-card" style="max-width:560px;">
-      <button class="modal-close-btn" onclick="app.closeBatchModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="auth-modal-header">
-        <h3 id="batchModalTitle">Add Farm Traceability Batch</h3>
-        <p>Real-time purity certificate & farm origin lookup for customers</p>
-      </div>
-      <div class="auth-body">
-        <form id="batchForm" onsubmit="event.preventDefault(); app.saveBatchFromForm();">
-          <input type="hidden" id="bmOriginalCode">
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Batch Code</label>
-              <input type="text" id="bmCode" class="form-control" placeholder="e.g. HS-LKO-2026">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Certificate No</label>
-              <input type="text" id="bmCertNo" class="form-control" placeholder="NPOP/NAB/001492">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Partner Farm Name</label>
-            <input type="text" id="bmFarmer" class="form-control" placeholder="e.g. Rameshwar Farmer Cooperative">
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Region / Location</label>
-              <input type="text" id="bmLocation" class="form-control" placeholder="Lucknow Agri Belt, UP">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Harvest Date</label>
-              <input type="text" id="bmHarvestDate" class="form-control" placeholder="June 18, 2026">
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Purity / Lab Test Result</label>
-              <input type="text" id="bmLabResult" class="form-control" placeholder="100% Pure - Pesticide 0.00%">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Soil Type</label>
-              <input type="text" id="bmSoilType" class="form-control" placeholder="Alluvial Organic Rich">
-            </div>
-          </div>
-
-          <button type="button" class="btn-gold" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;" onclick="app.saveBatchFromForm()">
-            <i class="fa-solid fa-floppy-disk"></i> Save & Sync Batch Record
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       POPUP MODAL (MOBILE NUMBER AUTH: LOGIN & SIGNUP)
-       ========================================================================== -->
+  <!-- POPUP MODAL: MOBILE NUMBER AUTH (LOGIN / SIGNUP) -->
   <div id="authModal" class="modal-backdrop" onclick="if(event.target === this) app.closeAuthModal()">
     <div class="auth-modal-card">
       <button class="modal-close-btn" onclick="app.closeAuthModal()">
@@ -1342,15 +438,14 @@
       </button>
 
       <div class="auth-modal-header">
-        <h3 id="authModalTitle">Welcome to Hotspy Organics</h3>
-        <p>100% Pure Organic Pantry • Direct Farm Origin</p>
+        <h3 id="authModalTitle">Welcome to BigBasket Organics</h3>
+        <p style="font-size:0.82rem; opacity:0.85; margin-top:0.25rem;">Login / Register with Mobile Number (+91)</p>
       </div>
 
       <div class="auth-body">
-        <!-- Auth Segmented Toggle -->
-        <div class="auth-toggle" style="display:flex; background:var(--bg-warm); padding:0.25rem; border-radius:var(--radius-sm); margin-bottom:1rem;">
-          <button class="auth-toggle-btn active" id="authTabLogin" onclick="app.switchAuthTab('login')" style="flex:1; padding:0.4rem; border:none; background:transparent; font-weight:700; font-size:0.85rem; border-radius:var(--radius-sm); cursor:pointer;">Login</button>
-          <button class="auth-toggle-btn" id="authTabSignup" onclick="app.switchAuthTab('signup')" style="flex:1; padding:0.4rem; border:none; background:transparent; font-weight:700; font-size:0.85rem; border-radius:var(--radius-sm); cursor:pointer;">Create Account</button>
+        <div style="display:flex; background:var(--bg-warm); padding:0.25rem; border-radius:var(--radius-sm); margin-bottom:1rem;">
+          <button id="authTabLogin" class="btn-secondary active" onclick="app.switchAuthTab('login')" style="flex:1; border:none;">Login</button>
+          <button id="authTabSignup" class="btn-secondary" onclick="app.switchAuthTab('signup')" style="flex:1; border:none;">Register</button>
         </div>
 
         <!-- Login Form -->
@@ -1362,13 +457,11 @@
               <input type="tel" id="loginMobile" class="form-control" style="padding-left:3.2rem;" placeholder="9876543210" required maxlength="10">
             </div>
           </div>
-
           <div class="form-group">
             <label class="form-label">Password</label>
             <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
           </div>
-
-          <button type="submit" class="btn-primary" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;">
+          <button type="submit" class="btn-primary" style="width:100%; border-radius:var(--radius-sm);">
             Login to Account <i class="fa-solid fa-arrow-right"></i>
           </button>
         </form>
@@ -1379,7 +472,6 @@
             <label class="form-label">Full Name</label>
             <input type="text" id="signupName" class="form-control" placeholder="Aarav Sharma" required>
           </div>
-
           <div class="form-group">
             <label class="form-label">Mobile Number</label>
             <div style="position:relative;">
@@ -1387,77 +479,50 @@
               <input type="tel" id="signupMobile" class="form-control" style="padding-left:3.2rem;" placeholder="9876543210" required maxlength="10">
             </div>
           </div>
-
           <div class="form-group">
-            <label class="form-label">Create Password</label>
+            <label class="form-label">Password</label>
             <input type="password" id="signupPassword" class="form-control" placeholder="••••••••" required minlength="6">
           </div>
-
-          <button type="submit" class="btn-gold" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;">
-            Create New Account <i class="fa-solid fa-user-plus"></i>
+          <button type="submit" class="btn-primary" style="width:100%; border-radius:var(--radius-sm);">
+            Create Account <i class="fa-solid fa-user-plus"></i>
           </button>
         </form>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem; margin-top:1rem;">
           <button type="button" class="btn-secondary" style="padding:0.4rem; font-size:0.75rem;" onclick="app.quickDemoLogin('customer')">
-            <i class="fa-solid fa-user"></i> Demo Customer
+            Demo Customer
           </button>
           <button type="button" class="btn-secondary" style="padding:0.4rem; font-size:0.75rem;" onclick="app.quickDemoLogin('admin')">
-            <i class="fa-solid fa-shield-halved"></i> Demo Admin
+            Demo Admin
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       PROFILE & NAVIGATION MENU POPUP / DRAWER
-       ========================================================================== -->
+  <!-- POPUP MODAL: PROFILE & STORE MENU -->
   <div id="profileMenuModal" class="modal-backdrop" onclick="if(event.target === this) app.closeProfileMenuModal()">
-    <div class="auth-modal-card" style="max-width:380px; padding:0; overflow:hidden; border-radius:var(--radius-lg);">
-      <div style="background:var(--primary-deep); padding:1.25rem 1.5rem; color:white; position:relative;">
+    <div class="auth-modal-card" style="max-width:380px; padding:0; overflow:hidden;">
+      <div style="background:var(--primary-deep); padding:1.25rem; color:white; position:relative;">
         <button class="modal-close-btn" onclick="app.closeProfileMenuModal()" style="color:white; background:rgba(255,255,255,0.15);">
           <i class="fa-solid fa-xmark"></i>
         </button>
-
         <div id="profileMenuHeaderBox" style="display:flex; align-items:center; gap:0.85rem;">
           <!-- Rendered dynamically by app.js -->
         </div>
       </div>
 
       <div style="padding:1rem;">
-        <div style="font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.65rem; padding-left:0.5rem;">
-          Store Navigation
+        <div style="font-size:0.72rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.65rem;">
+          Store Navigation Menu
         </div>
-
-        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.35rem;">
-          <li>
-            <a href="#" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; border-radius:var(--radius-sm); color:var(--text-main); font-weight:600; text-decoration:none; transition:var(--transition-fast);" onmouseover="this.style.background='var(--bg-warm)'" onmouseout="this.style.background='transparent'">
-              <i class="fa-solid fa-house" style="color:var(--primary); width:20px;"></i> Home Store
-            </a>
-          </li>
-          <li>
-            <a href="#traceability" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; border-radius:var(--radius-sm); color:var(--text-main); font-weight:600; text-decoration:none; transition:var(--transition-fast);" onmouseover="this.style.background='var(--bg-warm)'" onmouseout="this.style.background='transparent'">
-              <i class="fa-solid fa-tractor" style="color:var(--primary); width:20px;"></i> Farm Traceability
-            </a>
-          </li>
-          <li>
-            <a href="#store" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; border-radius:var(--radius-sm); color:var(--text-main); font-weight:600; text-decoration:none; transition:var(--transition-fast);" onmouseover="this.style.background='var(--bg-warm)'" onmouseout="this.style.background='transparent'">
-              <i class="fa-solid fa-store" style="color:var(--primary); width:20px;"></i> Shop Spices & Teas
-            </a>
-          </li>
-          <li>
-            <a href="#comboPage" onclick="app.openComboPage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 0.85rem; border-radius:var(--radius-sm); color:var(--primary-dark); font-weight:800; text-decoration:none; background:#FEF3C7; border:1px solid #FDE68A;" onmouseover="this.style.background='#FDE68A'" onmouseout="this.style.background='#FEF3C7'">
-              <i class="fa-solid fa-fire" style="color:#B45309; width:20px;"></i> 🔥 Recipe Pairings & Combos
-            </a>
-          </li>
-          <li>
-            <a href="#" onclick="app.toggleAdminMode(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; border-radius:var(--radius-sm); color:var(--text-main); font-weight:600; text-decoration:none; transition:var(--transition-fast);" onmouseover="this.style.background='var(--bg-warm)'" onmouseout="this.style.background='transparent'">
-              <i class="fa-solid fa-sliders" style="color:var(--primary); width:20px;"></i> Admin Panel
-            </a>
-          </li>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.35rem;">
+          <li><a href="#" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem; font-weight:600;"><i class="fa-solid fa-house" style="color:var(--primary);"></i> Home Store</a></li>
+          <li><a href="#traceability" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem; font-weight:600;"><i class="fa-solid fa-tractor" style="color:var(--primary);"></i> Farm Traceability</a></li>
+          <li><a href="#store" onclick="app.showHomePage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem; font-weight:600;"><i class="fa-solid fa-store" style="color:var(--primary);"></i> Shop Spices & Teas</a></li>
+          <li><a href="#comboPage" onclick="app.openComboPage(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem; font-weight:800; background:var(--accent-gold-light); border-radius:var(--radius-sm);"><i class="fa-solid fa-fire" style="color:var(--accent-gold);"></i> 🔥 Recipe Pairings & Combos</a></li>
+          <li><a href="#" onclick="app.toggleAdminMode(); app.closeProfileMenuModal();" style="display:flex; align-items:center; gap:0.75rem; padding:0.65rem; font-weight:600;"><i class="fa-solid fa-sliders" style="color:var(--primary);"></i> Admin Control Center</a></li>
         </ul>
-
         <div id="profileMenuFooterBox" style="margin-top:1rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle);">
           <!-- Rendered dynamically by app.js -->
         </div>
@@ -1465,56 +530,34 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       CHANGE PASSWORD MODAL
-       ========================================================================== -->
-  <div id="changePasswordModal" class="modal-backdrop" onclick="if(event.target === this) app.closeChangePasswordModal()">
-    <div class="auth-modal-card" style="max-width:440px;">
-      <button class="modal-close-btn" onclick="app.closeChangePasswordModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="auth-modal-header">
-        <h3>Change Account Password</h3>
-        <p>Update your account security password</p>
+  <!-- POPUP MODAL: CUSTOM LOGOUT CONFIRMATION -->
+  <div id="logoutConfirmModal" class="modal-backdrop" onclick="if(event.target === this) app.closeLogoutConfirmModal()">
+    <div class="auth-modal-card" style="max-width:380px; text-align:center; padding:1.75rem;">
+      <div style="width:56px; height:56px; border-radius:50%; background:#FEE2E2; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 1rem;">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
       </div>
-      <div class="auth-body">
-        <form onsubmit="event.preventDefault(); app.saveNewPassword();">
-          <div class="form-group">
-            <label class="form-label">Current Password</label>
-            <input type="password" id="cpCurrentPass" class="form-control" placeholder="••••••••" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">New Password</label>
-            <input type="password" id="cpNewPass" class="form-control" placeholder="••••••••" required minlength="6">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Confirm New Password</label>
-            <input type="password" id="cpConfirmPass" class="form-control" placeholder="••••••••" required minlength="6">
-          </div>
-          <button type="submit" class="btn-gold" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;">
-            Update Password <i class="fa-solid fa-key"></i>
-          </button>
-        </form>
+      <h3 style="font-size:1.2rem; color:var(--primary-deep); margin-bottom:0.35rem;">Logout Confirmation</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">Are you sure you want to logout from your account?</p>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.65rem;">
+        <button class="btn-secondary" onclick="app.closeLogoutConfirmModal()">Cancel</button>
+        <button class="btn-primary" onclick="app.confirmLogoutUser()" style="background:#DC2626; border-color:#DC2626;">Yes, Logout</button>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       ADD / EDIT DELIVERY ADDRESS MODAL
-       ========================================================================== -->
+  <!-- POPUP MODAL: ADD / EDIT ADDRESS -->
   <div id="addressModal" class="modal-backdrop" onclick="if(event.target === this) app.closeAddressModal()">
-    <div class="auth-modal-card" style="max-width:580px;">
+    <div class="auth-modal-card" style="max-width:560px;">
       <button class="modal-close-btn" onclick="app.closeAddressModal()">
         <i class="fa-solid fa-xmark"></i>
       </button>
       <div class="auth-modal-header">
         <h3 id="addressModalTitle">Add Delivery Address</h3>
-        <p>Real-time delivery address for farm fresh dispatches</p>
+        <p style="font-size:0.82rem; opacity:0.85;">Address for express supermarket delivery</p>
       </div>
       <div class="auth-body">
         <form id="addressForm" onsubmit="event.preventDefault(); app.saveAddressFromForm();">
           <input type="hidden" id="amAddrId">
-
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
             <div class="form-group">
               <label class="form-label">Full Name</label>
@@ -1525,81 +568,44 @@
               <input type="tel" id="amMobile" class="form-control" placeholder="9876543210" required maxlength="10">
             </div>
           </div>
-
           <div class="form-group">
             <label class="form-label">House / Flat / Building No</label>
             <input type="text" id="amHouseNo" class="form-control" placeholder="Flat 402, Royal Residency" required>
           </div>
-
           <div class="form-group">
             <label class="form-label">Street / Area / Locality</label>
             <input type="text" id="amStreet" class="form-control" placeholder="Gomti Nagar Main Road" required>
           </div>
-
           <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem;">
             <div class="form-group">
               <label class="form-label">City</label>
-              <input type="text" id="amCity" class="form-control" placeholder="Lucknow" required>
+              <input type="text" id="amCity" class="form-control" value="Lucknow" required>
             </div>
             <div class="form-group">
               <label class="form-label">State</label>
-              <input type="text" id="amState" class="form-control" placeholder="Uttar Pradesh" required>
+              <input type="text" id="amState" class="form-control" value="Uttar Pradesh" required>
             </div>
             <div class="form-group">
               <label class="form-label">Pincode</label>
-              <input type="text" id="amPincode" class="form-control" placeholder="226010" required maxlength="6">
+              <input type="text" id="amPincode" class="form-control" value="226010" required maxlength="6">
             </div>
           </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Landmark (Optional)</label>
-              <input type="text" id="amLandmark" class="form-control" placeholder="Near Cyber Tower">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Address Type</label>
-              <select id="amType" class="form-control">
-                <option value="Home">🏠 Home</option>
-                <option value="Work">🏢 Work / Office</option>
-              </select>
-            </div>
-          </div>
-
           <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
             <input type="checkbox" id="amIsDefault" style="width:18px; height:18px;">
             <label for="amIsDefault" style="font-size:0.85rem; font-weight:700; cursor:pointer;">Set as my Default Delivery Address</label>
           </div>
-
-          <button type="submit" class="btn-gold" style="width:100%; border-radius:var(--radius-sm); margin-top:0.5rem;">
-            <i class="fa-solid fa-floppy-disk"></i> Save & Sync Address
-          </button>
+          <button type="submit" class="btn-primary" style="width:100%;">Save Address</button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================================================
-       ADMIN CUSTOMER DETAILS & ORDER HISTORY MODAL
-       ========================================================================== -->
-  <div id="adminCustomerDetailModal" class="modal-backdrop" onclick="if(event.target === this) app.closeAdminCustomerDetailModal()">
-    <div class="auth-modal-card" style="max-width:760px;">
-      <button class="modal-close-btn" onclick="app.closeAdminCustomerDetailModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div id="adminCustomerDetailContent">
-        <!-- Rendered dynamically by app.js -->
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       SLIDE-OUT CART DRAWER
-       ========================================================================== -->
+  <!-- Slide-Out Cart Drawer -->
   <div id="cartDrawerBackdrop" class="cart-drawer-backdrop" onclick="if(event.target === this) app.closeCartDrawer()">
     <div class="cart-drawer">
       <div class="cart-drawer-header">
         <div class="cart-drawer-title">
-          <i class="fa-solid fa-basket-shopping" style="color:var(--primary);"></i> Your Organic Basket
+          <i class="fa-solid fa-basket-shopping" style="color:var(--primary);"></i> My Shopping Basket
         </div>
         <button class="icon-btn" onclick="app.closeCartDrawer()">
           <i class="fa-solid fa-xmark"></i>
@@ -1615,9 +621,6 @@
       </div>
 
       <div class="cart-drawer-footer">
-        <div class="tree-planted-callout">
-          <i class="fa-solid fa-tree"></i> This purchase plants <strong>1 Organic Tree</strong> in Lucknow farms!
-        </div>
         <div class="cart-summary-row">
           <span>Subtotal</span>
           <span id="cartSubtotal">₹0</span>
@@ -1627,26 +630,8 @@
           <span id="cartGrandTotal">₹0</span>
         </div>
         <button class="btn-primary" style="width:100%;" onclick="app.checkout()">
-          <i class="fa-solid fa-lock"></i> Complete Order
+          <i class="fa-solid fa-lock"></i> Place Order / Complete Checkout
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       CUSTOM LOGOUT CONFIRMATION MODAL
-       ========================================================================== -->
-  <div id="logoutConfirmModal" class="modal-backdrop" onclick="if(event.target === this) app.closeLogoutConfirmModal()">
-    <div class="auth-modal-card" style="max-width:380px; text-align:center; padding:1.75rem;">
-      <div style="width:56px; height:56px; border-radius:50%; background:#FEE2E2; color:#DC2626; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 1rem;">
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-      </div>
-      <h3 style="font-size:1.2rem; color:var(--primary-deep); margin-bottom:0.35rem;">Logout Confirmation</h3>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">Are you sure you want to logout from your Hotspy Organics account?</p>
-      
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.65rem;">
-        <button class="btn-secondary" onclick="app.closeLogoutConfirmModal()" style="padding:0.6rem; font-size:0.85rem;">Cancel</button>
-        <button class="btn-primary" onclick="app.confirmLogoutUser()" style="padding:0.6rem; font-size:0.85rem; background:#DC2626; border-color:#DC2626;">Yes, Logout</button>
       </div>
     </div>
   </div>
@@ -1654,8 +639,8 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- Supabase JS Client & Application Engine -->
+  <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=3.0"></script>
+  <script src="app.js?v=4.0"></script>
 </body>
 </html>
