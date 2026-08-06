@@ -374,44 +374,80 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. HOMEPAGE RENDER & DYNAMIC BANNER SLIDER
+  // 1. HOMEPAGE RENDER & DYNAMIC BANNER SLIDER & LAYOUT ENGINE
   renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
-    if (home) home.style.display = 'block';
+    if (!home) return;
+    home.style.display = 'block';
 
     this.updateMobileNavActive('mobNavHome');
 
-    // DYNAMIC BANNER SLIDER RENDER
-    this.renderBannerSliderEngine();
+    // Build homepage content dynamically in exact order of this.homepageSections
+    let sectionsHTML = '';
 
-    // Featured Products
-    const featuredProds = this.products.filter(p => p.isFeatured);
-    const grid = document.getElementById('homeProductGrid');
-    if (grid) grid.innerHTML = this.renderProductCardsHTML(featuredProds);
+    this.homepageSections.forEach(sec => {
+      if (!sec.enabled) return;
 
-    // Homepage Combos
-    const hpCombos = this.recipes.filter(r => r.showOnHomepage);
-    const combosSec = document.getElementById('homeCombosSection');
-    const combosGrid = document.getElementById('homeCombosGrid');
-    if (hpCombos.length > 0 && combosSec && combosGrid) {
-      combosSec.style.display = 'block';
-      combosGrid.innerHTML = hpCombos.map(r => `
-        <div class="bb-product-card">
-          <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">FEATURED COMBO</span>
-          <div class="bb-card-img-wrap">
-            <img src="${r.image}">
+      if (sec.id === 'banners') {
+        sectionsHTML += `<div class="slider-container" id="homeBannersContainer" style="margin-bottom:1.5rem;"></div>`;
+      } else if (sec.id === 'featured') {
+        const featuredProds = this.products.filter(p => p.isFeatured);
+        sectionsHTML += `
+          <div style="margin-bottom:1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:nowrap; gap:0.5rem;">
+              <div>
+                <span style="font-size:0.72rem; font-weight:800; color:var(--header-bg); text-transform:uppercase;">Handpicked Supermarket Items</span>
+                <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg); white-space:nowrap; margin-top:0.1rem;">⭐ Featured Store Products</h2>
+              </div>
+              <a href="#/shop" class="btn-secondary" onclick="app.openShopPage(); return false;" style="padding:0.35rem 0.65rem; font-size:0.75rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.35rem; flex-shrink:0;">View All Shop <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div class="product-grid">${this.renderProductCardsHTML(featuredProds)}</div>
           </div>
-          <h3 class="bb-card-title">${r.title}</h3>
-          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
-          <div class="bb-price-row">
-            <span class="bb-sale-price">₹${r.comboPrice}</span>
+        `;
+      } else if (sec.id === 'combos') {
+        const hpCombos = this.recipes.filter(r => r.showOnHomepage);
+        if (hpCombos.length > 0) {
+          sectionsHTML += `
+            <div style="margin-bottom:1.5rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:nowrap; gap:0.5rem;">
+                <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg); white-space:nowrap;">🔥 Featured Recipe Combos</h2>
+                <a href="#/combos" class="btn-secondary" onclick="app.openComboPage(); return false;" style="padding:0.35rem 0.65rem; font-size:0.75rem; white-space:nowrap; display:inline-flex; align-items:center; gap:0.35rem; flex-shrink:0;">All Combos <i class="fa-solid fa-arrow-right"></i></a>
+              </div>
+              <div class="product-grid">
+                ${hpCombos.map(r => `
+                  <div class="bb-product-card">
+                    <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">FEATURED COMBO</span>
+                    <div class="bb-card-img-wrap"><img src="${r.image}"></div>
+                    <h3 class="bb-card-title">${r.title}</h3>
+                    <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
+                    <div class="bb-price-row"><span class="bb-sale-price">₹${r.comboPrice}</span></div>
+                    <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+      } else if (sec.isCustom && sec.productIds && sec.productIds.length > 0) {
+        const secProds = this.products.filter(p => sec.productIds.includes(p.id));
+        sectionsHTML += `
+          <div style="margin-bottom:1.5rem;">
+            <div style="margin-bottom:1rem;">
+              <h2 style="font-size:1.2rem; font-weight:800; color:var(--header-bg);">${sec.name}</h2>
+              ${sec.subtitle ? `<p style="font-size:0.8rem; color:var(--text-muted);">${sec.subtitle}</p>` : ''}
+            </div>
+            <div class="product-grid">${this.renderProductCardsHTML(secProds)}</div>
           </div>
-          <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
-        </div>
-      `).join('');
-    } else if (combosSec) {
-      combosSec.style.display = 'none';
+        `;
+      }
+    });
+
+    home.innerHTML = sectionsHTML;
+
+    // Initialize Banner Slider Engine if Banners section is enabled
+    if (this.homepageSections.find(s => s.id === 'banners' && s.enabled)) {
+      this.renderBannerSliderEngine();
     }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
