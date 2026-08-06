@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   Dedicated Standalone Admin Portal Engine (#/admin) with Top Header & Sidebar
+   Interactive Banner Slider Engine & Admin Live Preview Banner Builder
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -117,7 +117,19 @@ const INITIAL_BANNERS = [
     id: 'ban_1',
     title: 'Organic Golden Spice Harvest',
     subtitle: 'Click to view exclusive banner-selected organic products!',
+    badge: '🔥 EXCLUSIVE DEAL',
+    ctaText: 'View Banner Collection',
+    overlayImg: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
     productIds: ['prod_1', 'prod_2', 'prod_5']
+  },
+  {
+    id: 'ban_2',
+    title: 'Himalayan Herbal Tea Festival',
+    subtitle: 'Up to 30% OFF on First Flush Green Tea & Wellness Blends',
+    badge: '⚡ 30% OFF FESTIVAL',
+    ctaText: 'Explore Teas Collection',
+    overlayImg: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60',
+    productIds: ['prod_3']
   }
 ];
 
@@ -172,6 +184,8 @@ class AppEngine {
     this.selectedCategory = 'All';
     this.searchQuery = '';
     this.minDiscountFilter = 0;
+    this.currentSlideIndex = 0;
+    this.bannerSliderTimer = null;
 
     this.init();
   }
@@ -303,6 +317,7 @@ class AppEngine {
   }
 
   hideAllPages() {
+    if (this.bannerSliderTimer) clearInterval(this.bannerSliderTimer);
     document.querySelectorAll('.customer-view-element').forEach(el => {
       el.style.display = '';
     });
@@ -327,7 +342,7 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. HOMEPAGE RENDER
+  // 1. HOMEPAGE RENDER & DYNAMIC BANNER SLIDER
   renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
@@ -335,24 +350,8 @@ class AppEngine {
 
     this.updateMobileNavActive('mobNavHome');
 
-    // Banners
-    const bannersContainer = document.getElementById('homeBannersContainer');
-    if (bannersContainer) {
-      bannersContainer.innerHTML = this.banners.map(b => `
-        <div style="background:linear-gradient(135deg, #024731 0%, #064E3B 100%); color:white; padding:1.25rem; border-radius:var(--radius-lg); margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-md);">
-          <div>
-            <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
-              🔥 Exclusive Banner Deal
-            </span>
-            <h2 style="font-size:1.35rem; font-weight:800; margin:0.35rem 0 0.2rem;">${b.title}</h2>
-            <p style="font-size:0.8rem; opacity:0.9;">${b.subtitle || 'Click to view banner collection!'}</p>
-          </div>
-          <button class="btn-primary" onclick="app.openBannerProductsPage('${b.title}', ${JSON.stringify(b.productIds || []).replace(/"/g, '&quot;')})" style="background:var(--primary); color:var(--header-dark); padding:0.5rem 1rem; font-size:0.85rem;">
-            View Banner Collection <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-      `).join('');
-    }
+    // DYNAMIC BANNER SLIDER RENDER
+    this.renderBannerSliderEngine();
 
     // Featured Products
     const featuredProds = this.products.filter(p => p.isFeatured);
@@ -384,6 +383,83 @@ class AppEngine {
     }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  renderBannerSliderEngine() {
+    const container = document.getElementById('homeBannersContainer');
+    if (!container) return;
+
+    if (this.banners.length === 0) {
+      container.innerHTML = ``;
+      return;
+    }
+
+    this.currentSlideIndex = 0;
+
+    container.innerHTML = `
+      <div class="slider-wrapper" id="bannerSliderWrapper" style="transform: translateX(0%);">
+        ${this.banners.map((b, i) => `
+          <div class="slide-item">
+            <div style="position:relative; z-index:2; max-width:65%;">
+              <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
+                ${b.badge || '🔥 EXCLUSIVE DEAL'}
+              </span>
+              <h2 style="font-size:1.35rem; font-weight:800; margin:0.4rem 0 0.2rem; line-height:1.25;">${b.title}</h2>
+              <p style="font-size:0.8rem; opacity:0.9; margin-bottom:0.75rem;">${b.subtitle || 'Click to view banner collection!'}</p>
+              
+              <button class="btn-primary" onclick="app.openBannerProductsPage('${b.title}', ${JSON.stringify(b.productIds || []).replace(/"/g, '&quot;')})" style="background:var(--primary); color:var(--header-dark); padding:0.45rem 0.85rem; font-size:0.8rem;">
+                ${b.ctaText || 'View Banner Collection'} <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+            ${b.overlayImg ? `<img src="${b.overlayImg}" class="slide-item-overlay-img">` : ''}
+          </div>
+        `).join('')}
+      </div>
+
+      ${this.banners.length > 1 ? `
+        <div class="slider-arrow prev" onclick="app.prevBannerSlide()"><i class="fa-solid fa-chevron-left"></i></div>
+        <div class="slider-arrow next" onclick="app.nextBannerSlide()"><i class="fa-solid fa-chevron-right"></i></div>
+        
+        <div class="slider-dots" id="bannerSliderDots">
+          ${this.banners.map((_, i) => `
+            <div class="slider-dot ${i === 0 ? 'active' : ''}" onclick="app.goToBannerSlide(${i})"></div>
+          `).join('')}
+        </div>
+      ` : ''}
+    `;
+
+    if (this.banners.length > 1) {
+      this.bannerSliderTimer = setInterval(() => this.nextBannerSlide(), 5000);
+    }
+  }
+
+  nextBannerSlide() {
+    if (this.banners.length <= 1) return;
+    this.currentSlideIndex = (this.currentSlideIndex + 1) % this.banners.length;
+    this.updateBannerSliderPosition();
+  }
+
+  prevBannerSlide() {
+    if (this.banners.length <= 1) return;
+    this.currentSlideIndex = (this.currentSlideIndex - 1 + this.banners.length) % this.banners.length;
+    this.updateBannerSliderPosition();
+  }
+
+  goToBannerSlide(index) {
+    this.currentSlideIndex = index;
+    this.updateBannerSliderPosition();
+  }
+
+  updateBannerSliderPosition() {
+    const wrapper = document.getElementById('bannerSliderWrapper');
+    if (wrapper) {
+      wrapper.style.transform = `translateX(-${this.currentSlideIndex * 100}%)`;
+    }
+    const dots = document.querySelectorAll('#bannerSliderDots .slider-dot');
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.currentSlideIndex);
+    });
   }
 
   // 2. SHOP PAGE
@@ -831,6 +907,9 @@ class AppEngine {
       if (link) link.classList.toggle('active', t.toLowerCase() === tab.toLowerCase());
     });
     this.renderAdminTables();
+    if (tab.toLowerCase() === 'banners') {
+      this.updateBannerLivePreview();
+    }
   }
 
   renderAdminTables() {
@@ -882,11 +961,14 @@ class AppEngine {
       `).join('');
     }
 
+    // RENDER EXISTING BANNERS TABLE IN ADMIN
+    this.renderAdminBannersTable();
+
     const bannerPicker = document.getElementById('adminBannerProductsPicker');
     if (bannerPicker) {
       bannerPicker.innerHTML = this.products.map(p => `
         <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; cursor:pointer;">
-          <input type="checkbox" class="banner-prod-checkbox" value="${p.id}"> ${p.name.slice(0, 22)}...
+          <input type="checkbox" class="banner-prod-checkbox" value="${p.id}"> ${p.name.slice(0, 20)}...
         </label>
       `).join('');
     }
@@ -899,6 +981,63 @@ class AppEngine {
         </label>
       `).join('');
     }
+  }
+
+  renderAdminBannersTable() {
+    const table = document.getElementById('adminBannersListTable');
+    if (!table) return;
+
+    if (this.banners.length === 0) {
+      table.innerHTML = `<tr><td colspan="5" style="padding:1rem; text-align:center; color:var(--text-muted);">No active banners. Create one below!</td></tr>`;
+      return;
+    }
+
+    table.innerHTML = this.banners.map(b => `
+      <tr style="border-bottom:1px solid var(--border-subtle);">
+        <td style="padding:0.5rem;"><strong>${b.title}</strong></td>
+        <td style="padding:0.5rem; font-size:0.78rem; color:var(--text-muted);">${b.subtitle || 'N/A'}</td>
+        <td style="padding:0.5rem;"><span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:10px;">${b.badge || 'DEAL'}</span></td>
+        <td style="padding:0.5rem; font-weight:800;">${(b.productIds || []).length} Products</td>
+        <td style="padding:0.5rem;">
+          <button class="btn-primary" onclick="app.deleteBannerFromAdmin('${b.id}')" style="background:#DC2626; padding:0.25rem 0.55rem; font-size:0.72rem;">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  updateBannerLivePreview() {
+    const box = document.getElementById('adminBannerLivePreviewBox');
+    if (!box) return;
+
+    const title = document.getElementById('adminBannerTitle').value.trim() || 'Your Banner Slide Title';
+    const subtitle = document.getElementById('adminBannerSubtitle').value.trim() || 'Your subtitle / promotional offer description appears here.';
+    const badge = document.getElementById('adminBannerBadge').value.trim() || '🔥 EXCLUSIVE DEAL';
+    const ctaText = document.getElementById('adminBannerCtaText').value.trim() || 'Shop Collection';
+    const imgUrl = document.getElementById('adminBannerImg').value.trim();
+
+    box.innerHTML = `
+      <div style="position:relative; z-index:2; max-width:65%;">
+        <span style="background:var(--primary); color:var(--header-dark); font-size:0.65rem; font-weight:900; padding:0.15rem 0.45rem; border-radius:10px; text-transform:uppercase;">
+          ${badge}
+        </span>
+        <h3 style="font-size:1.15rem; font-weight:800; margin:0.35rem 0 0.2rem; color:white;">${title}</h3>
+        <p style="font-size:0.75rem; opacity:0.9; margin-bottom:0.65rem; color:white;">${subtitle}</p>
+        <button style="background:var(--primary); color:var(--header-dark); border:none; padding:0.35rem 0.75rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:800;">
+          ${ctaText} <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      ${imgUrl ? `<img src="${imgUrl}" style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); max-height:85%; max-width:140px; object-fit:contain; opacity:0.85; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.3));">` : ''}
+    `;
+  }
+
+  deleteBannerFromAdmin(bannerId) {
+    this.banners = this.banners.filter(b => b.id !== bannerId);
+    localStorage.setItem('hotspy_banners', JSON.stringify(this.banners));
+    this.showToast('Deleted Banner slide!');
+    this.renderAdminTables();
   }
 
   addNewProductFromAdmin() {
@@ -944,11 +1083,15 @@ class AppEngine {
   createNewBannerFromAdmin() {
     const title = document.getElementById('adminBannerTitle').value.trim();
     const subtitle = document.getElementById('adminBannerSubtitle').value.trim();
+    const badge = document.getElementById('adminBannerBadge').value.trim() || '🔥 EXCLUSIVE DEAL';
+    const ctaText = document.getElementById('adminBannerCtaText').value.trim() || 'View Collection';
+    const overlayImg = document.getElementById('adminBannerImg').value.trim();
+    
     const checkboxes = document.querySelectorAll('.banner-prod-checkbox:checked');
     const selectedIds = Array.from(checkboxes).map(c => c.value);
 
-    if (!title || selectedIds.length === 0) {
-      this.showToast('Please enter banner title and pick at least 1 product!', 'error');
+    if (!title) {
+      this.showToast('Please enter a banner title!', 'error');
       return;
     }
 
@@ -956,13 +1099,16 @@ class AppEngine {
       id: `ban_${Date.now()}`,
       title: title,
       subtitle: subtitle,
+      badge: badge,
+      ctaText: ctaText,
+      overlayImg: overlayImg,
       productIds: selectedIds
     };
 
     this.banners.unshift(newBanner);
     localStorage.setItem('hotspy_banners', JSON.stringify(this.banners));
 
-    this.showToast(`🎉 Created Banner "${title}"!`);
+    this.showToast(`🎉 Published Banner Slide "${title}"!`);
     this.renderAdminTables();
     this.showHomePage();
   }

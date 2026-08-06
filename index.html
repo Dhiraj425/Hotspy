@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=23.0">
+  <link rel="stylesheet" href="styles.css?v=24.0">
 </head>
 <body>
 
@@ -128,7 +128,9 @@
     
     <!-- 1. STANDALONE HOMEPAGE VIEW -->
     <main id="homePageContent" class="container">
-      <div id="homeBannersContainer" style="margin-bottom:1.5rem;"></div>
+      
+      <!-- INTERACTIVE HOMEPAGE BANNER SLIDER -->
+      <div class="slider-container" id="homeBannersContainer"></div>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <div>
@@ -427,7 +429,7 @@
 
         <div class="admin-sidebar-link" id="adminSidebarBanners" onclick="app.switchAdminTab('banners')">
           <i class="fa-solid fa-image"></i>
-          <span>4. Create Banners</span>
+          <span>4. Banner Manager & Slider Tool</span>
         </div>
 
         <div class="admin-sidebar-link" id="adminSidebarCombos" onclick="app.switchAdminTab('combos')">
@@ -534,28 +536,87 @@
           </form>
         </div>
 
-        <!-- Admin Section 4: Create Homepage Banner -->
+        <!-- Admin Section 4: Create & Manage Homepage Banners with Live Preview Slider Builder -->
         <div id="adminSectionBanners" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
-          <h3 style="font-size:1.1rem; color:var(--header-bg); font-weight:800; margin-bottom:1rem;">🖼️ Create Homepage Promotional Banner & Assign Products</h3>
-          <form onsubmit="event.preventDefault(); app.createNewBannerFromAdmin();">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-              <div>
-                <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Banner Title</label>
-                <input type="text" id="adminBannerTitle" placeholder="e.g. Himalayan Tea Harvest Festival" required style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+          
+          <!-- PART 1: EXISTING ACTIVE BANNERS TABLE -->
+          <div style="margin-bottom:2rem; padding-bottom:1.25rem; border-bottom:2px dashed var(--border-light);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+              <h3 style="font-size:1.15rem; color:var(--header-bg); font-weight:800;">🖼️ Existing Active Homepage Banners</h3>
+              <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">Manage or Delete Active Banners</span>
+            </div>
+            
+            <div style="overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+                <thead>
+                  <tr style="background:var(--bg-warm); text-align:left;">
+                    <th style="padding:0.55rem;">Banner Title</th>
+                    <th style="padding:0.55rem;">Subtitle</th>
+                    <th style="padding:0.55rem;">Badge Text</th>
+                    <th style="padding:0.55rem;">Assigned Products</th>
+                    <th style="padding:0.55rem;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBannersListTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PART 2: EDITABLE SLIDER TOOL WITH LIVE PREVIEW -->
+          <h3 style="font-size:1.15rem; color:var(--header-bg); font-weight:800; margin-bottom:1rem;">➕ Create New Banner Slide & Live Preview</h3>
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;" class="banner-editor-grid">
+            
+            <!-- LEFT: FORM INPUTS -->
+            <div>
+              <form id="adminBannerForm" onsubmit="event.preventDefault(); app.createNewBannerFromAdmin();">
+                <div style="margin-bottom:0.85rem;">
+                  <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Banner Title</label>
+                  <input type="text" id="adminBannerTitle" placeholder="e.g. Organic Golden Spice Harvest" required oninput="app.updateBannerLivePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+
+                <div style="margin-bottom:0.85rem;">
+                  <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Subtitle / Tagline</label>
+                  <input type="text" id="adminBannerSubtitle" placeholder="e.g. Pure single-origin spices from authentic Lucknow farms!" oninput="app.updateBannerLivePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+                  <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Badge Pill Text</label>
+                    <input type="text" id="adminBannerBadge" placeholder="🔥 EXCLUSIVE DEAL" oninput="app.updateBannerLivePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                  </div>
+                  <div>
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Button Text</label>
+                    <input type="text" id="adminBannerCtaText" placeholder="Shop Banner Collection" oninput="app.updateBannerLivePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                  </div>
+                </div>
+
+                <div style="margin-bottom:0.85rem;">
+                  <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Overlay Image / Graphic URL (Optional)</label>
+                  <input type="url" id="adminBannerImg" placeholder="https://images.unsplash.com/photo-..." oninput="app.updateBannerLivePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+
+                <div style="margin-bottom:1.15rem;">
+                  <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.25rem;">Select Products for this Banner Collection</label>
+                  <div id="adminBannerProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0.4rem; max-height:160px; overflow-y:auto; border:1px solid var(--border-light); padding:0.55rem; border-radius:4px;"></div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width:100%; padding:0.65rem;"><i class="fa-solid fa-plus"></i> Save & Publish Banner Slide</button>
+              </form>
+            </div>
+
+            <!-- RIGHT: REAL-TIME LIVE PREVIEW BOX -->
+            <div>
+              <div style="font-size:0.82rem; font-weight:800; color:var(--header-bg); margin-bottom:0.5rem;">
+                👁️ Live Real-Time Banner Preview
               </div>
-              <div>
-                <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Tagline / Subtitle</label>
-                <input type="text" id="adminBannerSubtitle" placeholder="e.g. Up to 40% OFF on all Himalayan Herbal Blends" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px;">
+              
+              <div id="adminBannerLivePreviewBox" style="background:linear-gradient(135deg, #024731 0%, #064E3B 100%); color:white; padding:1.5rem; border-radius:var(--radius-lg); position:relative; overflow:hidden; min-height:180px; display:flex; flex-direction:column; justify-content:center; box-shadow:var(--shadow-md);">
+                <!-- Live updated via JavaScript -->
               </div>
             </div>
 
-            <div style="margin-bottom:1.25rem;">
-              <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Select Products for this Banner Collection</label>
-              <div id="adminBannerProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:0.5rem; max-height:180px; overflow-y:auto; border:1px solid var(--border-light); padding:0.65rem; border-radius:4px;"></div>
-            </div>
-
-            <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem;"><i class="fa-solid fa-plus"></i> Create Homepage Banner</button>
-          </form>
+          </div>
         </div>
 
         <!-- Admin Section 5: Create Combo Products -->
@@ -710,6 +771,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=23.0"></script>
+  <script src="app.js?v=24.0"></script>
 </body>
 </html>
