@@ -192,8 +192,7 @@ class AppEngine {
     this.currentSlideIndex = 0;
     this.bannerSliderTimer = null;
 
-    const savedSections = localStorage.getItem('hotspy_homepage_layout');
-    this.homepageSections = savedSections ? JSON.parse(savedSections) : [
+    this.homepageSections = [
       { id: 'categories', name: '🔴 Circular Category Quick Strip', enabled: true },
       { id: 'banners', name: '🖼️ Interactive Banner Slider Carousel', enabled: true },
       { id: 'featured', name: '⭐ Featured Store Products Grid', enabled: true },
@@ -240,7 +239,6 @@ class AppEngine {
       const { data: layoutData } = await _supabase.from('settings').select('*').eq('id', 'homepage_layout');
       if (layoutData && layoutData.length > 0 && layoutData[0].data) {
         this.homepageSections = layoutData[0].data;
-        localStorage.setItem('hotspy_homepage_layout', JSON.stringify(this.homepageSections));
       }
     } catch(e) {
       console.warn('Supabase cloud fetch fallback to active memory catalog', e);
@@ -1166,11 +1164,12 @@ class AppEngine {
   }
 
   async saveHomepageLayoutOrder(showToastMsg = true) {
-    sessionStorage.setItem('hotspy_homepage_sections', JSON.stringify(this.homepageSections));
     if (_supabase) {
       try {
         await _supabase.from('settings').upsert({ id: 'homepage_layout', data: this.homepageSections });
-      } catch(e) {}
+      } catch(e) {
+        console.warn('Supabase layout save error', e);
+      }
     }
     if (showToastMsg) {
       this.showToast('🎉 Homepage layout order published successfully!');
