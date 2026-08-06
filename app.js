@@ -245,6 +245,7 @@ class AppEngine {
     const pages = [
       'homePageContent',
       'dedicatedCategoryPageView',
+      'dedicatedCategoryProductsView',
       'dedicatedTraceabilityPageView',
       'dedicatedCombosPageView',
       'customerProfilePageView',
@@ -276,31 +277,31 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(this.products);
   }
 
-  // 2. STANDALONE DEDICATED CATEGORY PAGE
-  openCategoryPage(catName = 'All') {
+  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE (SHOWS ONLY CATEGORIES - NO PRODUCTS!)
+  openCategoryPage() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
     if (page) page.style.display = 'block';
 
-    this.selectedCategory = catName;
-    const bread = document.getElementById('catBreadcrumb');
-    const title = document.getElementById('catPageTitle');
-    if (bread) bread.textContent = `Home / Catalog / ${catName}`;
-    if (title) title.textContent = catName === 'All' ? 'All Groceries & Staples' : `${catName} Storefront`;
-
-    this.renderCategoryProducts();
     this.updateMobileNavActive('mobNavCat');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  selectCategoryFromPage(catName) {
+  // 2B. SPECIFIC CATEGORY PRODUCTS VIEW
+  openCategoryProductsView(catName = 'Spices') {
+    this.hideAllPages();
+    const page = document.getElementById('dedicatedCategoryProductsView');
+    if (page) page.style.display = 'block';
+
     this.selectedCategory = catName;
-    const bread = document.getElementById('catBreadcrumb');
-    const title = document.getElementById('catPageTitle');
-    if (bread) bread.textContent = `Home / Catalog / ${catName}`;
-    if (title) title.textContent = catName === 'All' ? 'All Groceries & Staples' : `${catName} Storefront`;
+    const bread = document.getElementById('specificCatBreadcrumb');
+    const title = document.getElementById('specificCatTitle');
+    if (bread) bread.textContent = `Home / Categories / ${catName}`;
+    if (title) title.textContent = `${catName} Storefront`;
 
     this.renderCategoryProducts();
+    this.updateMobileNavActive('mobNavCat');
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   renderCategoryProducts() {
@@ -560,13 +561,13 @@ class AppEngine {
   }
 
   filterCategory(cat) {
-    this.openCategoryPage(cat);
+    this.openCategoryProductsView(cat);
   }
 
   handleSearchInput(e) {
     this.searchQuery = e.target.value;
     if (this.searchQuery) {
-      this.openCategoryPage('All');
+      this.openCategoryProductsView('All');
     }
   }
 
@@ -607,8 +608,8 @@ class AppEngine {
   saveCart() {
     localStorage.setItem('hotspy_cart', JSON.stringify(this.cart));
     this.updateCartUI();
-    const activeCatPage = document.getElementById('dedicatedCategoryPageView');
-    if (activeCatPage && activeCatPage.style.display === 'block') {
+    const activeCatView = document.getElementById('dedicatedCategoryProductsView');
+    if (activeCatView && activeCatView.style.display === 'block') {
       this.renderCategoryProducts();
     } else {
       this.renderHomeProducts();
