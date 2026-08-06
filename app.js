@@ -24,6 +24,7 @@ const INITIAL_PRODUCTS = [
     reviews: 342,
     image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
     badge: '20% की छूट',
+    discountPct: 22,
     origin: 'Lucknow Farm',
     batchNo: 'HS-LKO-2026',
     inStock: true
@@ -39,6 +40,7 @@ const INITIAL_PRODUCTS = [
     reviews: 215,
     image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=60',
     badge: '22% की छूट',
+    discountPct: 22,
     origin: 'Kerala Highlands',
     batchNo: 'HS-KRL-2026',
     inStock: true
@@ -54,6 +56,7 @@ const INITIAL_PRODUCTS = [
     reviews: 189,
     image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500&auto=format&fit=crop&q=60',
     badge: '20% की छूट',
+    discountPct: 20,
     origin: 'Himalayan Foothills',
     batchNo: 'HS-HIM-2026',
     inStock: true
@@ -69,6 +72,7 @@ const INITIAL_PRODUCTS = [
     reviews: 410,
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500&auto=format&fit=crop&q=60',
     badge: '45% की छूट',
+    discountPct: 45,
     origin: 'Lucknow Co-op',
     batchNo: 'HS-OIL-2026',
     inStock: true
@@ -84,6 +88,7 @@ const INITIAL_PRODUCTS = [
     reviews: 156,
     image: 'https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=500&auto=format&fit=crop&q=60',
     badge: '23% की छूट',
+    discountPct: 23,
     origin: 'Idukki Kerala',
     batchNo: 'HS-CARD-2026',
     inStock: true
@@ -99,6 +104,7 @@ const INITIAL_PRODUCTS = [
     reviews: 98,
     image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60',
     badge: '25% की छूट',
+    discountPct: 25,
     origin: 'Lucknow Belt',
     batchNo: 'HS-SNK-2026',
     inStock: true
@@ -146,6 +152,7 @@ class AppEngine {
     this.user = JSON.parse(sessionStorage.getItem('hotspy_auth_session')) || null;
     this.selectedCategory = 'All';
     this.searchQuery = '';
+    this.minDiscountFilter = 0;
 
     try {
       this.supabase = (typeof window.supabase !== 'undefined') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -165,7 +172,6 @@ class AppEngine {
     this.checkAdminRoute();
   }
 
-  // --- STRICT PAGE SWITCHER (HIDES ALL OTHER PAGES STRICTLY) ---
   hideAllPages() {
     const pages = [
       'homePageContent',
@@ -201,7 +207,7 @@ class AppEngine {
     grid.innerHTML = this.renderProductCardsHTML(this.products);
   }
 
-  // 2. STANDALONE DEDICATED CATEGORY PAGE
+  // 2. STANDALONE DEDICATED CATEGORY PAGE WITH FULL FILTERS & SORTING
   openCategoryPage(catName = 'All') {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
@@ -213,20 +219,49 @@ class AppEngine {
     if (bread) bread.textContent = `Home / Catalog / ${catName}`;
     if (title) title.textContent = catName === 'All' ? 'All Groceries & Staples' : `${catName} Storefront`;
 
-    const grid = document.getElementById('categoryProductGrid');
-    if (grid) {
-      let filtered = this.products;
-      if (catName !== 'All') {
-        filtered = filtered.filter(p => p.category === catName);
-      }
-      grid.innerHTML = this.renderProductCardsHTML(filtered);
-    }
-
+    this.renderCategoryProducts();
     this.updateMobileNavActive('mobNavCat');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 3. STANDALONE DEDICATED TRACEABILITY PAGE
+  renderCategoryProducts() {
+    const grid = document.getElementById('categoryProductGrid');
+    if (!grid) return;
+
+    let filtered = this.products;
+    if (this.selectedCategory !== 'All') {
+      filtered = filtered.filter(p => p.category === this.selectedCategory);
+    }
+    if (this.searchQuery) {
+      const q = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+    }
+    if (this.minDiscountFilter > 0) {
+      filtered = filtered.filter(p => (p.discountPct || 20) >= this.minDiscountFilter);
+    }
+
+    const sortVal = document.getElementById('catSortSelect') ? document.getElementById('catSortSelect').value : 'relevance';
+    if (sortVal === 'price_low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortVal === 'price_high') {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (sortVal === 'discount') {
+      filtered.sort((a, b) => (b.discountPct || 0) - (a.discountPct || 0));
+    }
+
+    grid.innerHTML = this.renderProductCardsHTML(filtered);
+  }
+
+  sortCategoryProducts() {
+    this.renderCategoryProducts();
+  }
+
+  filterCategoryDiscount(minDiscount) {
+    this.minDiscountFilter = minDiscount === 'all' ? 0 : minDiscount;
+    this.renderCategoryProducts();
+  }
+
+  // 3. STANDALONE DEDICATED FARM TRACEABILITY PAGE
   openTraceabilityPage() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedTraceabilityPageView');
@@ -495,7 +530,7 @@ class AppEngine {
     this.updateCartUI();
     const activeCatPage = document.getElementById('dedicatedCategoryPageView');
     if (activeCatPage && activeCatPage.style.display === 'block') {
-      this.openCategoryPage(this.selectedCategory);
+      this.renderCategoryProducts();
     } else {
       this.renderHomeProducts();
     }
