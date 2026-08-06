@@ -8,7 +8,7 @@
   
   <!-- Font Awesome Icons & Google Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=17.0">
+  <link rel="stylesheet" href="styles.css?v=18.0">
 </head>
 <body>
 
@@ -60,10 +60,10 @@
 
               <ul class="dropdown-menu-list">
                 <li><a href="#/home" onclick="app.showHomePage(); app.closeProfileDropdown();"><i class="fa-solid fa-house" style="color:var(--header-bg);"></i> Home Store</a></li>
+                <li><a href="#/shop" onclick="app.openShopPage(); app.closeProfileDropdown();"><i class="fa-solid fa-store" style="color:var(--header-bg);"></i> Shop All Products</a></li>
                 <li><a href="#/categories" onclick="app.openCategoryPage('All'); app.closeProfileDropdown();"><i class="fa-solid fa-border-all" style="color:var(--header-bg);"></i> Category Directory</a></li>
                 <li><a href="#/tracking" onclick="app.openOrderTrackingPage(); app.closeProfileDropdown();"><i class="fa-solid fa-truck-fast" style="color:var(--header-bg);"></i> Track Orders & History</a></li>
                 <li><a href="#/combos" onclick="app.openComboPage(); app.closeProfileDropdown();"><i class="fa-solid fa-percent" style="color:var(--accent-gold);"></i> Deals & Combos</a></li>
-                <li><a href="#/traceability" onclick="app.openTraceabilityPage(); app.closeProfileDropdown();"><i class="fa-solid fa-seedling" style="color:var(--header-bg);"></i> Farm Traceability Portal</a></li>
               </ul>
 
               <div id="dropdownFooterBox" style="padding:0.5rem; border-top:1px solid var(--border-subtle);"></div>
@@ -98,6 +98,10 @@
       <div class="bb-circle-icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
       <span class="bb-circle-label">Home Store</span>
     </div>
+    <div class="bb-category-circle-card" onclick="app.openShopPage()">
+      <div class="bb-circle-icon-box" style="background:var(--primary); color:var(--header-dark);"><i class="fa-solid fa-store"></i></div>
+      <span class="bb-circle-label" style="font-weight:800; color:var(--header-bg);">Shop All</span>
+    </div>
     <div class="bb-category-circle-card" onclick="app.openCategoryProductsView('Spices')">
       <div class="bb-circle-icon-box"><i class="fa-solid fa-pepper-hot"></i></div>
       <span class="bb-circle-label">Pure Spices</span>
@@ -110,29 +114,85 @@
       <div class="bb-circle-icon-box"><i class="fa-solid fa-bottle-droplet"></i></div>
       <span class="bb-circle-label">Cold-Pressed Oils</span>
     </div>
-    <div class="bb-category-circle-card" onclick="app.openCategoryProductsView('Organic')">
-      <div class="bb-circle-icon-box"><i class="fa-solid fa-seedling"></i></div>
-      <span class="bb-circle-label">Organic</span>
-    </div>
 
     <!-- 6th Special Card: View All Categories -->
     <div class="bb-category-circle-card" onclick="app.openCategoryPage('All')">
-      <div class="bb-circle-icon-box" style="background:var(--primary); color:var(--header-dark);"><i class="fa-solid fa-border-all"></i></div>
-      <span class="bb-circle-label" style="font-weight:800; color:var(--header-bg);">View All ></span>
+      <div class="bb-circle-icon-box"><i class="fa-solid fa-border-all"></i></div>
+      <span class="bb-circle-label">Categories</span>
     </div>
   </div>
 
   <!-- Storefront Main Container -->
   <div id="storefrontWrapper">
     
-    <!-- 1. STANDALONE HOMEPAGE VIEW -->
+    <!-- 1. STANDALONE HOMEPAGE VIEW (FEATURED PRODUCTS + PROMOTIONAL BANNERS + HOMEPAGE COMBOS) -->
     <main id="homePageContent" class="container">
-      <div class="product-grid" id="homeProductGrid">
+      
+      <!-- Homepage Interactive Banner Section -->
+      <div style="background:linear-gradient(135deg, #024731 0%, #064E3B 100%); color:white; padding:1.25rem; border-radius:var(--radius-lg); margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-md);">
+        <div>
+          <span style="background:var(--primary); color:var(--header-dark); font-size:0.68rem; font-weight:900; padding:0.18rem 0.5rem; border-radius:var(--radius-full); text-transform:uppercase;">
+            🔥 Exclusive Banner Deal
+          </span>
+          <h2 style="font-size:1.35rem; font-weight:800; margin:0.35rem 0 0.2rem;">Organic Golden Spice Harvest</h2>
+          <p style="font-size:0.8rem; opacity:0.9;">Click to view exclusive banner-selected organic products!</p>
+        </div>
+        <button class="btn-primary" onclick="app.openBannerProductsPage('Organic Golden Spice Harvest', ['prod_1', 'prod_2', 'prod_5'])" style="background:var(--primary); color:var(--header-dark); padding:0.5rem 1rem; font-size:0.85rem;">
+          View Banner Collection <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Featured Products Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div>
+          <span style="font-size:0.72rem; font-weight:800; color:var(--header-bg); text-transform:uppercase;">Handpicked Supermarket Items</span>
+          <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">⭐ Featured Store Products</h2>
+        </div>
+        <a href="#/shop" class="btn-secondary" onclick="app.openShopPage(); return false;" style="padding:0.3rem 0.65rem; font-size:0.75rem;">View All Shop <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <!-- Featured Products Grid -->
+      <div class="product-grid" id="homeProductGrid" style="margin-bottom:1.5rem;">
         <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Homepage Combos Section (Only show combos flagged for homepage) -->
+      <div id="homeCombosSection" style="display:none; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h2 style="font-size:1.25rem; font-weight:800; color:var(--header-bg);">🔥 Featured Recipe Combos</h2>
+          <a href="#/combos" class="btn-secondary" onclick="app.openComboPage(); return false;" style="padding:0.3rem 0.65rem; font-size:0.75rem;">All Combos <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="product-grid" id="homeCombosGrid"></div>
       </div>
     </main>
 
-    <!-- 2. STANDALONE DEDICATED CATEGORIES DIRECTORY PAGE -->
+    <!-- 2. STANDALONE SHOP ALL PRODUCTS PAGE VIEW -->
+    <div id="shopPageView" class="container" style="display:none; padding:1.25rem 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+        <div>
+          <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">Complete Catalog</span>
+          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">🛍️ Shop All Store Products</h1>
+        </div>
+        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+      </div>
+
+      <div class="product-grid" id="shopProductGrid"></div>
+    </div>
+
+    <!-- 3. STANDALONE BANNER COLLECTION PRODUCTS PAGE VIEW -->
+    <div id="bannerProductsPageView" class="container" style="display:none; padding:1.25rem 1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
+        <div>
+          <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">PROMOTIONAL SELECTION</span>
+          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;" id="bannerPageTitle">Banner Collection</h1>
+        </div>
+        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
+      </div>
+
+      <div class="product-grid" id="bannerProductGrid"></div>
+    </div>
+
+    <!-- 4. STANDALONE DEDICATED CATEGORIES DIRECTORY PAGE -->
     <div id="dedicatedCategoryPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -185,7 +245,7 @@
       </div>
     </div>
 
-    <!-- 2B. DEDICATED SPECIFIC CATEGORY PRODUCTS VIEW -->
+    <!-- 4B. DEDICATED SPECIFIC CATEGORY PRODUCTS VIEW -->
     <div id="dedicatedCategoryProductsView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -216,7 +276,7 @@
       <div class="product-grid" id="categoryProductGrid"></div>
     </div>
 
-    <!-- 3. STANDALONE DEDICATED MULTI-ORDER TRACKING PAGE VIEW -->
+    <!-- 5. STANDALONE DEDICATED MULTI-ORDER TRACKING PAGE VIEW -->
     <div id="dedicatedOrderTrackingPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -234,33 +294,7 @@
       <div id="specificOrderTrackingContainer" style="display:none;"></div>
     </div>
 
-    <!-- 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE -->
-    <div id="dedicatedTraceabilityPageView" class="container" style="display:none; padding:1.25rem 1rem;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
-        <div>
-          <span style="font-size:0.75rem; font-weight:700; color:var(--header-bg); text-transform:uppercase;">100% Purity Guarantee</span>
-          <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg); margin-top:0.15rem;">🌱 Farm Traceability Portal</h1>
-        </div>
-        <button class="btn-secondary" onclick="app.showHomePage();" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Home Store</button>
-      </div>
-
-      <div style="background:var(--header-bg); color:white; padding:1.75rem 1.25rem; border-radius:var(--radius-lg); text-align:center; box-shadow:var(--shadow-lg); margin-bottom:1.5rem;">
-        <span style="background:rgba(255,255,255,0.15); color:white; font-size:0.72rem; font-weight:800; padding:0.2rem 0.65rem; border-radius:var(--radius-full); display:inline-block; margin-bottom:0.65rem;">
-          <i class="fa-solid fa-tractor"></i> Direct Partner Farming Co-ops
-        </span>
-        <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:0.4rem;">Trace Your Packet Direct to the Farmer</h2>
-        <p style="font-size:0.82rem; opacity:0.9; margin-bottom:1rem;">Enter batch code (e.g. HS-LKO-2026) to view partner farm, harvest date & lab purity report.</p>
-
-        <div style="display:flex; gap:0.4rem; max-width:420px; margin:0 auto 0.85rem;">
-          <input type="text" id="traceBatchInput" style="padding:0.6rem; border-radius:var(--radius-sm); border:none; font-weight:700; width:100%; text-transform:uppercase; font-size:0.85rem;" placeholder="Enter Batch Code (e.g. HS-LKO-2026)">
-          <button class="btn-primary" onclick="app.verifyBatchFromInput()" style="background:var(--primary); color:var(--header-dark); flex-shrink:0; padding:0.6rem 0.85rem;">Verify</button>
-        </div>
-
-        <div id="traceResultCard" style="display:none; background:white; color:var(--text-main); padding:1.15rem; border-radius:var(--radius-md); text-align:left;"></div>
-      </div>
-    </div>
-
-    <!-- 5. STANDALONE DEDICATED RECIPE COMBOS PAGE -->
+    <!-- 6. STANDALONE DEDICATED RECIPE COMBOS PAGE -->
     <div id="dedicatedCombosPageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-light);">
         <div>
@@ -273,7 +307,7 @@
       <div class="product-grid" id="dedicatedCombosGrid"></div>
     </div>
 
-    <!-- 6. STANDALONE DEDICATED CUSTOMER PROFILE PAGE -->
+    <!-- 7. STANDALONE DEDICATED CUSTOMER PROFILE PAGE -->
     <div id="customerProfilePageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h1 style="font-size:1.4rem; font-weight:800; color:var(--header-bg);">My Account & Orders</h1>
@@ -315,7 +349,7 @@
       </div>
     </div>
 
-    <!-- 7. STANDALONE DEDICATED ORDER TAX INVOICE PAGE -->
+    <!-- 8. STANDALONE DEDICATED ORDER TAX INVOICE PAGE -->
     <div id="orderInvoicePageView" class="container" style="display:none; padding:1.25rem 1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;" class="no-print">
         <button class="btn-secondary" onclick="app.openCustomerProfilePage('orders');" style="padding:0.35rem 0.75rem; font-size:0.78rem;"><i class="fa-solid fa-arrow-left"></i> Back</button>
@@ -326,7 +360,7 @@
 
   </div>
 
-  <!-- STANDALONE ADMIN PANEL VIEW -->
+  <!-- STANDALONE SECURE ADMIN PANEL VIEW -->
   <div id="adminWrapper" style="display:none; padding:1.25rem 1rem;" class="container">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.65rem; border-bottom:2px solid var(--header-bg);">
       <div>
@@ -337,11 +371,11 @@
 
     <div style="display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap;">
       <button class="btn-secondary active" id="adminTabOrdersBtn" onclick="app.switchAdminTab('orders')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Orders (5-Stage Status)</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Products</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('recipes')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Recipes</button>
-      <button class="btn-secondary" onclick="app.switchAdminTab('traceability')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Traceability</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('products')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Products & Featured Toggle</button>
+      <button class="btn-secondary" onclick="app.switchAdminTab('combos')" style="padding:0.3rem 0.65rem; font-size:0.78rem;">Create Combo Products</button>
     </div>
 
+    <!-- Admin Section 1: Orders -->
     <div id="adminSectionOrders" style="background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto;">
       <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Manage 5-Stage Live Customer Orders</h3>
       <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
@@ -359,26 +393,62 @@
       </table>
     </div>
 
+    <!-- Admin Section 2: Products & Featured Toggle -->
     <div id="adminSectionProducts" style="display:none; background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); overflow-x:auto;">
+      <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Products Catalog & Featured Homepage Toggle</h3>
       <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
         <thead>
           <tr style="background:var(--bg-warm); text-align:left;">
             <th style="padding:0.4rem;">Img</th>
             <th style="padding:0.4rem;">Name</th>
             <th style="padding:0.4rem;">Price</th>
-            <th style="padding:0.4rem;">Stock</th>
+            <th style="padding:0.4rem;">Show as Featured on Homepage</th>
           </tr>
         </thead>
         <tbody id="adminProductTable"></tbody>
       </table>
     </div>
+
+    <!-- Admin Section 3: Create Combo Products with Homepage Toggle -->
+    <div id="adminSectionCombos" style="display:none; background:white; padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+      <h3 style="font-size:1.05rem; color:var(--header-bg); margin-bottom:0.85rem;">Create Custom Combo Product</h3>
+      <form onsubmit="event.preventDefault(); app.createNewComboFromAdmin();">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Combo Title</label>
+            <input type="text" id="adminComboTitle" placeholder="e.g. Master Chef Immunity Combo" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Combo Price (₹)</label>
+            <input type="number" id="adminComboPrice" placeholder="499" required style="width:100%; padding:0.5rem; border:1px solid var(--border-light); border-radius:4px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:0.2rem;">Select Included Products</label>
+          <div id="adminComboProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0.5rem; max-height:160px; overflow-y:auto; border:1px solid var(--border-light); padding:0.5rem; border-radius:4px;"></div>
+        </div>
+
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.82rem; font-weight:700; color:var(--header-bg); cursor:pointer;">
+            <input type="checkbox" id="adminComboShowHomepage" checked> Show this Combo on Homepage Storefront
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Save & Publish Combo</button>
+      </form>
+    </div>
   </div>
 
-  <!-- STICKY MOBILE BOTTOM NAVIGATION BAR -->
+  <!-- STICKY MOBILE BOTTOM NAVIGATION BAR (REPLACED ORGANIC WITH SHOP PAGE) -->
   <nav class="mobile-bottom-nav">
     <div class="mobile-nav-item active" id="mobNavHome" onclick="app.showHomePage()">
       <i class="fa-solid fa-house"></i>
       <span>Home</span>
+    </div>
+    <div class="mobile-nav-item" id="mobNavShop" onclick="app.openShopPage()">
+      <i class="fa-solid fa-store"></i>
+      <span>Shop</span>
     </div>
     <div class="mobile-nav-item" id="mobNavCat" onclick="app.openCategoryPage('All')">
       <i class="fa-solid fa-border-all"></i>
@@ -387,10 +457,6 @@
     <div class="mobile-nav-item center-badge" id="mobNavOffers" onclick="app.openComboPage()">
       <i class="fa-solid fa-percent"></i>
       <span>Offers</span>
-    </div>
-    <div class="mobile-nav-item" id="mobNavOrganic" onclick="app.openTraceabilityPage()">
-      <i class="fa-solid fa-seedling"></i>
-      <span>Organic</span>
     </div>
     <div class="mobile-nav-item" id="mobNavCart" onclick="app.openCartDrawer()">
       <i class="fa-solid fa-basket-shopping"></i>
@@ -517,6 +583,6 @@
 
   <!-- Supabase JS SDK & Application Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=17.0"></script>
+  <script src="app.js?v=18.0"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* ==========================================================================
    BIGBASKET E-COMMERCE SUPERMARKET - CORE JAVASCRIPT APPLICATION ENGINE
    Instance: https://sbqmpnyzocgqdgjkjeta.supabase.co
-   URL Hash Routing Engine for Mobile & PC Browser Back Button Compatibility
+   URL Hash Routing Engine: Shop Page, Featured Section, Banner Collections, Admin Combo Creator
    ========================================================================== */
 
 const SUPABASE_URL = (typeof window !== 'undefined' && window.SUPABASE_URL) 
@@ -12,7 +12,7 @@ const SUPABASE_ANON_KEY = (typeof window !== 'undefined' && window.SUPABASE_ANON
   ? window.SUPABASE_ANON_KEY 
   : (typeof window !== 'undefined' && window.ENV && window.ENV.SUPABASE_ANON_KEY ? window.ENV.SUPABASE_ANON_KEY : "https://sbqmpnyzocgqdgjkjeta.supabase.co");
 
-// Supermarket Catalog Data
+// Supermarket Catalog Data with Featured Flags
 const INITIAL_PRODUCTS = [
   {
     id: 'prod_1',
@@ -28,7 +28,7 @@ const INITIAL_PRODUCTS = [
     discountPct: 22,
     origin: 'Lucknow Farm',
     batchNo: 'HS-LKO-2026',
-    inStock: true
+    isFeatured: true
   },
   {
     id: 'prod_2',
@@ -44,7 +44,7 @@ const INITIAL_PRODUCTS = [
     discountPct: 22,
     origin: 'Kerala Highlands',
     batchNo: 'HS-KRL-2026',
-    inStock: true
+    isFeatured: true
   },
   {
     id: 'prod_3',
@@ -60,7 +60,7 @@ const INITIAL_PRODUCTS = [
     discountPct: 20,
     origin: 'Himalayan Foothills',
     batchNo: 'HS-HIM-2026',
-    inStock: true
+    isFeatured: true
   },
   {
     id: 'prod_4',
@@ -76,7 +76,7 @@ const INITIAL_PRODUCTS = [
     discountPct: 45,
     origin: 'Lucknow Co-op',
     batchNo: 'HS-OIL-2026',
-    inStock: true
+    isFeatured: false
   },
   {
     id: 'prod_5',
@@ -92,7 +92,7 @@ const INITIAL_PRODUCTS = [
     discountPct: 23,
     origin: 'Idukki Kerala',
     batchNo: 'HS-CARD-2026',
-    inStock: true
+    isFeatured: true
   },
   {
     id: 'prod_6',
@@ -108,7 +108,20 @@ const INITIAL_PRODUCTS = [
     discountPct: 25,
     origin: 'Lucknow Belt',
     batchNo: 'HS-SNK-2026',
-    inStock: true
+    isFeatured: false
+  }
+];
+
+const INITIAL_RECIPES = [
+  {
+    id: 'rec_1',
+    title: '🌿 Golden Immunity Boost Combo',
+    tag: 'Best Seller',
+    image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
+    description: 'Lakadong Turmeric Powder (250g) + Malabar Black Pepper Whole (100g)',
+    productIds: ['prod_1', 'prod_2'],
+    comboPrice: 499,
+    showOnHomepage: true
   }
 ];
 
@@ -127,43 +140,13 @@ const INITIAL_ORDERS = [
     status: 'Out for Delivery',
     shipped_remarks: 'Out for 10-Min Express Delivery via Rider Raju Sharma',
     date: '2026-08-06 16:30'
-  },
-  {
-    id: 'ORD-7310',
-    customer_mobile: '9876543210',
-    customer_name: 'Aarav Sharma',
-    items: JSON.stringify([
-      { name: 'Cold-Pressed Organic Mustard Oil (Kachi Ghani)', price: 199, quantity: 1 },
-      { name: 'Roasted Organic Flax Seeds & Chia Munch', price: 149, quantity: 1 }
-    ]),
-    shipping_address: JSON.stringify({ house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010' }),
-    subtotal: 348,
-    total_amount: 348,
-    status: 'Shipped',
-    shipped_remarks: 'In Transit through Kanpur Logistics Express Hub - Arriving Lucknow Today',
-    date: '2026-08-05 14:15'
-  },
-  {
-    id: 'ORD-6120',
-    customer_mobile: '9876543210',
-    customer_name: 'Aarav Sharma',
-    items: JSON.stringify([
-      { name: 'Himalayan Whole Leaf First Flush Green Tea', price: 399, quantity: 1 },
-      { name: 'Farm Fresh Organic Royal Green Cardamom (8mm+)', price: 499, quantity: 1 }
-    ]),
-    shipping_address: JSON.stringify({ house_no: 'Flat 402, Royal Residency', street: 'Gomti Nagar Main Road', city: 'Lucknow', state: 'Uttar Pradesh', pincode: '226010' }),
-    subtotal: 898,
-    total_amount: 898,
-    status: 'Delivered',
-    shipped_remarks: 'Delivered successfully and signed by customer Aarav Sharma',
-    date: '2026-08-02 11:00'
   }
 ];
 
 class AppEngine {
   constructor() {
     this.products = JSON.parse(localStorage.getItem('hotspy_products')) || INITIAL_PRODUCTS;
-    this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || [];
+    this.recipes = JSON.parse(localStorage.getItem('hotspy_recipes')) || INITIAL_RECIPES;
     this.cart = JSON.parse(localStorage.getItem('hotspy_cart')) || [];
     this.orders = JSON.parse(localStorage.getItem('hotspy_orders')) || INITIAL_ORDERS;
     this.userProfiles = JSON.parse(localStorage.getItem('hotspy_user_profiles')) || [
@@ -185,11 +168,9 @@ class AppEngine {
     this.updateCartUI();
     this.updateAuthStatusUI();
 
-    // LISTEN TO BROWSER & MOBILE BACK/FORWARD BUTTON HASH CHANGES
     window.addEventListener('hashchange', () => this.handleRouteHashChange());
     window.addEventListener('popstate', () => this.handleRouteHashChange());
 
-    // Initial page load route parsing
     this.handleRouteHashChange();
 
     document.addEventListener('click', (e) => {
@@ -200,7 +181,7 @@ class AppEngine {
     });
   }
 
-  // ROUTER CONTROLLER: PARSES URL HASH FOR DESKTOP & MOBILE BACK BUTTON SUPPORT
+  // ROUTER CONTROLLER FOR HASH ROUTING
   handleRouteHashChange() {
     const hash = window.location.hash || '#/home';
 
@@ -209,7 +190,12 @@ class AppEngine {
       return;
     }
 
-    if (hash.startsWith('#/category/')) {
+    if (hash === '#/shop') {
+      this.renderShopPageView();
+    } else if (hash.startsWith('#/banner/')) {
+      const title = decodeURIComponent(hash.replace('#/banner/', ''));
+      this.renderBannerProductsPageView(title);
+    } else if (hash.startsWith('#/category/')) {
       const catName = decodeURIComponent(hash.replace('#/category/', ''));
       this.renderCategoryProductsView(catName);
     } else if (hash.startsWith('#/tracking/')) {
@@ -221,8 +207,6 @@ class AppEngine {
       this.renderCategoryPageView();
     } else if (hash === '#/combos') {
       this.renderComboPageView();
-    } else if (hash === '#/traceability') {
-      this.renderTraceabilityPageView();
     } else if (hash === '#/profile') {
       this.renderCustomerProfilePageView('addresses');
     } else if (hash.startsWith('#/invoice/')) {
@@ -233,9 +217,18 @@ class AppEngine {
     }
   }
 
-  // NAVIGATION ROUTE TRIGGER METHODS (UPDATES WINDOW.LOCATION.HASH)
+  // NAVIGATION ROUTE TRIGGER METHODS
   showHomePage() {
     window.location.hash = '#/home';
+  }
+
+  openShopPage() {
+    window.location.hash = '#/shop';
+  }
+
+  openBannerProductsPage(title, productIds = []) {
+    this.currentBannerProductIds = productIds;
+    window.location.hash = `#/banner/${encodeURIComponent(title)}`;
   }
 
   openCategoryPage() {
@@ -256,10 +249,6 @@ class AppEngine {
 
   openComboPage() {
     window.location.hash = '#/combos';
-  }
-
-  openTraceabilityPage() {
-    window.location.hash = '#/traceability';
   }
 
   openCustomerProfilePage(tab = 'addresses') {
@@ -339,10 +328,11 @@ class AppEngine {
   hideAllPages() {
     const pages = [
       'homePageContent',
+      'shopPageView',
+      'bannerProductsPageView',
       'dedicatedCategoryPageView',
       'dedicatedCategoryProductsView',
       'dedicatedOrderTrackingPageView',
-      'dedicatedTraceabilityPageView',
       'dedicatedCombosPageView',
       'customerProfilePageView',
       'orderInvoicePageView',
@@ -356,24 +346,80 @@ class AppEngine {
     if (storefront) storefront.style.display = 'block';
   }
 
-  // 1. STANDALONE HOMEPAGE RENDER
+  // 1. STANDALONE HOMEPAGE RENDER (SHOWS ONLY FEATURED PRODUCTS & HOMEPAGE COMBOS)
   renderHomePageView() {
     this.hideAllPages();
     const home = document.getElementById('homePageContent');
     if (home) home.style.display = 'block';
 
     this.updateMobileNavActive('mobNavHome');
-    this.renderHomeProducts();
+
+    // Filter featured products only for homepage
+    const featuredProds = this.products.filter(p => p.isFeatured);
+    const grid = document.getElementById('homeProductGrid');
+    if (grid) grid.innerHTML = this.renderProductCardsHTML(featuredProds);
+
+    // Render homepage combos if enabled
+    const hpCombos = this.recipes.filter(r => r.showOnHomepage);
+    const combosSec = document.getElementById('homeCombosSection');
+    const combosGrid = document.getElementById('homeCombosGrid');
+    if (hpCombos.length > 0 && combosSec && combosGrid) {
+      combosSec.style.display = 'block';
+      combosGrid.innerHTML = hpCombos.map(r => `
+        <div class="bb-product-card">
+          <span class="bb-discount-pill" style="background:var(--accent-gold); color:var(--header-dark);">HOMEPAGE FEATURED</span>
+          <div class="bb-card-img-wrap">
+            <img src="${r.image}">
+          </div>
+          <h3 class="bb-card-title">${r.title}</h3>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
+          <div class="bb-price-row">
+            <span class="bb-sale-price">₹${r.comboPrice}</span>
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
+        </div>
+      `).join('');
+    } else if (combosSec) {
+      combosSec.style.display = 'none';
+    }
+
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  renderHomeProducts() {
-    const grid = document.getElementById('homeProductGrid');
-    if (!grid) return;
-    grid.innerHTML = this.renderProductCardsHTML(this.products);
+  // 2. STANDALONE SHOP ALL PRODUCTS PAGE RENDER (ALL STORE ITEMS)
+  renderShopPageView() {
+    this.hideAllPages();
+    const page = document.getElementById('shopPageView');
+    if (page) page.style.display = 'block';
+
+    const grid = document.getElementById('shopProductGrid');
+    if (grid) grid.innerHTML = this.renderProductCardsHTML(this.products);
+
+    this.updateMobileNavActive('mobNavShop');
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 2A. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE RENDER
+  // 3. STANDALONE BANNER COLLECTION PRODUCTS PAGE RENDER
+  renderBannerProductsPageView(title) {
+    this.hideAllPages();
+    const page = document.getElementById('bannerProductsPageView');
+    if (page) page.style.display = 'block';
+
+    const titleEl = document.getElementById('bannerPageTitle');
+    if (titleEl) titleEl.textContent = title || 'Promotional Collection';
+
+    let list = this.products;
+    if (this.currentBannerProductIds && this.currentBannerProductIds.length > 0) {
+      list = this.products.filter(p => this.currentBannerProductIds.includes(p.id));
+    }
+
+    const grid = document.getElementById('bannerProductGrid');
+    if (grid) grid.innerHTML = this.renderProductCardsHTML(list);
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  // 4. STANDALONE DEDICATED CATEGORY DIRECTORY PAGE RENDER
   renderCategoryPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryPageView');
@@ -383,7 +429,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 2B. SPECIFIC CATEGORY PRODUCTS VIEW RENDER
+  // 4B. SPECIFIC CATEGORY PRODUCTS VIEW RENDER
   renderCategoryProductsView(catName = 'Spices') {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCategoryProductsView');
@@ -400,7 +446,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 3. MULTI-ORDER TRACKING & 5-STAGE DETAILS RENDER
+  // 5. MULTI-ORDER TRACKING & 5-STAGE DETAILS RENDER
   renderOrderTrackingPageView(specificOrderId = null) {
     if (!this.user) {
       this.openAuthModal('login');
@@ -557,8 +603,6 @@ class AppEngine {
         <h3 style="font-size:1.05rem; font-weight:800; color:var(--header-bg); margin-bottom:1.25rem;">5-Stage Live Delivery Progress</h3>
 
         <div style="display:flex; flex-direction:column; gap:1.25rem;">
-          
-          <!-- Stage 1: Placed -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 0 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 0 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex > 0 ? '✓' : '1'}
@@ -569,7 +613,6 @@ class AppEngine {
             </div>
           </div>
 
-          <!-- Stage 2: Accepted -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 1 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 1 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex > 1 ? '✓' : '2'}
@@ -580,7 +623,6 @@ class AppEngine {
             </div>
           </div>
 
-          <!-- Stage 3: Shipped -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 2 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 2 ? 'var(--header-bg)' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex > 2 ? '✓' : '3'}
@@ -593,7 +635,6 @@ class AppEngine {
             </div>
           </div>
 
-          <!-- Stage 4: Out for Delivery -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 3 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 3 ? 'var(--primary)' : 'var(--border-light)'}; color:${currentStageIndex >= 3 ? 'var(--header-dark)' : 'var(--text-muted)'}; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex > 3 ? '✓' : '<i class="fa-solid fa-motorcycle"></i>'}
@@ -604,7 +645,6 @@ class AppEngine {
             </div>
           </div>
 
-          <!-- Stage 5: Delivered -->
           <div style="display:flex; align-items:flex-start; gap:0.85rem; opacity:${currentStageIndex >= 4 ? '1' : '0.5'};">
             <div style="width:32px; height:32px; border-radius:50%; background:${currentStageIndex >= 4 ? '#10B981' : 'var(--border-light)'}; color:white; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; flex-shrink:0;">
               ${currentStageIndex >= 4 ? '✓' : '5'}
@@ -614,11 +654,10 @@ class AppEngine {
               <div style="font-size:0.78rem; color:var(--text-muted);">Handed over to customer at doorstep</div>
             </div>
           </div>
-
         </div>
       </div>
 
-      <!-- ORDERED ITEMS & ADDRESS SUMMARY -->
+      <!-- ORDERED ITEMS SUMMARY -->
       <div style="display:grid; grid-template-columns:1fr; gap:1rem;">
         <div style="background:white; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border-light);">
           <h3 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.65rem;">Ordered Products (${(items || []).length})</h3>
@@ -637,17 +676,7 @@ class AppEngine {
     `;
   }
 
-  // 4. STANDALONE DEDICATED FARM TRACEABILITY PAGE RENDER
-  renderTraceabilityPageView() {
-    this.hideAllPages();
-    const page = document.getElementById('dedicatedTraceabilityPageView');
-    if (page) page.style.display = 'block';
-
-    this.updateMobileNavActive('mobNavOrganic');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  // 5. STANDALONE DEDICATED RECIPE COMBOS PAGE RENDER
+  // 6. STANDALONE DEDICATED RECIPE COMBOS PAGE RENDER
   renderComboPageView() {
     this.hideAllPages();
     const page = document.getElementById('dedicatedCombosPageView');
@@ -665,7 +694,6 @@ class AppEngine {
           <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;">${r.description}</p>
           <div class="bb-price-row">
             <span class="bb-sale-price">₹${r.comboPrice}</span>
-            <span class="bb-mrp-price">₹669</span>
           </div>
           <button class="btn-primary" style="width:100%;" onclick="app.addComboToCart('${r.id}')">Add Combo</button>
         </div>
@@ -676,7 +704,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 6. STANDALONE DEDICATED CUSTOMER PROFILE PAGE RENDER
+  // 7. STANDALONE DEDICATED CUSTOMER PROFILE PAGE RENDER
   renderCustomerProfilePageView(tab = 'addresses') {
     this.hideAllPages();
     const page = document.getElementById('customerProfilePageView');
@@ -694,7 +722,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 7. STANDALONE DEDICATED ORDER TAX INVOICE PAGE RENDER
+  // 8. STANDALONE DEDICATED ORDER TAX INVOICE PAGE RENDER
   renderOrderInvoicePageView(orderId) {
     const order = this.orders.find(o => o.id === orderId);
     if (!order) return;
@@ -754,7 +782,7 @@ class AppEngine {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  // 8. STANDALONE SECURE ADMIN PANEL WITH 5-STAGE STATUS & SHIPPED REMARKS CONTROL
+  // 9. SECURE ADMIN PANEL WITH FEATURED TOGGLE & COMBO CREATOR
   checkAdminRoute() {
     if (window.location.hash === '#admin') {
       this.openAdminAuthModal();
@@ -802,7 +830,7 @@ class AppEngine {
   }
 
   switchAdminTab(tab) {
-    ['Orders', 'Products', 'Recipes', 'Traceability'].forEach(t => {
+    ['Orders', 'Products', 'Combos'].forEach(t => {
       const sec = document.getElementById(`adminSection${t}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
     });
@@ -848,9 +876,70 @@ class AppEngine {
           <td style="padding:0.4rem;"><img src="${p.image}" style="width:30px; height:30px; object-fit:cover; border-radius:4px;"></td>
           <td style="padding:0.4rem;"><strong>${p.name}</strong></td>
           <td style="padding:0.4rem; font-weight:800; color:var(--header-bg);">₹${p.price}</td>
-          <td style="padding:0.4rem;"><span style="color:var(--header-bg); font-weight:700;">In Stock</span></td>
+          
+          <td style="padding:0.4rem;">
+            <button class="btn-secondary" onclick="app.toggleProductFeatured('${p.id}')" style="padding:0.25rem 0.55rem; font-size:0.75rem; background:${p.isFeatured ? 'var(--primary)' : 'white'}; color:${p.isFeatured ? 'var(--header-dark)' : 'var(--text-main)'}; font-weight:800;">
+              ${p.isFeatured ? '⭐ Featured on Homepage' : 'Standard (Shop Only)'}
+            </button>
+          </td>
         </tr>
       `).join('');
+    }
+
+    const comboPicker = document.getElementById('adminComboProductsPicker');
+    if (comboPicker) {
+      comboPicker.innerHTML = this.products.map(p => `
+        <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.75rem; cursor:pointer;">
+          <input type="checkbox" class="combo-prod-checkbox" value="${p.id}"> ${p.name.slice(0, 22)}...
+        </label>
+      `).join('');
+    }
+  }
+
+  toggleProductFeatured(productId) {
+    const p = this.products.find(item => item.id === productId);
+    if (p) {
+      p.isFeatured = !p.isFeatured;
+      localStorage.setItem('hotspy_products', JSON.stringify(this.products));
+      this.showToast(`Updated "${p.name}" featured state to: ${p.isFeatured}`);
+      this.renderAdminTables();
+    }
+  }
+
+  createNewComboFromAdmin() {
+    const title = document.getElementById('adminComboTitle').value.trim();
+    const price = parseInt(document.getElementById('adminComboPrice').value, 10);
+    const showHp = document.getElementById('adminComboShowHomepage').checked;
+
+    const checkboxes = document.querySelectorAll('.combo-prod-checkbox:checked');
+    const selectedIds = Array.from(checkboxes).map(c => c.value);
+
+    if (!title || !price || selectedIds.length === 0) {
+      this.showToast('Please enter combo title, price, and pick at least 1 product!', 'error');
+      return;
+    }
+
+    const firstProd = this.products.find(p => p.id === selectedIds[0]);
+
+    const newCombo = {
+      id: `rec_${Date.now()}`,
+      title: title,
+      comboPrice: price,
+      productIds: selectedIds,
+      showOnHomepage: showHp,
+      image: firstProd ? firstProd.image : 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=500&auto=format&fit=crop&q=60',
+      description: `Includes ${selectedIds.length} organic pairing products.`
+    };
+
+    this.recipes.unshift(newCombo);
+    localStorage.setItem('hotspy_recipes', JSON.stringify(this.recipes));
+
+    this.showToast(`🎉 Created Combo "${title}"!`);
+    this.renderAdminTables();
+    if (showHp) {
+      this.showHomePage();
+    } else {
+      this.openComboPage();
     }
   }
 
@@ -1063,7 +1152,7 @@ class AppEngine {
   }
 
   updateMobileNavActive(activeId) {
-    ['mobNavHome', 'mobNavCat', 'mobNavOffers', 'mobNavOrganic', 'mobNavCart'].forEach(id => {
+    ['mobNavHome', 'mobNavShop', 'mobNavCat', 'mobNavOffers', 'mobNavCart'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.toggle('active', id === activeId);
     });
@@ -1302,29 +1391,6 @@ class AppEngine {
   closeCartDrawer() {
     const drawer = document.getElementById('cartDrawerBackdrop');
     if (drawer) drawer.classList.remove('open');
-  }
-
-  verifyBatchFromInput() {
-    const input = document.getElementById('traceBatchInput');
-    const code = input ? input.value.trim() : '';
-    const resultCard = document.getElementById('traceResultCard');
-    const info = (BATCH_DATABASE && code) ? BATCH_DATABASE[code.toUpperCase()] : null;
-
-    if (!info) {
-      this.showToast(`Batch "${code}" not found. Try HS-LKO-2026`, 'error');
-      return;
-    }
-
-    if (resultCard) {
-      resultCard.innerHTML = `
-        <div style="font-size:0.85rem;">
-          <strong>Farm:</strong> ${info.farmer}<br>
-          <strong>Harvest Date:</strong> ${info.harvestDate}<br>
-          <strong>Lab Result:</strong> <span style="color:var(--header-bg); font-weight:800;">${info.labResult}</span>
-        </div>
-      `;
-      resultCard.style.display = 'block';
-    }
   }
 
   showToast(msg, type = 'success') {
