@@ -1598,7 +1598,74 @@ class AppEngine {
     else this.openShopPage();
   }
 
+  openBannerSyncModal(isSuccess, title, message) {
+    const modal = document.getElementById('bannerSyncPopupModal');
+    const card = document.getElementById('bannerSyncModalCard');
+    const iconWrap = document.getElementById('bannerSyncIconWrap');
+    const badge = document.getElementById('bannerSyncBadge');
+    const titleEl = document.getElementById('bannerSyncTitle');
+    const msgEl = document.getElementById('bannerSyncMessage');
+    const actions = document.getElementById('bannerSyncActions');
+
+    if (!modal) return;
+
+    if (isSuccess) {
+      iconWrap.style.background = '#DCFCE7';
+      iconWrap.style.color = '#16A34A';
+      iconWrap.innerHTML = `<i class="fa-solid fa-circle-check popup-icon-animated" style="font-size:2.8rem;"></i>`;
+
+      badge.style.background = '#DCFCE7';
+      badge.style.color = '#15803D';
+      badge.textContent = '🎉 LIVE ON CUSTOMER HOMEPAGE';
+
+      actions.innerHTML = `
+        <button class="btn-primary" onclick="app.closeBannerSyncModal(); app.showHomePage();" style="background:#16A34A; color:white; padding:0.6rem 1.25rem;">
+          <i class="fa-solid fa-eye"></i> View Customer Homepage
+        </button>
+        <button class="btn-secondary" onclick="app.closeBannerSyncModal()" style="padding:0.6rem 1rem;">
+          Close
+        </button>
+      `;
+    } else {
+      iconWrap.style.background = '#FEE2E2';
+      iconWrap.style.color = '#DC2626';
+      iconWrap.innerHTML = `<i class="fa-solid fa-circle-xmark popup-icon-animated" style="font-size:2.8rem;"></i>`;
+
+      badge.style.background = '#FEE2E2';
+      badge.style.color = '#B91C1C';
+      badge.textContent = '❌ SYNC FAILED';
+
+      actions.innerHTML = `
+        <button class="btn-primary" onclick="app.closeBannerSyncModal()" style="background:#DC2626; color:white; padding:0.6rem 1.25rem;">
+          <i class="fa-solid fa-rotate-left"></i> Try Again
+        </button>
+      `;
+    }
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+
+    if (card) {
+      card.classList.remove('popup-animated-card');
+      void card.offsetWidth; // Trigger reflow
+      card.classList.add('popup-animated-card');
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  closeBannerSyncModal() {
+    const modal = document.getElementById('bannerSyncPopupModal');
+    if (modal) modal.style.display = 'none';
+  }
+
   async createNewBannerFromAdmin() {
+    const btn = document.getElementById('saveNewBannerBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Syncing to Supabase...`;
+    }
+
     const title = document.getElementById('adminBannerTitle').value.trim();
     const subtitle = document.getElementById('adminBannerSubtitle').value.trim();
     const badge = document.getElementById('adminBannerBadge').value.trim() || '🔥 EXCLUSIVE DEAL';
@@ -1609,7 +1676,11 @@ class AppEngine {
     const selectedIds = Array.from(checkboxes).map(c => c.value);
 
     if (!title) {
-      this.showToast('Please enter a banner title!', 'error');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-plus"></i> Save & Publish Banner Slide`;
+      }
+      this.openBannerSyncModal(false, 'Missing Banner Title', 'Please enter a title for your new banner slide before saving.');
       return;
     }
 
@@ -1623,15 +1694,60 @@ class AppEngine {
       productIds: selectedIds
     };
 
-    this.banners.unshift(newBanner);
+    let syncSuccess = false;
+    let errorMsg = '';
 
     if (_supabase) {
-      try { await _supabase.from('banners').insert([newBanner]); } catch(e) {}
+      try {
+        const { data, error } = await _supabase.from('banners').insert([{
+          id: newBanner.id,
+          title: newBanner.title,
+          subtitle: newBanner.subtitle,
+          badge: newBanner.badge,
+          ctaText: newBanner.ctaText,
+          overlayImg: newBanner.overlayImg,
+          productIds: newBanner.productIds
+        }]);
+
+        if (error) {
+          syncSuccess = false;
+          errorMsg = error.message || 'Error inserting banner to Supabase';
+        } else {
+          syncSuccess = true;
+        }
+      } catch(err) {
+        syncSuccess = false;
+        errorMsg = err.message || 'Network error connecting to Supabase';
+      }
+    } else {
+      syncSuccess = true;
     }
 
-    this.showToast(`🎉 Published Banner Slide "${title}"!`);
-    this.renderAdminTables();
-    this.showHomePage();
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-plus"></i> Save & Publish Banner Slide`;
+    }
+
+    if (syncSuccess) {
+      this.banners.unshift(newBanner);
+      this.renderAdminTables();
+      this.renderBannerSliderEngine();
+
+      const form = document.getElementById('adminBannerForm');
+      if (form) form.reset();
+
+      this.openBannerSyncModal(
+        true,
+        `" ${title} " Published Live!`,
+        'Your new banner slide has been published live to Supabase Cloud Database & is now active on the customer homepage slider.'
+      );
+    } else {
+      this.openBannerSyncModal(
+        false,
+        'Banner Sync Failed',
+        `Supabase returned an error while saving your banner slide: ${errorMsg}`
+      );
+    }
   }
 
   async toggleProductFeatured(productId) {

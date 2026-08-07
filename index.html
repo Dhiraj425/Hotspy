@@ -607,7 +607,7 @@
                   <div id="adminBannerProductsPicker" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:0.4rem; max-height:160px; overflow-y:auto; border:1px solid var(--border-light); padding:0.55rem; border-radius:4px;"></div>
                 </div>
 
-                <button type="submit" class="btn-primary" style="width:100%; padding:0.65rem;"><i class="fa-solid fa-plus"></i> Save & Publish Banner Slide</button>
+                <button type="submit" id="saveNewBannerBtn" class="btn-primary" style="width:100%; padding:0.65rem;"><i class="fa-solid fa-plus"></i> Save & Publish Banner Slide</button>
               </form>
             </div>
 
@@ -872,6 +872,17 @@
         </div>
         <button class="btn-primary" style="width:100%;" onclick="app.checkout()"><i class="fa-solid fa-lock"></i> Complete Order</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ANIMATED BANNER SYNC POPUP MODAL (SUCCESS / FAILURE) -->
+  <div id="bannerSyncPopupModal" class="modal-backdrop" style="display:none; justify-content:center; align-items:center; z-index:9999;" onclick="if(event.target === this) app.closeBannerSyncModal()">
+    <div class="auth-modal-card popup-animated-card" id="bannerSyncModalCard" style="max-width:420px; width:90%; text-align:center; padding:2rem 1.5rem; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2);">
+      <div id="bannerSyncIconWrap" style="margin:0 auto 1rem; width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center;"></div>
+      <span id="bannerSyncBadge" style="display:inline-block; padding:0.3rem 0.85rem; border-radius:20px; font-size:0.75rem; font-weight:800; text-transform:uppercase; margin-bottom:0.6rem;"></span>
+      <h3 id="bannerSyncTitle" style="font-size:1.25rem; color:var(--header-bg); font-weight:800; margin-bottom:0.4rem;"></h3>
+      <p id="bannerSyncMessage" style="font-size:0.83rem; color:var(--text-muted); margin-bottom:1.4rem; line-height:1.45;"></p>
+      <div id="bannerSyncActions" style="display:flex; justify-content:center; gap:0.65rem; flex-wrap:wrap;"></div>
     </div>
   </div>
 

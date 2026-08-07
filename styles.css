@@ -1247,3 +1247,33 @@ button {
 .product-grid > *:nth-child(7) { animation-delay: 0.35s; }
 .product-grid > *:nth-child(8) { animation-delay: 0.4s; }
 
+/* 8. ANIMATED SYNC POPUP MODAL STYLES */
+@keyframes popupBounceEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(50px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes popupIconPulse {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.popup-animated-card {
+  animation: popupBounceEntrance 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+.popup-icon-animated {
+  animation: popupIconPulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
