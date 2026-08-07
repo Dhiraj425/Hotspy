@@ -265,7 +265,7 @@ class AppEngine {
           }
         }
 
-        this.banners = bans
+        const fetchedBanners = bans
           .filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config')
           .map(b => {
             let pIds = b.productIds || b.productids || [];
@@ -282,6 +282,18 @@ class AppEngine {
               productIds: Array.isArray(pIds) ? pIds : []
             };
           });
+
+        if (fetchedBanners.length > 0) {
+          // Merge fetched banners with current in-memory banners so newly created ones are preserved
+          fetchedBanners.forEach(fb => {
+            const idx = this.banners.findIndex(b => b.id === fb.id);
+            if (idx >= 0) {
+              this.banners[idx] = fb;
+            } else {
+              this.banners.push(fb);
+            }
+          });
+        }
       }
 
       const { data: recs } = await _supabase.from('recipes').select('*');
@@ -1727,22 +1739,35 @@ class AppEngine {
 
     if (_supabase) {
       try {
-        const { data, error } = await _supabase.from('banners').upsert([{
+        // Try standard camelCase payload
+        let { data, error } = await _supabase.from('banners').upsert([{
           id: newBanner.id,
           title: newBanner.title,
           subtitle: newBanner.subtitle,
           badge: newBanner.badge,
           ctaText: newBanner.ctaText,
-          ctatext: newBanner.ctaText,
           overlayImg: newBanner.overlayImg,
-          overlayimg: newBanner.overlayImg,
-          productIds: newBanner.productIds,
-          productids: newBanner.productIds
+          productIds: newBanner.productIds
         }]);
 
         if (error) {
-          syncSuccess = false;
-          errorMsg = error.message || 'Supabase RLS Permission Error (401 Unauthorized)';
+          // Retry with lowercase column keys if camelCase column failed
+          const retry = await _supabase.from('banners').upsert([{
+            id: newBanner.id,
+            title: newBanner.title,
+            subtitle: newBanner.subtitle,
+            badge: newBanner.badge,
+            ctatext: newBanner.ctaText,
+            overlayimg: newBanner.overlayImg,
+            productids: newBanner.productIds
+          }]);
+
+          if (!retry.error) {
+            syncSuccess = true;
+          } else {
+            syncSuccess = false;
+            errorMsg = error.message || retry.error.message || 'Supabase RLS or Column Error';
+          }
         } else {
           syncSuccess = true;
         }
