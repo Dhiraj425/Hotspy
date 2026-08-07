@@ -201,8 +201,8 @@ class AppEngine {
 
     const localSavedTheme = localStorage.getItem('hotspy_app_theme');
     this.appTheme = localSavedTheme ? JSON.parse(localSavedTheme) : {
-      brandName: 'bigbasket ORGANICS',
-      logoText: 'bb',
+      brandName: 'HOTSPY GLOBAL',
+      logoText: 'HS',
       headerBg: '#024731',
       primaryColor: '#84C225',
       fontFamily: 'Plus Jakarta Sans',
@@ -1188,8 +1188,8 @@ class AppEngine {
     const primaryColor = document.getElementById('adminPrimaryColorInput');
     const fontFamily = document.getElementById('adminFontFamilySelect');
 
-    if (brandName) brandName.value = this.appTheme.brandName || 'bigbasket ORGANICS';
-    if (logoText) logoText.value = this.appTheme.logoText || 'bb';
+    if (brandName) brandName.value = this.appTheme.brandName || 'HOTSPY GLOBAL';
+    if (logoText) logoText.value = this.appTheme.logoText || 'HS';
     if (headerBg) headerBg.value = this.appTheme.headerBg || '#024731';
     if (primaryColor) primaryColor.value = this.appTheme.primaryColor || '#84C225';
     if (fontFamily) fontFamily.value = this.appTheme.fontFamily || 'Plus Jakarta Sans';
@@ -1211,8 +1211,8 @@ class AppEngine {
     const previewBox = document.getElementById('adminLiveThemePreviewBox');
     if (!previewBox) return;
 
-    const brandName = document.getElementById('adminBrandNameInput')?.value || 'bigbasket ORGANICS';
-    const logoText = document.getElementById('adminBrandLogoTextInput')?.value || 'bb';
+    const brandName = document.getElementById('adminBrandNameInput')?.value || 'HOTSPY GLOBAL';
+    const logoText = document.getElementById('adminBrandLogoTextInput')?.value || 'HS';
     const headerBg = document.getElementById('adminHeaderBgColorInput')?.value || '#024731';
     const primaryColor = document.getElementById('adminPrimaryColorInput')?.value || '#84C225';
     const fontFamily = document.getElementById('adminFontFamilySelect')?.value || 'Plus Jakarta Sans';
@@ -1282,12 +1282,6 @@ class AppEngine {
     `;
   }
 
-  async saveAppThemeFromAdmin() {
-    const brandName = document.getElementById('adminBrandNameInput').value.trim();
-    const logoText = document.getElementById('adminBrandLogoTextInput').value.trim();
-    const headerBg = document.getElementById('adminHeaderBgColorInput').value;
-    const primaryColor = document.getElementById('adminPrimaryColorInput').value;
-    const fontFamily = document.getElementById('adminFontFamilySelect').value;
 
     const nav1Lbl = document.getElementById('adminNav1Label').value.trim();
     const nav1Icn = document.getElementById('adminNav1Icon').value.trim();
