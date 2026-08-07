@@ -265,7 +265,23 @@ class AppEngine {
           }
         }
 
-        this.banners = bans.filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config');
+        this.banners = bans
+          .filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config')
+          .map(b => {
+            let pIds = b.productIds || b.productids || [];
+            if (typeof pIds === 'string') {
+              try { pIds = JSON.parse(pIds); } catch(e) {}
+            }
+            return {
+              id: b.id,
+              title: b.title,
+              subtitle: b.subtitle || '',
+              badge: b.badge || '🔥 EXCLUSIVE DEAL',
+              ctaText: b.ctaText || b.ctatext || 'View Banner Collection',
+              overlayImg: b.overlayImg || b.overlayimg || '',
+              productIds: Array.isArray(pIds) ? pIds : []
+            };
+          });
       }
 
       const { data: recs } = await _supabase.from('recipes').select('*');
@@ -1652,11 +1668,15 @@ class AppEngine {
     }
 
     modal.style.display = 'flex';
+    modal.classList.add('open');
   }
 
   closeBannerSyncModal() {
     const modal = document.getElementById('bannerSyncPopupModal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+      modal.classList.remove('open');
+      modal.style.display = 'none';
+    }
   }
 
   async createNewBannerFromAdmin() {
@@ -1713,8 +1733,11 @@ class AppEngine {
           subtitle: newBanner.subtitle,
           badge: newBanner.badge,
           ctaText: newBanner.ctaText,
+          ctatext: newBanner.ctaText,
           overlayImg: newBanner.overlayImg,
-          productIds: newBanner.productIds
+          overlayimg: newBanner.overlayImg,
+          productIds: newBanner.productIds,
+          productids: newBanner.productIds
         }]);
 
         if (error) {
