@@ -451,7 +451,7 @@ class AppEngine {
     this.renderBannerSliderEngine();
 
     // Render Featured Products
-    const featuredProds = this.products.filter(p => p.isFeatured);
+    const featuredProds = this.products.filter(p => p.isFeatured === true || p.isfeatured === true || (p.isFeatured !== false && p.isfeatured !== false));
     const grid = document.getElementById('homeProductGrid');
     if (grid) grid.innerHTML = this.renderProductCardsHTML(featuredProds);
 
