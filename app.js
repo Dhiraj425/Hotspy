@@ -199,7 +199,8 @@ class AppEngine {
       { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
     ];
 
-    this.appTheme = {
+    const localSavedTheme = localStorage.getItem('hotspy_app_theme');
+    this.appTheme = localSavedTheme ? JSON.parse(localSavedTheme) : {
       brandName: 'bigbasket ORGANICS',
       logoText: 'bb',
       headerBg: '#024731',
@@ -214,6 +215,7 @@ class AppEngine {
       ]
     };
 
+    this.applyAppTheme();
     this.init();
   }
 
@@ -257,6 +259,8 @@ class AppEngine {
           this.appTheme = typeof themeConfig.productIds === 'string'
             ? JSON.parse(themeConfig.productIds)
             : themeConfig.productIds;
+          localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
+          this.applyAppTheme();
         }
 
         this.banners = bans.filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config');
@@ -1037,19 +1041,15 @@ class AppEngine {
 
     // 3. Brand Name
     if (this.appTheme.brandName) {
-      const titleEl = document.querySelector('.app-title-green') || document.querySelector('.app-brand-text-wrap span');
-      if (titleEl) {
-        titleEl.textContent = this.appTheme.brandName;
-      }
+      const titleEls = document.querySelectorAll('.bb-brand-title, .app-title-green, .app-brand-text-wrap span');
+      titleEls.forEach(el => { el.textContent = this.appTheme.brandName; });
       document.title = `${this.appTheme.brandName} - Premium Organic Supermarket`;
     }
 
     // 4. Logo Text / Initials
     if (this.appTheme.logoText) {
-      const logoSq = document.querySelector('.app-logo-sq');
-      if (logoSq) {
-        logoSq.textContent = this.appTheme.logoText;
-      }
+      const logoEls = document.querySelectorAll('.bb-brand-icon, .app-logo-sq');
+      logoEls.forEach(el => { el.textContent = this.appTheme.logoText; });
     }
 
     // 5. Mobile Bottom Navbar Items
