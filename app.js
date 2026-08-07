@@ -256,11 +256,15 @@ class AppEngine {
 
         const themeConfig = bans.find(b => b.id === 'app_theme_config');
         if (themeConfig && themeConfig.productIds) {
-          this.appTheme = typeof themeConfig.productIds === 'string'
-            ? JSON.parse(themeConfig.productIds)
-            : themeConfig.productIds;
-          localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
-          this.applyAppTheme();
+          let parsedTheme = themeConfig.productIds;
+          while (typeof parsedTheme === 'string') {
+            try { parsedTheme = JSON.parse(parsedTheme); } catch(e) { break; }
+          }
+          if (parsedTheme && typeof parsedTheme === 'object') {
+            this.appTheme = parsedTheme;
+            localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
+            this.applyAppTheme();
+          }
         }
 
         this.banners = bans.filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config');
@@ -1013,6 +1017,10 @@ class AppEngine {
 
   applyAppTheme() {
     if (!this.appTheme) return;
+    while (typeof this.appTheme === 'string') {
+      try { this.appTheme = JSON.parse(this.appTheme); } catch(e) { break; }
+    }
+    if (!this.appTheme || typeof this.appTheme !== 'object') return;
 
     // 1. CSS Variables for Colors
     if (this.appTheme.headerBg) {
@@ -1044,7 +1052,12 @@ class AppEngine {
     if (this.appTheme.brandName) {
       const titleEls = document.querySelectorAll('.bb-brand-title, .app-title-green, .app-brand-text-wrap span');
       titleEls.forEach(el => { el.textContent = this.appTheme.brandName; });
-      document.title = `${this.appTheme.brandName} - Premium Organic Supermarket`;
+
+      // Hide extra static hardcoded tag so it doesn't show duplicate 'ORGANICS'
+      const tagEls = document.querySelectorAll('.bb-brand-tag');
+      tagEls.forEach(el => { el.style.display = 'none'; });
+
+      document.title = `${this.appTheme.brandName} - Premium Supermarket`;
 
       const bannerText = document.querySelector('.top-app-banner .app-banner-text strong');
       if (bannerText) {
@@ -1100,8 +1113,8 @@ class AppEngine {
     const nav5Icn = document.getElementById('adminNav5Icon').value.trim();
 
     this.appTheme = {
-      brandName: brandName || 'bigbasket ORGANICS',
-      logoText: logoText || 'bb',
+      brandName: brandName || 'HOTSPY',
+      logoText: logoText || 'hs',
       headerBg: headerBg || '#024731',
       primaryColor: primaryColor || '#84C225',
       fontFamily: fontFamily || 'Plus Jakarta Sans',
