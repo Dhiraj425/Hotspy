@@ -214,6 +214,21 @@ class AppEngine {
       ]
     };
 
+    // Restore any custom published banners across tab refreshes
+    const cachedCustomBanners = sessionStorage.getItem('hotspy_custom_banners');
+    if (cachedCustomBanners) {
+      try {
+        const parsed = JSON.parse(cachedCustomBanners);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          parsed.forEach(cb => {
+            if (!this.banners.some(b => b.id === cb.id)) {
+              this.banners.unshift(cb);
+            }
+          });
+        }
+      } catch(e) {}
+    }
+
     this.applyAppTheme();
     this.init();
   }
@@ -1576,11 +1591,15 @@ class AppEngine {
 
   async deleteBannerFromAdmin(bannerId) {
     this.banners = this.banners.filter(b => b.id !== bannerId);
+    const customBanners = this.banners.filter(b => b.id !== 'ban_1' && b.id !== 'ban_2');
+    sessionStorage.setItem('hotspy_custom_banners', JSON.stringify(customBanners));
+
     if (_supabase) {
       try { await _supabase.from('banners').delete().eq('id', bannerId); } catch(e) {}
     }
     this.showToast('Deleted Banner slide!');
     this.renderAdminTables();
+    this.renderBannerSliderEngine();
   }
 
   async addNewProductFromAdmin() {
@@ -1731,6 +1750,9 @@ class AppEngine {
 
     // Always update in-memory catalog immediately so Admin & Customer UI reflect the new slide
     this.banners.unshift(newBanner);
+    const customBanners = this.banners.filter(b => b.id !== 'ban_1' && b.id !== 'ban_2');
+    sessionStorage.setItem('hotspy_custom_banners', JSON.stringify(customBanners));
+
     this.renderAdminTables();
     this.renderBannerSliderEngine();
 
