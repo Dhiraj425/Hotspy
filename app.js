@@ -199,11 +199,27 @@ class AppEngine {
       { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
     ];
 
+    this.appTheme = {
+      brandName: 'bigbasket ORGANICS',
+      logoText: 'bb',
+      headerBg: '#024731',
+      primaryColor: '#84C225',
+      fontFamily: 'Plus Jakarta Sans',
+      mobileNav: [
+        { id: 'mobNavHome', label: 'Home', icon: 'fa-solid fa-house' },
+        { id: 'mobNavShop', label: 'Shop', icon: 'fa-solid fa-store' },
+        { id: 'mobNavCat', label: 'Categories', icon: 'fa-solid fa-border-all' },
+        { id: 'mobNavOffers', label: 'Offers', icon: 'fa-solid fa-percent' },
+        { id: 'mobNavCart', label: 'Basket', icon: 'fa-solid fa-basket-shopping' }
+      ]
+    };
+
     this.init();
   }
 
   async init() {
     await this.syncSupabaseBackendData();
+    this.applyAppTheme();
 
     this.updateCartUI();
     this.updateAuthStatusUI();
@@ -235,7 +251,15 @@ class AppEngine {
             ? JSON.parse(layoutConfig.productIds) 
             : layoutConfig.productIds;
         }
-        this.banners = bans.filter(b => b.id !== 'layout_config');
+
+        const themeConfig = bans.find(b => b.id === 'app_theme_config');
+        if (themeConfig && themeConfig.productIds) {
+          this.appTheme = typeof themeConfig.productIds === 'string'
+            ? JSON.parse(themeConfig.productIds)
+            : themeConfig.productIds;
+        }
+
+        this.banners = bans.filter(b => b.id !== 'layout_config' && b.id !== 'app_theme_config');
       }
 
       const { data: recs } = await _supabase.from('recipes').select('*');
@@ -982,8 +1006,69 @@ class AppEngine {
     this.renderAdminPageView();
   }
 
+  applyAppTheme() {
+    if (!this.appTheme) return;
+
+    // 1. CSS Variables for Colors
+    if (this.appTheme.headerBg) {
+      document.documentElement.style.setProperty('--header-bg', this.appTheme.headerBg);
+      document.documentElement.style.setProperty('--header-dark', this.appTheme.headerBg);
+    }
+    if (this.appTheme.primaryColor) {
+      document.documentElement.style.setProperty('--primary', this.appTheme.primaryColor);
+    }
+
+    // 2. Font Family
+    if (this.appTheme.fontFamily) {
+      const fontName = this.appTheme.fontFamily;
+      document.documentElement.style.setProperty('--font-main', `'${fontName}', sans-serif`);
+      
+      const fontSlug = fontName.replace(/ /g, '+');
+      const fontLinkId = 'dynamic-google-font';
+      let fontLink = document.getElementById(fontLinkId);
+      if (!fontLink) {
+        fontLink = document.createElement('link');
+        fontLink.id = fontLinkId;
+        fontLink.rel = 'stylesheet';
+        document.head.appendChild(fontLink);
+      }
+      fontLink.href = `https://fonts.googleapis.com/css2?family=${fontSlug}:wght@300;400;500;600;700;800&display=swap`;
+    }
+
+    // 3. Brand Name
+    if (this.appTheme.brandName) {
+      const titleEl = document.querySelector('.app-title-green') || document.querySelector('.app-brand-text-wrap span');
+      if (titleEl) {
+        titleEl.textContent = this.appTheme.brandName;
+      }
+      document.title = `${this.appTheme.brandName} - Premium Organic Supermarket`;
+    }
+
+    // 4. Logo Text / Initials
+    if (this.appTheme.logoText) {
+      const logoSq = document.querySelector('.app-logo-sq');
+      if (logoSq) {
+        logoSq.textContent = this.appTheme.logoText;
+      }
+    }
+
+    // 5. Mobile Bottom Navbar Items
+    if (this.appTheme.mobileNav && Array.isArray(this.appTheme.mobileNav)) {
+      this.appTheme.mobileNav.forEach((item, idx) => {
+        const navIndex = idx + 1;
+        const navEl = document.getElementById(item.id || `mobNav${navIndex}`);
+        if (navEl) {
+          const iconEl = navEl.querySelector('i');
+          const labelEl = navEl.querySelector('span');
+          if (iconEl && item.icon) iconEl.className = item.icon;
+          if (labelEl && item.label) labelEl.textContent = item.label;
+        }
+      });
+    }
+  }
+
   switchAdminTab(tab) {
-    ['orders', 'products', 'addproduct', 'banners', 'combos', 'layout'].forEach(t => {
+    ['orders', 'products', 'addproduct', 'banners', 'combos', 'theme'].forEach(t => {
       const sec = document.getElementById(`adminSection${t.charAt(0).toUpperCase() + t.slice(1)}`);
       const link = document.getElementById(`adminSidebar${t.charAt(0).toUpperCase() + t.slice(1)}`);
       if (sec) sec.style.display = (t.toLowerCase() === tab.toLowerCase()) ? 'block' : 'none';
@@ -992,9 +1077,168 @@ class AppEngine {
     this.renderAdminTables();
     if (tab.toLowerCase() === 'banners') {
       this.updateBannerLivePreview();
-    } else if (tab.toLowerCase() === 'layout') {
-      this.renderAdminLayoutSections();
+    } else if (tab.toLowerCase() === 'theme') {
+      this.renderAdminThemeCustomizer();
     }
+  }
+
+  renderAdminThemeCustomizer() {
+    if (!this.appTheme) return;
+
+    const brandName = document.getElementById('adminBrandNameInput');
+    const logoText = document.getElementById('adminBrandLogoTextInput');
+    const headerBg = document.getElementById('adminHeaderBgColorInput');
+    const primaryColor = document.getElementById('adminPrimaryColorInput');
+    const fontFamily = document.getElementById('adminFontFamilySelect');
+
+    if (brandName) brandName.value = this.appTheme.brandName || 'bigbasket ORGANICS';
+    if (logoText) logoText.value = this.appTheme.logoText || 'bb';
+    if (headerBg) headerBg.value = this.appTheme.headerBg || '#024731';
+    if (primaryColor) primaryColor.value = this.appTheme.primaryColor || '#84C225';
+    if (fontFamily) fontFamily.value = this.appTheme.fontFamily || 'Plus Jakarta Sans';
+
+    if (this.appTheme.mobileNav && Array.isArray(this.appTheme.mobileNav)) {
+      this.appTheme.mobileNav.forEach((item, idx) => {
+        const num = idx + 1;
+        const lbl = document.getElementById(`adminNav${num}Label`);
+        const icn = document.getElementById(`adminNav${num}Icon`);
+        if (lbl) lbl.value = item.label || '';
+        if (icn) icn.value = item.icon || '';
+      });
+    }
+
+    this.updateLiveThemePreview();
+  }
+
+  updateLiveThemePreview() {
+    const previewBox = document.getElementById('adminLiveThemePreviewBox');
+    if (!previewBox) return;
+
+    const brandName = document.getElementById('adminBrandNameInput')?.value || 'bigbasket ORGANICS';
+    const logoText = document.getElementById('adminBrandLogoTextInput')?.value || 'bb';
+    const headerBg = document.getElementById('adminHeaderBgColorInput')?.value || '#024731';
+    const primaryColor = document.getElementById('adminPrimaryColorInput')?.value || '#84C225';
+    const fontFamily = document.getElementById('adminFontFamilySelect')?.value || 'Plus Jakarta Sans';
+
+    const nav1Lbl = document.getElementById('adminNav1Label')?.value || 'Home';
+    const nav1Icn = document.getElementById('adminNav1Icon')?.value || 'fa-solid fa-house';
+    const nav2Lbl = document.getElementById('adminNav2Label')?.value || 'Shop';
+    const nav2Icn = document.getElementById('adminNav2Icon')?.value || 'fa-solid fa-store';
+    const nav3Lbl = document.getElementById('adminNav3Label')?.value || 'Categories';
+    const nav3Icn = document.getElementById('adminNav3Icon')?.value || 'fa-solid fa-border-all';
+    const nav4Lbl = document.getElementById('adminNav4Label')?.value || 'Offers';
+    const nav4Icn = document.getElementById('adminNav4Icon')?.value || 'fa-solid fa-percent';
+    const nav5Lbl = document.getElementById('adminNav5Label')?.value || 'Basket';
+    const nav5Icn = document.getElementById('adminNav5Icon')?.value || 'fa-solid fa-basket-shopping';
+
+    previewBox.innerHTML = `
+      <div style="font-family:'${fontFamily}', sans-serif; background:#F4F6F8; padding:1rem;">
+        <!-- Header Mockup -->
+        <div style="background:${headerBg}; color:white; padding:0.75rem 1rem; border-radius:8px 8px 0 0; display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <div style="background:${primaryColor}; color:${headerBg}; width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.9rem;">
+              ${logoText}
+            </div>
+            <span style="font-weight:800; font-size:1.05rem; color:${primaryColor};">${brandName}</span>
+          </div>
+          <div style="background:${primaryColor}; color:${headerBg}; padding:0.25rem 0.6rem; border-radius:4px; font-weight:800; font-size:0.72rem;">
+            Cart (2)
+          </div>
+        </div>
+
+        <!-- Content Card Mockup -->
+        <div style="background:white; padding:1rem; border-radius:8px; border:1px solid #E5E7EB; margin-bottom:0.75rem;">
+          <div style="font-size:0.72rem; font-weight:800; color:${headerBg}; text-transform:uppercase;">Handpicked Organic</div>
+          <h4 style="font-size:1.05rem; font-weight:800; color:${headerBg}; margin-bottom:0.5rem;">⭐ Pure Organic Turmeric Powder</h4>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:800; color:${headerBg}; font-size:1.1rem;">₹299</span>
+            <button style="background:${primaryColor}; color:${headerBg}; border:none; padding:0.4rem 0.85rem; border-radius:6px; font-weight:800; font-size:0.78rem; cursor:pointer;">
+              + Add Product
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Bottom Nav Mockup -->
+        <div style="background:${headerBg}; color:white; padding:0.5rem; border-radius:0 0 8px 8px; display:grid; grid-template-columns:repeat(5, 1fr); text-align:center;">
+          <div style="color:${primaryColor}; font-size:0.7rem; font-weight:800;">
+            <i class="${nav1Icn}" style="font-size:1rem; display:block; margin-bottom:0.15rem;"></i>
+            ${nav1Lbl}
+          </div>
+          <div style="opacity:0.8; font-size:0.7rem; font-weight:700;">
+            <i class="${nav2Icn}" style="font-size:1rem; display:block; margin-bottom:0.15rem;"></i>
+            ${nav2Lbl}
+          </div>
+          <div style="opacity:0.8; font-size:0.7rem; font-weight:700;">
+            <i class="${nav3Icn}" style="font-size:1rem; display:block; margin-bottom:0.15rem;"></i>
+            ${nav3Lbl}
+          </div>
+          <div style="opacity:0.8; font-size:0.7rem; font-weight:700;">
+            <i class="${nav4Icn}" style="font-size:1rem; display:block; margin-bottom:0.15rem;"></i>
+            ${nav4Lbl}
+          </div>
+          <div style="opacity:0.8; font-size:0.7rem; font-weight:700;">
+            <i class="${nav5Icn}" style="font-size:1rem; display:block; margin-bottom:0.15rem;"></i>
+            ${nav5Lbl}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async saveAppThemeFromAdmin() {
+    const brandName = document.getElementById('adminBrandNameInput').value.trim();
+    const logoText = document.getElementById('adminBrandLogoTextInput').value.trim();
+    const headerBg = document.getElementById('adminHeaderBgColorInput').value;
+    const primaryColor = document.getElementById('adminPrimaryColorInput').value;
+    const fontFamily = document.getElementById('adminFontFamilySelect').value;
+
+    const nav1Lbl = document.getElementById('adminNav1Label').value.trim();
+    const nav1Icn = document.getElementById('adminNav1Icon').value.trim();
+    const nav2Lbl = document.getElementById('adminNav2Label').value.trim();
+    const nav2Icn = document.getElementById('adminNav2Icon').value.trim();
+    const nav3Lbl = document.getElementById('adminNav3Label').value.trim();
+    const nav3Icn = document.getElementById('adminNav3Icon').value.trim();
+    const nav4Lbl = document.getElementById('adminNav4Label').value.trim();
+    const nav4Icn = document.getElementById('adminNav4Icon').value.trim();
+    const nav5Lbl = document.getElementById('adminNav5Label').value.trim();
+    const nav5Icn = document.getElementById('adminNav5Icon').value.trim();
+
+    this.appTheme = {
+      brandName: brandName || 'bigbasket ORGANICS',
+      logoText: logoText || 'bb',
+      headerBg: headerBg || '#024731',
+      primaryColor: primaryColor || '#84C225',
+      fontFamily: fontFamily || 'Plus Jakarta Sans',
+      mobileNav: [
+        { id: 'mobNavHome', label: nav1Lbl || 'Home', icon: nav1Icn || 'fa-solid fa-house' },
+        { id: 'mobNavShop', label: nav2Lbl || 'Shop', icon: nav2Icn || 'fa-solid fa-store' },
+        { id: 'mobNavCat', label: nav3Lbl || 'Categories', icon: nav3Icn || 'fa-solid fa-border-all' },
+        { id: 'mobNavOffers', label: nav4Lbl || 'Offers', icon: nav4Icn || 'fa-solid fa-percent' },
+        { id: 'mobNavCart', label: nav5Lbl || 'Basket', icon: nav5Icn || 'fa-solid fa-basket-shopping' }
+      ]
+    };
+
+    // Apply live locally immediately across DOM
+    this.applyAppTheme();
+
+    // Sync to Supabase Cloud Database
+    if (_supabase) {
+      try {
+        await _supabase.from('banners').upsert([{
+          id: 'app_theme_config',
+          title: 'App Theme Config',
+          subtitle: 'System branding & theme settings',
+          badge: 'SYSTEM',
+          ctaText: 'Theme',
+          overlayImg: '',
+          productIds: JSON.stringify(this.appTheme)
+        }]);
+      } catch(e) {
+        console.warn('Supabase theme save error', e);
+      }
+    }
+
+    this.showToast('🎉 App Theme & Branding published to Supabase Cloud!');
   }
 
   renderAdminLayoutSections() {

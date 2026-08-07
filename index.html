@@ -439,6 +439,11 @@
           <span>5. Recipe Combos</span>
         </div>
 
+        <div class="admin-sidebar-link" id="adminSidebarTheme" onclick="app.switchAdminTab('theme')">
+          <i class="fa-solid fa-palette"></i>
+          <span>6. App Branding & Theme Customizer</span>
+        </div>
+
         <div style="margin-top:auto; pt-1rem; border-top:1px solid var(--border-subtle);">
           <div class="admin-sidebar-link" onclick="app.showHomePage()" style="color:var(--header-bg);">
             <i class="fa-solid fa-arrow-left"></i>
@@ -648,6 +653,108 @@
             </div>
 
             <button type="submit" class="btn-primary" style="padding:0.6rem 1.25rem;"><i class="fa-solid fa-plus"></i> Save & Publish Combo</button>
+          </form>
+        </div>
+
+        <!-- Admin Section 6: App Branding & Theme Customizer -->
+        <div id="adminSectionTheme" style="display:none; background:white; padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid var(--border-subtle); padding-bottom:0.75rem;">
+            <div>
+              <h3 style="font-size:1.15rem; color:var(--header-bg); font-weight:800;">🎨 App Branding, Colors, Fonts & Mobile Menu Customizer</h3>
+              <p style="font-size:0.78rem; color:var(--text-muted);">Customize store name, logo text, global theme colors, Google fonts, and mobile navbar icons in real time!</p>
+            </div>
+            <button class="btn-primary" onclick="app.saveAppThemeFromAdmin()" style="padding:0.45rem 1rem; font-size:0.82rem;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish App Theme
+            </button>
+          </div>
+
+          <form onsubmit="event.preventDefault(); app.saveAppThemeFromAdmin();">
+            <!-- 1. BRAND NAME & LOGO -->
+            <div style="background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.25rem;">
+              <h4 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.85rem;"><i class="fa-solid fa-signature"></i> 1. App Store Name & Logo Badge</h4>
+              <div style="display:grid; grid-template-columns:2fr 1fr; gap:1rem;">
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Store Name (Displays in Header, Invoices, Title)</label>
+                  <input type="text" id="adminBrandNameInput" value="bigbasket ORGANICS" oninput="app.updateLiveThemePreview()" required style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px; font-weight:700;">
+                </div>
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Logo Initials / Icon Text</label>
+                  <input type="text" id="adminBrandLogoTextInput" value="bb" oninput="app.updateLiveThemePreview()" required style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px; font-weight:800; text-transform:lowercase;">
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. GLOBAL COLORS & FONTS -->
+            <div style="background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.25rem;">
+              <h4 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.85rem;"><i class="fa-solid fa-palette"></i> 2. Global Theme Colors & Typography</h4>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Header & Dark Theme Color</label>
+                  <input type="color" id="adminHeaderBgColorInput" value="#024731" oninput="app.updateLiveThemePreview()" style="width:100%; height:40px; border:1px solid var(--border-light); border-radius:4px; cursor:pointer;">
+                </div>
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Primary Accent Color</label>
+                  <input type="color" id="adminPrimaryColorInput" value="#84C225" oninput="app.updateLiveThemePreview()" style="width:100%; height:40px; border:1px solid var(--border-light); border-radius:4px; cursor:pointer;">
+                </div>
+                <div>
+                  <label style="display:block; font-size:0.8rem; font-weight:700; margin-bottom:0.25rem;">Global Google Font Family</label>
+                  <select id="adminFontFamilySelect" onchange="app.updateLiveThemePreview()" style="width:100%; padding:0.55rem; border:1px solid var(--border-light); border-radius:4px; font-weight:700; outline:none;">
+                    <option value="Plus Jakarta Sans">Plus Jakarta Sans (Default)</option>
+                    <option value="Inter">Inter (Sleek Modern)</option>
+                    <option value="Outfit">Outfit (Trendy Clean)</option>
+                    <option value="Poppins">Poppins (Bold Geometric)</option>
+                    <option value="Roboto">Roboto (Classic Standard)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. MOBILE BOTTOM NAVBAR CUSTOMIZER -->
+            <div style="background:var(--bg-warm); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:1.25rem;">
+              <h4 style="font-size:0.95rem; font-weight:800; color:var(--header-bg); margin-bottom:0.85rem;"><i class="fa-solid fa-mobile-screen-button"></i> 3. Mobile Bottom Navigation Bar Icons & Labels</h4>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem;" id="adminMobileNavConfigGrid">
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; display:block;">Tab 1 Label</label>
+                  <input type="text" id="adminNav1Label" value="Home" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.78rem; border:1px solid var(--border-light); border-radius:4px; margin-bottom:0.25rem;">
+                  <label style="font-size:0.72rem; color:var(--text-muted); display:block;">FontAwesome Icon</label>
+                  <input type="text" id="adminNav1Icon" value="fa-solid fa-house" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; display:block;">Tab 2 Label</label>
+                  <input type="text" id="adminNav2Label" value="Shop" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.78rem; border:1px solid var(--border-light); border-radius:4px; margin-bottom:0.25rem;">
+                  <label style="font-size:0.72rem; color:var(--text-muted); display:block;">FontAwesome Icon</label>
+                  <input type="text" id="adminNav2Icon" value="fa-solid fa-store" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; display:block;">Tab 3 Label</label>
+                  <input type="text" id="adminNav3Label" value="Categories" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.78rem; border:1px solid var(--border-light); border-radius:4px; margin-bottom:0.25rem;">
+                  <label style="font-size:0.72rem; color:var(--text-muted); display:block;">FontAwesome Icon</label>
+                  <input type="text" id="adminNav3Icon" value="fa-solid fa-border-all" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; display:block;">Tab 4 Label</label>
+                  <input type="text" id="adminNav4Label" value="Offers" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.78rem; border:1px solid var(--border-light); border-radius:4px; margin-bottom:0.25rem;">
+                  <label style="font-size:0.72rem; color:var(--text-muted); display:block;">FontAwesome Icon</label>
+                  <input type="text" id="adminNav4Icon" value="fa-solid fa-percent" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; font-weight:700; display:block;">Tab 5 Label</label>
+                  <input type="text" id="adminNav5Label" value="Basket" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.78rem; border:1px solid var(--border-light); border-radius:4px; margin-bottom:0.25rem;">
+                  <label style="font-size:0.72rem; color:var(--text-muted); display:block;">FontAwesome Icon</label>
+                  <input type="text" id="adminNav5Icon" value="fa-solid fa-basket-shopping" oninput="app.updateLiveThemePreview()" style="width:100%; padding:0.4rem; font-size:0.75rem; border:1px solid var(--border-light); border-radius:4px;">
+                </div>
+              </div>
+            </div>
+
+            <!-- LIVE PREVIEW CARD -->
+            <div style="margin-bottom:1.25rem;">
+              <h4 style="font-size:0.9rem; font-weight:800; color:var(--header-bg); margin-bottom:0.5rem;">👁️ Real-Time Theme Preview Box</h4>
+              <div id="adminLiveThemePreviewBox" style="border:1px solid var(--border-light); border-radius:var(--radius-md); overflow:hidden;"></div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="padding:0.65rem 1.5rem; font-size:0.9rem;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish App Theme
+            </button>
           </form>
         </div>
 
