@@ -199,8 +199,7 @@ class AppEngine {
       { id: 'combos', name: '🔥 Super Saver Recipe Combos', enabled: true }
     ];
 
-    const localSavedTheme = localStorage.getItem('hotspy_app_theme');
-    this.appTheme = localSavedTheme ? JSON.parse(localSavedTheme) : {
+    this.appTheme = {
       brandName: 'HOTSPY GLOBAL',
       logoText: 'HS',
       headerBg: '#024731',
@@ -262,7 +261,6 @@ class AppEngine {
           }
           if (parsedTheme && typeof parsedTheme === 'object') {
             this.appTheme = parsedTheme;
-            localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
             this.applyAppTheme();
           }
         }
@@ -1127,8 +1125,7 @@ class AppEngine {
       ]
     };
 
-    // Apply live locally immediately across DOM & save cache
-    localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
+    // Apply live locally immediately across DOM
     this.applyAppTheme();
 
     // Sync to Supabase Cloud Database with full Error Feedback
