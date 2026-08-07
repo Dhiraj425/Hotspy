@@ -1279,56 +1279,6 @@ class AppEngine {
     `;
   }
 
-
-    const nav1Lbl = document.getElementById('adminNav1Label').value.trim();
-    const nav1Icn = document.getElementById('adminNav1Icon').value.trim();
-    const nav2Lbl = document.getElementById('adminNav2Label').value.trim();
-    const nav2Icn = document.getElementById('adminNav2Icon').value.trim();
-    const nav3Lbl = document.getElementById('adminNav3Label').value.trim();
-    const nav3Icn = document.getElementById('adminNav3Icon').value.trim();
-    const nav4Lbl = document.getElementById('adminNav4Label').value.trim();
-    const nav4Icn = document.getElementById('adminNav4Icon').value.trim();
-    const nav5Lbl = document.getElementById('adminNav5Label').value.trim();
-    const nav5Icn = document.getElementById('adminNav5Icon').value.trim();
-
-    this.appTheme = {
-      brandName: brandName || 'bigbasket ORGANICS',
-      logoText: logoText || 'bb',
-      headerBg: headerBg || '#024731',
-      primaryColor: primaryColor || '#84C225',
-      fontFamily: fontFamily || 'Plus Jakarta Sans',
-      mobileNav: [
-        { id: 'mobNavHome', label: nav1Lbl || 'Home', icon: nav1Icn || 'fa-solid fa-house' },
-        { id: 'mobNavShop', label: nav2Lbl || 'Shop', icon: nav2Icn || 'fa-solid fa-store' },
-        { id: 'mobNavCat', label: nav3Lbl || 'Categories', icon: nav3Icn || 'fa-solid fa-border-all' },
-        { id: 'mobNavOffers', label: nav4Lbl || 'Offers', icon: nav4Icn || 'fa-solid fa-percent' },
-        { id: 'mobNavCart', label: nav5Lbl || 'Basket', icon: nav5Icn || 'fa-solid fa-basket-shopping' }
-      ]
-    };
-
-    // Apply live locally immediately across DOM
-    this.applyAppTheme();
-
-    // Sync to Supabase Cloud Database
-    if (_supabase) {
-      try {
-        await _supabase.from('banners').upsert([{
-          id: 'app_theme_config',
-          title: 'App Theme Config',
-          subtitle: 'System branding & theme settings',
-          badge: 'SYSTEM',
-          ctaText: 'Theme',
-          overlayImg: '',
-          productIds: JSON.stringify(this.appTheme)
-        }]);
-      } catch(e) {
-        console.warn('Supabase theme save error', e);
-      }
-    }
-
-    this.showToast('🎉 App Theme & Branding published to Supabase Cloud!');
-  }
-
   renderAdminLayoutSections() {
     const container = document.getElementById('adminLayoutSectionsList');
     if (!container) return;
