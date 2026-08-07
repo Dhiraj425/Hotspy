@@ -277,6 +277,7 @@ class AppEngine {
   }
 
   handleRouteHashChange() {
+    this.applyAppTheme();
     const hash = window.location.hash || '#/home';
 
     if (hash === '#/admin' || hash === '#admin') {
@@ -1044,6 +1045,11 @@ class AppEngine {
       const titleEls = document.querySelectorAll('.bb-brand-title, .app-title-green, .app-brand-text-wrap span');
       titleEls.forEach(el => { el.textContent = this.appTheme.brandName; });
       document.title = `${this.appTheme.brandName} - Premium Organic Supermarket`;
+
+      const bannerText = document.querySelector('.top-app-banner .app-banner-text strong');
+      if (bannerText) {
+        bannerText.innerHTML = `Use ${this.appTheme.brandName} app for best experience`;
+      }
     }
 
     // 4. Logo Text / Initials
@@ -1064,6 +1070,84 @@ class AppEngine {
           if (labelEl && item.label) labelEl.textContent = item.label;
         }
       });
+    }
+  }
+
+  async saveAppThemeFromAdmin() {
+    const saveBtn = document.getElementById('saveAppThemeBtn');
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Syncing to Supabase...`;
+    }
+
+    this.showToast('⏳ Publishing App Theme to Supabase Cloud...', 'info');
+
+    const brandName = document.getElementById('adminBrandNameInput').value.trim();
+    const logoText = document.getElementById('adminBrandLogoTextInput').value.trim();
+    const headerBg = document.getElementById('adminHeaderBgColorInput').value;
+    const primaryColor = document.getElementById('adminPrimaryColorInput').value;
+    const fontFamily = document.getElementById('adminFontFamilySelect').value;
+
+    const nav1Lbl = document.getElementById('adminNav1Label').value.trim();
+    const nav1Icn = document.getElementById('adminNav1Icon').value.trim();
+    const nav2Lbl = document.getElementById('adminNav2Label').value.trim();
+    const nav2Icn = document.getElementById('adminNav2Icon').value.trim();
+    const nav3Lbl = document.getElementById('adminNav3Label').value.trim();
+    const nav3Icn = document.getElementById('adminNav3Icon').value.trim();
+    const nav4Lbl = document.getElementById('adminNav4Label').value.trim();
+    const nav4Icn = document.getElementById('adminNav4Icon').value.trim();
+    const nav5Lbl = document.getElementById('adminNav5Label').value.trim();
+    const nav5Icn = document.getElementById('adminNav5Icon').value.trim();
+
+    this.appTheme = {
+      brandName: brandName || 'bigbasket ORGANICS',
+      logoText: logoText || 'bb',
+      headerBg: headerBg || '#024731',
+      primaryColor: primaryColor || '#84C225',
+      fontFamily: fontFamily || 'Plus Jakarta Sans',
+      mobileNav: [
+        { id: 'mobNavHome', label: nav1Lbl || 'Home', icon: nav1Icn || 'fa-solid fa-house' },
+        { id: 'mobNavShop', label: nav2Lbl || 'Shop', icon: nav2Icn || 'fa-solid fa-store' },
+        { id: 'mobNavCat', label: nav3Lbl || 'Categories', icon: nav3Icn || 'fa-solid fa-border-all' },
+        { id: 'mobNavOffers', label: nav4Lbl || 'Offers', icon: nav4Icn || 'fa-solid fa-percent' },
+        { id: 'mobNavCart', label: nav5Lbl || 'Basket', icon: nav5Icn || 'fa-solid fa-basket-shopping' }
+      ]
+    };
+
+    // Apply live locally immediately across DOM & save cache
+    localStorage.setItem('hotspy_app_theme', JSON.stringify(this.appTheme));
+    this.applyAppTheme();
+
+    // Sync to Supabase Cloud Database with full Error Feedback
+    if (_supabase) {
+      try {
+        const { data, error } = await _supabase.from('banners').upsert([{
+          id: 'app_theme_config',
+          title: 'App Theme Config',
+          subtitle: 'System branding & theme settings',
+          badge: 'SYSTEM',
+          ctaText: 'Theme',
+          overlayImg: '',
+          productIds: JSON.stringify(this.appTheme)
+        }]);
+
+        if (error) {
+          console.error('Supabase theme save error:', error);
+          this.showToast(`❌ Supabase Sync Failed: ${error.message || 'Error saving layout'}`, 'error');
+        } else {
+          this.showToast('✅ App Theme & Branding successfully published to Supabase Cloud!', 'success');
+        }
+      } catch(err) {
+        console.error('Supabase exception:', err);
+        this.showToast(`❌ Network Error: ${err.message || 'Could not connect to Supabase'}`, 'error');
+      }
+    } else {
+      this.showToast('⚠️ App Theme saved locally (Supabase offline)', 'info');
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish App Theme`;
     }
   }
 
