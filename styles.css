@@ -1079,3 +1079,171 @@ button {
   border-radius: 10px;
 }
 
+/* ==========================================================================
+   CUSTOM ANIMATION MAGIC SYSTEM (CARDS, BUTTONS, IMAGES, OPTIONS & MODALS)
+   ========================================================================== */
+
+/* 1. KEYFRAME ANIMATIONS */
+@keyframes magicFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes magicPulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(132, 194, 37, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(132, 194, 37, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(132, 194, 37, 0);
+  }
+}
+
+@keyframes magicShimmerSheen {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+@keyframes magicFloatOverlay {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+@keyframes magicBadgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 2. PRODUCT CARDS & IMAGE HOVER ANIMATION MAGIC */
+.bb-product-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: magicFadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bb-product-card:hover {
+  transform: translateY(-8px) scale(1.015) !important;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.15) !important;
+  border-color: var(--primary) !important;
+}
+
+.bb-card-img-wrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.bb-card-img-wrap img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease !important;
+}
+
+.bb-product-card:hover .bb-card-img-wrap img {
+  transform: scale(1.12) rotate(1deg) !important;
+  filter: brightness(1.04) !important;
+}
+
+/* 3. CATEGORY CIRCLE CARDS ANIMATION MAGIC */
+.bb-category-circle-card {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: magicFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bb-category-circle-card:hover {
+  transform: translateY(-5px) scale(1.08) !important;
+}
+
+.bb-category-circle-card:hover .bb-circle-icon-box {
+  transform: scale(1.12) rotate(-3deg) !important;
+  box-shadow: 0 10px 22px rgba(132, 194, 37, 0.4) !important;
+}
+
+/* 4. BUTTONS & INTERACTIVE OPTIONS MAGIC */
+.btn-primary, .btn-secondary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 20px rgba(132, 194, 37, 0.4) !important;
+}
+
+.btn-primary:active, .btn-secondary:active {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+/* Shiny Sheen Effect on Buttons */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  pointer-events: none;
+}
+
+.btn-primary:hover::after {
+  animation: magicShimmerSheen 0.85s ease-in-out;
+}
+
+/* 5. BANNER OVERLAY IMAGE ANIMATION MAGIC */
+.slider-overlay-img {
+  animation: magicFloatOverlay 4s ease-in-out infinite !important;
+  transition: transform 0.5s ease !important;
+}
+
+.slider-wrapper:hover .slider-overlay-img {
+  transform: scale(1.08) rotate(3deg) !important;
+}
+
+/* 6. DISCOUNT & FEATURED BADGES PULSE MAGIC */
+.bb-discount-pill {
+  animation: magicBadgePulse 2.5s ease-in-out infinite !important;
+}
+
+/* 7. ADMIN SIDEBAR LINKS & CARDS HOVER MAGIC */
+.admin-sidebar-link {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.admin-sidebar-link:hover {
+  transform: translateX(6px) !important;
+}
+
+/* STAGGERED ENTRANCE DELAYS FOR GRID ITEMS */
+.product-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.product-grid > *:nth-child(2) { animation-delay: 0.1s; }
+.product-grid > *:nth-child(3) { animation-delay: 0.15s; }
+.product-grid > *:nth-child(4) { animation-delay: 0.2s; }
+.product-grid > *:nth-child(5) { animation-delay: 0.25s; }
+.product-grid > *:nth-child(6) { animation-delay: 0.3s; }
+.product-grid > *:nth-child(7) { animation-delay: 0.35s; }
+.product-grid > *:nth-child(8) { animation-delay: 0.4s; }
+
