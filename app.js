@@ -239,6 +239,7 @@ class AppEngine {
 
     this.updateCartUI();
     this.updateAuthStatusUI();
+    this.setupSupabaseRealtimeSubscriptions();
 
     window.addEventListener('hashchange', () => this.handleRouteHashChange());
     window.addEventListener('popstate', () => this.handleRouteHashChange());
@@ -251,6 +252,38 @@ class AppEngine {
         this.closeProfileDropdown();
       }
     });
+  }
+
+  setupSupabaseRealtimeSubscriptions() {
+    if (!_supabase || !_supabase.channel) return;
+    try {
+      _supabase.channel('public:realtime_store_sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, async () => {
+          await this.syncSupabaseBackendData();
+          this.reRenderActiveView();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'banners' }, async () => {
+          await this.syncSupabaseBackendData();
+          this.reRenderActiveView();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, async () => {
+          await this.syncSupabaseBackendData();
+          this.reRenderActiveView();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, async () => {
+          await this.syncSupabaseBackendData();
+          this.reRenderActiveView();
+        })
+        .subscribe();
+    } catch(e) {
+      console.warn('Realtime channel subscription notice:', e);
+    }
+  }
+
+  reRenderActiveView() {
+    this.applyAppTheme();
+    this.handleRouteHashChange();
+    this.renderAdminTables();
   }
 
   async syncSupabaseBackendData() {
